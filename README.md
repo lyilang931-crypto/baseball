@@ -9,6 +9,66 @@ Next.js (App Router) + TypeScript + Tailwind CSS で作った iOS 風の野球�
 - **Result 画面**: 正解/不正解・効果音・解説・出典リンク・レート変動・「次の1球へ」
 - **最終結果**: 5問中正答数・レート変動・「スタートに戻る」
 - **Elo レーティング**: 初期1500・K=24、難易度で期待勝率を調整し、localStorage に保存
+- **みんなの正答率**: 問題ごとの回答数・正解数をサーバで永続集計し、結果画面に「みんなの正答率: xx%（n人中m人正解）」を表示（DB 未設定時は in-memory フォールバック／「集計中」表示）
+- **連続日数 Streak**: デイリー1日1回プレイで連続日数をカウント。トップ・結果画面に「連続: n日」を表示（localStorage 保存）
+- **シェア用カード画像**: 結果画面で Canvas により 1080x1920 のカード画像を生成。ダウンロード or Web Share API で共有可能
+- **OGP画像**: トップは固定OGP（1200x630）。結果シェア用は `/share?score=4&total=5&rating=1523` で動的OGP（匿名のみ）
+
+## OGP画像（X/LINEで拡散されやすいカード）
+
+| 種別 | URL | 内容 |
+|------|-----|------|
+| 固定OGP | トップ（/） | 今日の1球・野球IQクイズ・「あなたならどうする？」（1200x630） |
+| 動的OGP | `/share?score=4&total=5&rating=1523` | 正解数/問題数・正答率・レートを画像に表示 |
+
+**ローカルでOGPを確認する手順**
+
+1. `npm run dev` で起動
+2. 固定OGP: ブラウザで `http://localhost:3000/opengraph-image` を開く（画像が表示される）
+3. 動的OGP: `http://localhost:3000/share/og?score=4&total=5&rating=1523` を開く（画像が表示される）
+4. メタタグ確認: 開発者ツールで `<meta property="og:image" ...>` を確認するか、[Open Graph Debugger](https://www.opengraph.xyz/) 等で本番URLを入力（ローカルURLは外部ツールでは取得できない場合あり）
+
+**変更・追加ファイル（OGP / 統計問題）**
+
+| 種別 | ファイル | 内容 |
+|------|----------|------|
+| 追加 | `app/opengraph-image.tsx` | 固定OGP（1200x630・白背景・角丸カード風） |
+| 追加 | `app/share/page.tsx` | 結果シェア用ページ（クエリで score/total/rating を受け取り、動的 metadata） |
+| 追加 | `app/share/og/route.tsx` | 動的OGP画像生成（GET /share/og?score=...&total=...&rating=...） |
+| 変更 | `app/layout.tsx` | metadata に title/description/openGraph/twitter を整備 |
+| 変更 | `src/data/questions.ts` | 統計ベース問題3問の文言を指定どおりに更新（id 11, 12, 13） |
+
+## 環境変数（正答率集計用）
+
+| 変数名 | 説明 |
+|--------|------|
+| `DATABASE_URL` | Postgres 接続文字列（Vercel Postgres / Neon 等）。未設定時は **in-memory フォールバック**（再起動でリセット） |
+
+**設定方法**
+
+- **ローカル**: プロジェクト直下に `.env.local` を作成し、`DATABASE_URL=postgres://...` を記載
+- **Vercel**: ダッシュボードの Project → Settings → Environment Variables で `DATABASE_URL` を追加（Vercel Postgres または Neon の接続文字列）
+
+**ローカルで DB なしで動かす場合**
+
+- `DATABASE_URL` を設定しなければ、正答率集計は **in-memory フォールバック** になります（再起動でリセット）。結果画面では「集計中」またはデータ取得後に「みんなの正答率」が表示されます。その他の機能（Streak・シェア画像・デイリー）は DB なしで動作します。
+
+## Supabase：回答ログ用テーブル（SQL）
+
+Supabase の **SQL Editor** で以下を実行し、回答ログ用テーブルを作成してください。
+
+```sql
+create table if not exists answers (
+  id bigint generated always as identity primary key,
+  user_id uuid not null,
+  question_id text not null,
+  is_correct boolean not null,
+  created_at timestamp with time zone default now()
+);
+
+create index if not exists idx_answers_user_id on answers(user_id);
+create index if not exists idx_answers_question_id on answers(question_id);
+```
 
 ## 起動手順
 
@@ -74,3 +134,32 @@ npm start
 3. フレームワークは Next.js のまま「Deploy」で完了
 
 `package.json` と `next.config.js` がそのまま使える構成です。
+
+### 正答率集計まわりの変更・追加ファイル
+
+| 種別 | ファイル | 内容 |
+|------|----------|------|
+| 追加 | `src/lib/stats-db.ts` | 集計の永続化（Postgres / in-memory フォールバック）、`recordAnswer` / `getStats` |
+| 追加 | `app/api/stats/answer/route.ts` | `POST /api/stats/answer`（body: `questionId`, `isCorrect`） |
+| 追加 | `app/api/stats/question/route.ts` | `GET /api/stats/question?questionId=...` |
+| 変更 | `app/page.tsx` | 解答時に POST、Result に `questionId` を渡す |
+| 変更 | `app/components/ResultView.tsx` | `questionId` を受け取り、正答率を取得・表示 |
+| 変更 | `package.json` | `pg` / `@types/pg` 追加 |
+
+**DB テーブル（Postgres 使用時）**
+
+- テーブル名: `stats_question_aggregate`
+- カラム: `question_id` (TEXT PK), `total_attempts` (INTEGER), `total_correct` (INTEGER), `updated_at` (TIMESTAMP)
+- 初回 API 呼び出し時に `CREATE TABLE IF NOT EXISTS` で自動作成されます。
+
+### 今回の追加・変更ファイル（A/B/C）
+
+| 種別 | ファイル | 内容 |
+|------|----------|------|
+| 変更 | `app/components/ResultView.tsx` | 「みんなの正答率」文言・「集計中」フォールバック |
+| 追加 | `src/utils/streak.ts` | 連続日数 Streak（getStreakCount / updateStreakAndReturn） |
+| 変更 | `app/page.tsx` | セッション完了時に updateStreakAndReturn 呼び出し |
+| 変更 | `app/components/StartView.tsx` | 連続日数表示 |
+| 変更 | `app/components/FinalResultView.tsx` | 連続日数表示・ShareCard 組み込み |
+| 追加 | `src/utils/generateShareImage.ts` | Canvas で 1080x1920 シェア画像生成 |
+| 追加 | `app/components/ShareCard.tsx` | シェア画像作成・ダウンロード・Web Share API |

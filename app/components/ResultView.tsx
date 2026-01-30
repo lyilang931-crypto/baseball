@@ -1,8 +1,17 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { useResultSound } from "../hooks/useResultSound";
 
+interface QuestionStats {
+  questionId: string;
+  total_attempts: number;
+  total_correct: number;
+  accuracy: number;
+}
+
 interface ResultViewProps {
+  questionId: string;
   isCorrect: boolean;
   explanation: string;
   sourceLabel: string;
@@ -13,6 +22,7 @@ interface ResultViewProps {
 }
 
 export default function ResultView({
+  questionId,
   isCorrect,
   explanation,
   sourceLabel,
@@ -22,6 +32,20 @@ export default function ResultView({
   onNext,
 }: ResultViewProps) {
   useResultSound(isCorrect);
+  const [stats, setStats] = useState<QuestionStats | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch(`/api/stats/question?questionId=${encodeURIComponent(questionId)}`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (!cancelled && data) setStats(data);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [questionId]);
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-6 py-12 max-w-md mx-auto">
@@ -53,6 +77,20 @@ export default function ResultView({
             </a>
           </section>
         ) : null}
+
+        {stats != null && stats.total_attempts > 0 ? (
+          <section className="w-full mb-4 text-left">
+            <h3 className="text-sm font-bold text-gray-500 mb-1">みんなの正答率</h3>
+            <p className="text-gray-700 text-sm">
+              みんなの正答率: {Math.round(stats.accuracy * 100)}%（
+              {stats.total_attempts}人中{stats.total_correct}人正解）
+            </p>
+          </section>
+        ) : stats != null && stats.total_attempts === 0 ? null : (
+          <section className="w-full mb-4 text-left">
+            <p className="text-gray-400 text-sm">集計中</p>
+          </section>
+        ) }
 
         <p className="text-center mt-4">
           <span className="text-gray-600">レート: </span>

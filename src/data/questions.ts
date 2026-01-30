@@ -206,8 +206,9 @@ const QUESTIONS_POOL: Question[] = [
   {
     kind: "stat",
     id: 11,
-    situation: "MLB 2023 の指標「Whiff%」で、最も空振り率が高かった球種はどれ？",
-    count: "metric: Whiff%",
+    situation:
+      "右投手×右打者、1-2カウントで「最も空振り率（Whiff%）が高い球種」は？",
+    count: "MLB 2023 / metric: Whiff%",
     choices: [
       { id: "a", text: "フォーシーム" },
       { id: "b", text: "スライダー" },
@@ -216,7 +217,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "c",
     explanation:
-      "MLB 2023 の Whiff%（空振り率）ではフォークが最も高い球種でした。これは統計ベース問題です。",
+      "MLB 2023 の Whiff%（空振り率）ではフォークが最も高い球種でした。統計ベース問題です。",
     sourceLabel: "Baseball Savant",
     sourceUrl: "https://baseballsavant.mlb.com",
     difficulty: 4,
@@ -228,8 +229,9 @@ const QUESTIONS_POOL: Question[] = [
   {
     kind: "stat",
     id: 12,
-    situation: "NPB 2022 の「得点圏打率」で、最も打率が高かった打球方向は？",
-    count: "metric: Batting Average (RISP)",
+    situation:
+      "得点圏（ランナー2塁以上）で最も打率が高かった打球方向は？",
+    count: "NPB 2022 / metric: Batting Average (RISP)",
     choices: [
       { id: "a", text: "引っ張り" },
       { id: "b", text: "センター返し" },
@@ -238,7 +240,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "b",
     explanation:
-      "NPB 2022 の得点圏打率ではセンター返しが最も打率が高かった方向でした。これは統計ベース問題です。",
+      "NPB 2022 の得点圏打率ではセンター返しが最も打率が高かった方向でした。統計ベース問題です。",
     sourceLabel: "NPB 公式",
     sourceUrl: "https://npb.jp/bis/",
     difficulty: 3,
@@ -250,7 +252,8 @@ const QUESTIONS_POOL: Question[] = [
   {
     kind: "stat",
     id: 13,
-    situation: "MLB 2023「Spray Angle 別打率」で、シフト禁止後最も打率が上昇した方向は？",
+    situation:
+      "シフト制限後（2023年MLB）、左打者で最も打率が上がった打球方向は？",
     count: "metric: Batting Average by Spray Angle",
     choices: [
       { id: "a", text: "一二塁間" },
@@ -260,7 +263,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "b",
     explanation:
-      "MLB 2023 のシフト禁止後、三遊間方向の打率が最も上昇しました。これは統計ベース問題です。",
+      "MLB 2023 のシフト制限後、左打者で三遊間方向の打率が最も上昇しました。統計ベース問題です。",
     sourceLabel: "Baseball Savant",
     sourceUrl: "https://baseballsavant.mlb.com/leaderboard/spray-angle",
     difficulty: 5,

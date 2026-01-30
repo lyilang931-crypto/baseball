@@ -1,5 +1,11 @@
 "use client";
 
+/**
+ * 即体験UX（TikTok型の抽象化）
+ * - 起動後すぐに答えるボタンが押せる
+ * - 説明画面なし。問題 → 選択肢が最短で表示
+ */
+
 import type { Question } from "@/data/questions";
 
 interface QuestionViewProps {
@@ -19,20 +25,19 @@ export default function QuestionView({
 }: QuestionViewProps) {
   return (
     <div className="min-h-screen flex flex-col items-center justify-between px-6 py-10 max-w-md mx-auto">
-      <p className="text-sm text-gray-500 w-full text-center">
-        第{questionNumber}問 / {totalQuestions}
+      <p className="text-xs text-gray-400 w-full text-center">
+        {questionNumber}/{totalQuestions} · 残り{secondsLeft}秒
       </p>
 
-      <div className="flex-1 flex flex-col items-center justify-center w-full py-6">
-        <h2 className="text-xl font-bold text-gray-900 text-center mb-2">
+      <div className="flex-1 flex flex-col items-center justify-center w-full py-4">
+        <h2 className="text-lg font-bold text-gray-900 text-center mb-1">
           {question.situation}
         </h2>
-        <p className="text-base text-gray-700 text-center mb-4">
+        <p className="text-sm text-gray-600 text-center mb-6">
           {question.count}
         </p>
-        <p className="text-gray-900 text-center mb-8">あなたはどうする?</p>
 
-        <div className="w-full space-y-3">
+        <div className="w-full space-y-2">
           {question.choices.map((choice) => (
             <button
               key={choice.id}
@@ -45,8 +50,6 @@ export default function QuestionView({
           ))}
         </div>
       </div>
-
-      <p className="text-sm text-gray-500">残り {secondsLeft} 秒</p>
     </div>
   );
 }

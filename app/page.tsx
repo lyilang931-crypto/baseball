@@ -1,5 +1,13 @@
 "use client";
 
+/**
+ * 上位アプリUXの抽象化:
+ * - デイリー体験: daily.ts + StartView 分岐（Duolingo型）
+ * - 即体験: QuestionView 最小テキスト・即押せる（TikTok型）
+ * - 比較・競争: FinalResultView 判断力レベル名称（Trivia型）
+ * - シェア前提: 結果 = シェア画面（shareText + X/LINE）
+ */
+
 import { useState, useEffect, useCallback } from "react";
 import StartView from "./components/StartView";
 import QuestionView from "./components/QuestionView";
@@ -20,6 +28,15 @@ import {
   setRating as persistRating,
   appendHistory,
 } from "@/lib/storage";
+import {
+  hasPlayedToday,
+  setLastPlayedToday,
+  setTodayResult,
+  getTodayResult,
+  getLastPlayedDate,
+} from "@/lib/daily";
+import { updateStreakAndReturn } from "@/utils/streak";
+import { saveAnswer } from "@/lib/answers";
 
 type Screen = "start" | "question" | "result" | "final";
 
@@ -77,6 +94,12 @@ export default function Home() {
     const q = sessionQuestions[currentIndex];
     if (!q) return;
     clearTimer();
+    saveAnswer(String(q.id), false).catch(() => {});
+    fetch("/api/stats/answer", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ questionId: String(q.id), isCorrect: false }),
+    }).catch(() => {});
     const { newRating, delta } = eloAfterIncorrect(rating, q.difficulty);
     setRatingState(newRating);
     persistRating(newRating);
@@ -101,11 +124,21 @@ export default function Home() {
     setScreen("question");
   };
 
-  const handleSelect = (choiceId: string) => {
+  const handleSelect = async (choiceId: string) => {
     clearTimer();
     const q = sessionQuestions[currentIndex];
     if (!q) return;
     const isCorrect = q.answerChoiceId === choiceId;
+    saveAnswer(String(q.id), isCorrect).catch(() => {});
+    try {
+      await fetch("/api/stats/answer", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ questionId: String(q.id), isCorrect }),
+      });
+    } catch {
+      // 集計送信失敗時もプレイは継続
+    }
     const { newRating, delta } = isCorrect
       ? eloAfterCorrect(rating, q.difficulty)
       : eloAfterIncorrect(rating, q.difficulty);
@@ -127,6 +160,15 @@ export default function Home() {
   const handleNext = () => {
     if (lastCorrect) setCorrectCount((c) => c + 1);
     if (currentIndex + 1 >= QUESTIONS_PER_SESSION) {
+      const finalCorrect = lastCorrect ? correctCount + 1 : correctCount;
+      updateStreakAndReturn(getLastPlayedDate());
+      setLastPlayedToday();
+      setTodayResult({
+        correctCount: finalCorrect,
+        totalQuestions: QUESTIONS_PER_SESSION,
+        ratingBefore: ratingAtSessionStart,
+        ratingAfter: rating,
+      });
       setScreen("final");
     } else {
       setCurrentIndex((i) => i + 1);
@@ -140,8 +182,23 @@ export default function Home() {
     setCorrectCount(0);
   };
 
+  const handleViewTodayResult = () => {
+    const r = getTodayResult();
+    if (!r) return;
+    setCorrectCount(r.correctCount);
+    setRatingAtSessionStart(r.ratingBefore);
+    setRatingState(r.ratingAfter);
+    setScreen("final");
+  };
+
   if (screen === "start") {
-    return <StartView onStart={handleStart} />;
+    return (
+      <StartView
+        hasPlayedToday={hasPlayedToday()}
+        onStart={handleStart}
+        onViewTodayResult={handleViewTodayResult}
+      />
+    );
   }
 
   if (screen === "question" && sessionQuestions.length > 0) {
@@ -163,6 +220,7 @@ export default function Home() {
     if (!q) return null;
     return (
       <ResultView
+        questionId={String(q.id)}
         isCorrect={lastCorrect}
         explanation={q.explanation}
         sourceLabel={q.sourceLabel}
