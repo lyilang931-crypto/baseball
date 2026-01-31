@@ -19,18 +19,14 @@ const memoryStore = new Map<
   { total_attempts: number; total_correct: number }
 >();
 
-let _pool: import("pg").Pool | null | undefined = undefined;
+let _pool: import("pg").Pool | null = null;
 
 function pool(): import("pg").Pool | null {
-  if (_pool === undefined) {
-    if (!process.env.DATABASE_URL) {
-      _pool = null;
-      return null;
-    }
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const { Pool } = require("pg");
-    _pool = new Pool({ connectionString: process.env.DATABASE_URL });
-  }
+  if (_pool !== null) return _pool;
+  if (!process.env.DATABASE_URL) return null;
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const { Pool } = require("pg");
+  _pool = new Pool({ connectionString: process.env.DATABASE_URL });
   return _pool;
 }
 
