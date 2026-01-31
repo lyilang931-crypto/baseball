@@ -53,22 +53,108 @@ Next.js (App Router) + TypeScript + Tailwind CSS で作った iOS 風の野球�
 
 - `DATABASE_URL` を設定しなければ、正答率集計は **in-memory フォールバック** になります（再起動でリセット）。結果画面では「集計中」またはデータ取得後に「みんなの正答率」が表示されます。その他の機能（Streak・シェア画像・デイリー）は DB なしで動作します。
 
-## Supabase：回答ログ用テーブル（SQL）
+## 環境変数（Supabase・回答ログ用）
 
-Supabase の **SQL Editor** で以下を実行し、回答ログ用テーブルを作成してください。
+**※ Service Role Key は使用しません。anon key のみで RLS により制御します。**
+
+### .env.local 例
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=https://xxxx.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+```
+
+### Vercel Environment Variables
+
+| 変数名 | 説明 |
+|--------|------|
+| `NEXT_PUBLIC_SUPABASE_URL` | Supabase プロジェクトの URL |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase の anon（公開）キー |
+
+- **Service Role Key は使用しない** ことを明記します。anon key と RLS で insert/select のみ許可しています。
+
+---
+
+## Supabase：answer_logs / question_stats（SQL）
+
+Supabase の **SQL Editor** で以下を **そのまま実行** してください。
+
+### テーブル・トリガー・RLS
 
 ```sql
-create table if not exists answers (
-  id bigint generated always as identity primary key,
-  user_id uuid not null,
+-- 生ログ
+create table if not exists answer_logs (
+  id uuid primary key default gen_random_uuid(),
+  created_at timestamptz default now() not null,
+  user_id text not null,
   question_id text not null,
+  selected_option text not null,
   is_correct boolean not null,
-  created_at timestamp with time zone default now()
+  source_url text null,
+  rating_before int null,
+  rating_after int null,
+  meta jsonb null
 );
 
-create index if not exists idx_answers_user_id on answers(user_id);
-create index if not exists idx_answers_question_id on answers(question_id);
+-- 集計用（問題ごと）
+create table if not exists question_stats (
+  question_id text primary key,
+  answered_count int not null default 0,
+  correct_count int not null default 0,
+  updated_at timestamptz default now() not null
+);
+
+-- answer_logs insert 時に question_stats を upsert
+create or replace function sync_question_stats_on_answer_log()
+returns trigger as $$
+begin
+  insert into question_stats (question_id, answered_count, correct_count, updated_at)
+  values (new.question_id, 1, case when new.is_correct then 1 else 0 end, now())
+  on conflict (question_id) do update set
+    answered_count = question_stats.answered_count + 1,
+    correct_count = question_stats.correct_count + case when new.is_correct then 1 else 0 end,
+    updated_at = now();
+  return new;
+end;
+$$ language plpgsql;
+
+drop trigger if exists tr_sync_question_stats_on_answer_log on answer_logs;
+create trigger tr_sync_question_stats_on_answer_log
+  after insert on answer_logs
+  for each row execute function sync_question_stats_on_answer_log();
+
+-- RLS 有効化
+alter table answer_logs enable row level security;
+alter table question_stats enable row level security;
+
+-- answer_logs: anon で insert のみ許可
+create policy "anon_insert_answer_logs" on answer_logs
+  for insert to anon with check (true);
+
+-- question_stats: anon で select のみ許可
+create policy "anon_select_question_stats" on question_stats
+  for select to anon using (true);
 ```
+
+（既存の `answers` テーブルがある場合は、上記と別テーブルとして `answer_logs` を追加してください。）
+
+### 回答確定時の Supabase 保存（フック箇所）
+
+| 箇所 | 内容 |
+|------|------|
+| **app/page.tsx** | `handleSelect(choiceId)` … ユーザーが選択肢を押した直後に `getOrCreateUserId()` で userId を取得し、`POST /api/answers` を 1 回だけ送信（`answerLogSentForIndex` で二重送信防止）。失敗時は `console.error` のみで画面遷移は継続。 |
+| **app/page.tsx** | タイムアウト用 `useEffect`（`secondsLeft === 0`）… 時間切れ時も同様に `POST /api/answers` を 1 回だけ送信（`selectedOption: ""`）。 |
+| **app/api/answers/route.ts** | `POST` … body を検証し、Supabase の `answer_logs` に 1 行 insert。成功時 `{ ok: true }`、失敗時 500。 |
+| **src/lib/userId.ts** | `getOrCreateUserId()` … localStorage の `baseball_user_id` が無ければ `crypto.randomUUID()` で生成して保存し、返す。 |
+
+**変更・追加ファイル一覧（回答確定時の Supabase 保存）**
+
+| 種別 | ファイル | 内容 |
+|------|----------|------|
+| 追加 | `src/lib/userId.ts` | `getOrCreateUserId()`（localStorage + crypto.randomUUID） |
+| 追加 | `app/api/answers/route.ts` | `POST /api/answers`（answer_logs に insert） |
+| 変更 | `app/page.tsx` | `handleSelect` とタイムアウト `useEffect` に `/api/answers` 送信・二重送信防止を追加 |
+| 変更 | `README.md` | .env.local 例・Vercel 環境変数・Supabase SQL（answer_logs / question_stats / trigger / RLS）・フック箇所を追記 |
 
 ## 起動手順
 

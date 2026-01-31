@@ -8,7 +8,7 @@
  * - シェア前提: 結果 = シェア画面（shareText + X/LINE）
  */
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import StartView from "./components/StartView";
 import QuestionView from "./components/QuestionView";
 import ResultView from "./components/ResultView";
@@ -36,6 +36,7 @@ import {
   getLastPlayedDate,
 } from "@/lib/daily";
 import { updateStreakAndReturn } from "@/utils/streak";
+import { getOrCreateUserId } from "@/lib/userId";
 import { saveAnswer } from "@/lib/answers";
 
 type Screen = "start" | "question" | "result" | "final";
@@ -57,6 +58,7 @@ export default function Home() {
   const [timerId, setTimerId] = useState<ReturnType<typeof setInterval> | null>(
     null
   );
+  const answerLogSentForIndex = useRef<number>(-1);
 
   useEffect(() => {
     setRatingState(getStoredRating(getInitialRating()));
@@ -94,13 +96,32 @@ export default function Home() {
     const q = sessionQuestions[currentIndex];
     if (!q) return;
     clearTimer();
+    const { newRating, delta } = eloAfterIncorrect(rating, q.difficulty);
+    if (answerLogSentForIndex.current !== currentIndex) {
+      answerLogSentForIndex.current = currentIndex;
+      const userId = getOrCreateUserId();
+      if (userId) {
+        fetch("/api/answers", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            userId,
+            questionId: String(q.id),
+            selectedOption: "",
+            isCorrect: false,
+            sourceUrl: q.sourceUrl || undefined,
+            ratingBefore: rating,
+            ratingAfter: newRating,
+          }),
+        }).catch((err) => console.error("[answer log]", err));
+      }
+    }
     saveAnswer(String(q.id), false).catch(() => {});
     fetch("/api/stats/answer", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ questionId: String(q.id), isCorrect: false }),
     }).catch(() => {});
-    const { newRating, delta } = eloAfterIncorrect(rating, q.difficulty);
     setRatingState(newRating);
     persistRating(newRating);
     appendHistory({
@@ -129,6 +150,28 @@ export default function Home() {
     const q = sessionQuestions[currentIndex];
     if (!q) return;
     const isCorrect = q.answerChoiceId === choiceId;
+    const { newRating, delta } = isCorrect
+      ? eloAfterCorrect(rating, q.difficulty)
+      : eloAfterIncorrect(rating, q.difficulty);
+    if (answerLogSentForIndex.current !== currentIndex) {
+      answerLogSentForIndex.current = currentIndex;
+      const userId = getOrCreateUserId();
+      if (userId) {
+        fetch("/api/answers", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            userId,
+            questionId: String(q.id),
+            selectedOption: choiceId,
+            isCorrect,
+            sourceUrl: q.sourceUrl || undefined,
+            ratingBefore: rating,
+            ratingAfter: newRating,
+          }),
+        }).catch((err) => console.error("[answer log]", err));
+      }
+    }
     saveAnswer(String(q.id), isCorrect).catch(() => {});
     try {
       await fetch("/api/stats/answer", {
@@ -139,9 +182,6 @@ export default function Home() {
     } catch {
       // 集計送信失敗時もプレイは継続
     }
-    const { newRating, delta } = isCorrect
-      ? eloAfterCorrect(rating, q.difficulty)
-      : eloAfterIncorrect(rating, q.difficulty);
     setRatingState(newRating);
     persistRating(newRating);
     appendHistory({
