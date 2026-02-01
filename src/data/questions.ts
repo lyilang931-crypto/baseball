@@ -106,6 +106,7 @@ const QUESTIONS_POOL: Question[] = [
   },
   {
     kind: "definition",
+    questionType: "THEORY",
     id: 2,
     questionId: QUESTION_UUIDS[1],
     situation: "1回表・無死・1塁",
@@ -125,6 +126,7 @@ const QUESTIONS_POOL: Question[] = [
   },
   {
     kind: "definition",
+    questionType: "THEORY",
     id: 3,
     questionId: QUESTION_UUIDS[2],
     situation: "7回裏・1アウト・2塁3塁",
@@ -144,6 +146,7 @@ const QUESTIONS_POOL: Question[] = [
   },
   {
     kind: "definition",
+    questionType: "THEORY",
     id: 4,
     questionId: QUESTION_UUIDS[3],
     situation: "3回表・2アウト・走者なし",
@@ -163,6 +166,7 @@ const QUESTIONS_POOL: Question[] = [
   },
   {
     kind: "definition",
+    questionType: "THEORY",
     id: 5,
     questionId: QUESTION_UUIDS[4],
     situation: "5回裏・無死・満塁",
@@ -182,6 +186,7 @@ const QUESTIONS_POOL: Question[] = [
   },
   {
     kind: "definition",
+    questionType: "THEORY",
     id: 6,
     questionId: QUESTION_UUIDS[5],
     situation: "8回表・2アウト・1塁2塁",
@@ -200,6 +205,7 @@ const QUESTIONS_POOL: Question[] = [
   },
   {
     kind: "definition",
+    questionType: "THEORY",
     id: 7,
     questionId: QUESTION_UUIDS[6],
     situation: "延長10回裏・無死・2塁",
@@ -218,6 +224,7 @@ const QUESTIONS_POOL: Question[] = [
   },
   {
     kind: "definition",
+    questionType: "THEORY",
     id: 8,
     questionId: QUESTION_UUIDS[7],
     situation: "2回裏・1アウト・走者なし",
@@ -236,6 +243,7 @@ const QUESTIONS_POOL: Question[] = [
   },
   {
     kind: "definition",
+    questionType: "THEORY",
     id: 9,
     questionId: QUESTION_UUIDS[8],
     situation: "6回表・1アウト・満塁",
@@ -254,6 +262,7 @@ const QUESTIONS_POOL: Question[] = [
   },
   {
     kind: "definition",
+    questionType: "THEORY",
     id: 10,
     questionId: QUESTION_UUIDS[9],
     situation: "4回裏・無死・1塁3塁",
@@ -273,6 +282,7 @@ const QUESTIONS_POOL: Question[] = [
   // 統計ベース問題
   {
     kind: "stat",
+    questionType: "REAL_DATA",
     id: 11,
     questionId: QUESTION_UUIDS[10],
     situation:
@@ -298,6 +308,7 @@ const QUESTIONS_POOL: Question[] = [
   },
   {
     kind: "stat",
+    questionType: "REAL_DATA",
     id: 12,
     questionId: QUESTION_UUIDS[11],
     situation:
@@ -323,6 +334,7 @@ const QUESTIONS_POOL: Question[] = [
   },
   {
     kind: "stat",
+    questionType: "REAL_DATA",
     id: 13,
     questionId: QUESTION_UUIDS[12],
     situation:
@@ -531,21 +543,20 @@ const QUESTIONS_POOL: Question[] = [
   },
 ];
 
-/**
- * 追加 REAL_DATA 7問 一覧（league / season / metric / 出典URL）
- * ----------------------------------------
- * 1. MLB / 2023 / 本塁打 / https://www.baseball-reference.com/players/o/ohtansh01.shtml （大谷翔平）
- * 2. MLB / 2024 / OPS / https://www.mlb.com/stats/2024 （大谷翔平）
- * 3. MLB / 2023 / Whiff% (2ストライク) / https://baseballsavant.mlb.com/statcast_leaderboard
- * 4. MLB / 2023 / 飛距離・打球方向 / https://baseballsavant.mlb.com/leaderboard/statcast
- * 5. NPB / 2023 / 本塁打 / https://npb.jp/bis/2023/stats/bat_c.html
- * 6. NPB / 2023 / 奪三振 / https://npb.jp/bis/2023/stats/pit_c.html
- * 7. NPB / 2022 / チーム打率 / https://npb.jp/bis/2022/stats/tmb_c.html
- * ----------------------------------------
- * REAL_DATA 合計: 10問（既存3 + 追加7）。MLB 6問 / NPB 4問。大谷翔平 2問。
- */
+/** 出題プール用: id で指定した問題を順に返す */
+function pickByIds(pool: Question[], ids: readonly number[]): Question[] {
+  return ids
+    .map((id) => pool.find((q) => q.id === id))
+    .filter((q): q is Question => q != null);
+}
 
-/** 知識問題（5問目のみ出題） */
+/** 実データ問題プール（厳密に5問）。questionType は REAL_DATA で明示。 */
+const REAL_DATA_POOL: Question[] = pickByIds(QUESTIONS_POOL, [11, 12, 14, 15, 18]);
+
+/** 配球セオリー問題プール（厳密に3問）。questionType は THEORY で明示。 */
+const THEORY_POOL: Question[] = pickByIds(QUESTIONS_POOL, [1, 4, 7]);
+
+/** 知識問題プール（厳密に2問）。questionType は KNOWLEDGE で明示。 */
 const KNOWLEDGE_POOL: Question[] = [
   {
     kind: "definition",
@@ -614,23 +625,94 @@ export interface SessionOptions {
   dataOnly?: boolean;
 }
 
+/** 配列を Fisher–Yates でシャッフルし、先頭 n 件を返す（同一セッション内重複なし） */
+function shuffleDraw<T>(pool: T[], n: number): T[] {
+  const copy = [...pool];
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy.slice(0, n);
+}
+
+/** 制約を満たす構成 [REAL, THEORY, KNOW]。REAL>=2, KNOW<=1。REAL多めを少し優遇。 */
+const SESSION_COMPOSITIONS: { r: number; t: number; k: number; weight: number }[] = [
+  { r: 5, t: 0, k: 0, weight: 2 },
+  { r: 4, t: 1, k: 0, weight: 2 },
+  { r: 4, t: 0, k: 1, weight: 1 },
+  { r: 3, t: 2, k: 0, weight: 2 },
+  { r: 3, t: 1, k: 1, weight: 1 },
+  { r: 2, t: 3, k: 0, weight: 1 },
+  { r: 2, t: 2, k: 1, weight: 1 },
+];
+
+/** 重み付きで構成を1つ選ぶ */
+function pickComposition(): { r: number; t: number; k: number } {
+  const total = SESSION_COMPOSITIONS.reduce((s, c) => s + c.weight, 0);
+  let r = Math.random() * total;
+  for (const c of SESSION_COMPOSITIONS) {
+    r -= c.weight;
+    if (r <= 0) return { r: c.r, t: c.t, k: c.k };
+  }
+  return SESSION_COMPOSITIONS[0];
+}
+
 /**
- * 1セッション用に5問を選ぶ。
- * 1〜4問目: REAL_DATA + THEORY からランダム、5問目: KNOWLEDGE のみ。
- * @param options.dataOnly true のとき実データ問題のみ（1〜4問目、5問目はKNOWLEDGE）
+ * 1セッション用に5問を選ぶ（soft constraints 付きランダム）。
+ * - 構成 [REAL, THEORY, KNOW] を重み付きでランダムに選択（REAL>=2, KNOW<=1）
+ * - 各プールから重複なしで抽選し、最後に並び順をシャッフル
+ * @param options.dataOnly true のとき実データ5問のみシャッフルして出題
  */
 export function getSessionQuestions(options?: SessionOptions): Question[] {
-  const mainPool =
-    options?.dataOnly === true
-      ? QUESTIONS_POOL.filter(isDataQuestion)
-      : QUESTIONS_POOL.filter((q) => getQuestionType(q) !== "KNOWLEDGE");
-  const knowledgePool = [...KNOWLEDGE_POOL];
-  const mainCount = Math.min(4, mainPool.length);
-  const shuffledMain = [...mainPool].sort(() => Math.random() - 0.5);
-  const four = shuffledMain.slice(0, mainCount);
-  const oneKnowledge =
-    knowledgePool.length > 0
-      ? knowledgePool[Math.floor(Math.random() * knowledgePool.length)]
-      : null;
-  return oneKnowledge ? [...four, oneKnowledge] : four;
+  if (options?.dataOnly === true) {
+    return shuffleDraw(REAL_DATA_POOL, 5);
+  }
+  const { r, t, k } = pickComposition();
+  const real = shuffleDraw(REAL_DATA_POOL, r);
+  const theory = shuffleDraw(THEORY_POOL, t);
+  const know = shuffleDraw(KNOWLEDGE_POOL, k);
+  const five = [...real, ...theory, ...know];
+  return shuffleDraw(five, 5);
+}
+
+/**
+ * 開発者向け: getSessionQuestions を runs 回実行し、REAL/THEORY/KNOW の出現分布と
+ * 制約違反（REAL<2, KNOW>1）の有無を console に出力する。
+ * ブラウザの開発者ツールで window.verifySessionQuestionsDistribution?.() や
+ * scripts/debug.ts から呼ぶ想定。
+ */
+export function verifySessionQuestionsDistribution(runs: number = 100): void {
+  const realCounts: number[] = [];
+  const theoryCounts: number[] = [];
+  const knowCounts: number[] = [];
+  let violationsReal = 0;
+  let violationsKnow = 0;
+
+  for (let i = 0; i < runs; i++) {
+    const session = getSessionQuestions();
+    let r = 0,
+      t = 0,
+      k = 0;
+    for (const q of session) {
+      const type = getQuestionType(q);
+      if (type === "REAL_DATA") r++;
+      else if (type === "THEORY") t++;
+      else k++;
+    }
+    realCounts.push(r);
+    theoryCounts.push(t);
+    knowCounts.push(k);
+    if (r < 2) violationsReal++;
+    if (k > 1) violationsKnow++;
+  }
+
+  const sum = (arr: number[]) => arr.reduce((a, b) => a + b, 0);
+  const avg = (arr: number[]) => sum(arr) / arr.length;
+  /* eslint-disable no-console */
+  console.log(`[verifySessionQuestionsDistribution] ${runs}回実行`);
+  console.log("REAL_DATA 出現: 平均", avg(realCounts).toFixed(2), "回/セッション");
+  console.log("THEORY 出現: 平均", avg(theoryCounts).toFixed(2), "回/セッション");
+  console.log("KNOWLEDGE 出現: 平均", avg(knowCounts).toFixed(2), "回/セッション");
+  console.log("制約違反: REAL<2 →", violationsReal, "件, KNOW>1 →", violationsKnow, "件");
+  /* eslint-enable no-console */
 }
