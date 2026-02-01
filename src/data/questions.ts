@@ -18,8 +18,8 @@ export type SourceType = "static" | "data";
 /** 問題タイプ（UI・出題ロジック用） */
 export type QuestionType = "REAL_DATA" | "THEORY" | "KNOWLEDGE";
 
-/** 正解のバイアスレベル（日本人スター等で「最上位＝正解」を避けるための目安） */
-export type AnswerBiasLevel = "TOP" | "MID" | "AVG";
+/** 正解のバイアスレベル（4択なら TOP/MID/AVG/LOW で均等出題可能） */
+export type AnswerBiasLevel = "TOP" | "MID" | "AVG" | "LOW";
 
 /** 共通フィールド（難易度 1〜5、1が易しい） */
 interface QuestionBase {
@@ -312,6 +312,7 @@ const QUESTIONS_POOL: Question[] = [
     questionType: "REAL_DATA",
     id: 11,
     questionId: QUESTION_UUIDS[10],
+    answerBiasLevel: "TOP",
     situation:
       "右投手×右打者、1-2カウントで「最も空振り率（Whiff%）が高い球種」は？",
     count: "MLB 2023 / metric: Whiff%",
@@ -338,6 +339,7 @@ const QUESTIONS_POOL: Question[] = [
     questionType: "REAL_DATA",
     id: 12,
     questionId: QUESTION_UUIDS[11],
+    answerBiasLevel: "TOP",
     situation:
       "得点圏（ランナー2塁以上）で最も打率が高かった打球方向は？",
     count: "NPB 2022 / metric: Batting Average (RISP)",
@@ -445,6 +447,7 @@ const QUESTIONS_POOL: Question[] = [
     questionType: "REAL_DATA",
     id: 16,
     questionId: QUESTION_UUIDS[17],
+    answerBiasLevel: "TOP",
     situation:
       "2023年MLBのStatcastデータで、2ストライクから「空振り率（Whiff%）が最も高かった球種」は？",
     count: "MLB 2023 / metric: Whiff% (2ストライク)",
@@ -471,6 +474,7 @@ const QUESTIONS_POOL: Question[] = [
     questionType: "REAL_DATA",
     id: 17,
     questionId: QUESTION_UUIDS[18],
+    answerBiasLevel: "TOP",
     situation:
       "2023年MLBで、打者の「飛距離（平均打球速度×打撃角度）」がリーグ上位だった打球方向は？",
     count: "MLB 2023 / metric: 飛距離・打球方向",
@@ -497,6 +501,7 @@ const QUESTIONS_POOL: Question[] = [
     questionType: "REAL_DATA",
     id: 18,
     questionId: QUESTION_UUIDS[19],
+    answerBiasLevel: "TOP",
     situation:
       "NPB公式記録によると、2023年セ・リーグで最多本塁打を記録した選手の所属チームは？",
     count: "NPB 2023 / metric: 本塁打",
@@ -550,6 +555,7 @@ const QUESTIONS_POOL: Question[] = [
     questionType: "REAL_DATA",
     id: 22,
     questionId: QUESTION_UUIDS[21],
+    answerBiasLevel: "TOP",
     situation:
       "NPB公式の2022年シーズン記録で、セ・リーグのチーム打率1位だった球団は？",
     count: "NPB 2022 / metric: チーム打率",
@@ -631,19 +637,19 @@ const QUESTIONS_POOL: Question[] = [
     questionType: "REAL_DATA",
     id: 25,
     questionId: QUESTION_UUIDS[24],
-    answerBiasLevel: "TOP",
+    answerBiasLevel: "MID",
     situation:
       "2024年MLBのStatcastデータで、大谷翔平の「打球速度（Exit Velocity）平均」は打者全体でどのレンジだった？",
     count: "MLB 2024 / metric: 平均打球速度",
     choices: [
       { id: "a", text: "上位5％" },
       { id: "b", text: "上位10％" },
-      { id: "c", text: "上位20％" },
-      { id: "d", text: "上位30％" },
+      { id: "c", text: "上位25％" },
+      { id: "d", text: "平均付近以下" },
     ],
-    answerChoiceId: "a",
+    answerChoiceId: "b",
     explanation:
-      "実データ問題：2024年大谷は平均打球速度でリーグ上位。出典：Baseball Savant / season 2024 / metric Exit Velocity。",
+      "実データ問題：2024年大谷は平均打球速度で打者全体の上位約10％帯。出典：Baseball Savant / season 2024 / metric Exit Velocity。",
     sourceLabel: "Baseball Savant",
     sourceUrl: "https://baseballsavant.mlb.com/leaderboard/statcast",
     sourceType: "data",
@@ -658,6 +664,7 @@ const QUESTIONS_POOL: Question[] = [
     questionType: "REAL_DATA",
     id: 26,
     questionId: QUESTION_UUIDS[25],
+    answerBiasLevel: "TOP",
     situation:
       "2023年MLBで「wOBA（加重出塁率）がリーグ上位だった打者」に日本人は何人含まれていた？（トップ30程度で）",
     count: "MLB 2023 / metric: wOBA",
@@ -684,6 +691,7 @@ const QUESTIONS_POOL: Question[] = [
     questionType: "REAL_DATA",
     id: 27,
     questionId: QUESTION_UUIDS[26],
+    answerBiasLevel: "TOP",
     situation:
       "NPB公式記録によると、2024年セ・リーグでチーム打率1位だった球団は？",
     count: "NPB 2024 / metric: チーム打率",
@@ -829,19 +837,19 @@ const QUESTIONS_POOL: Question[] = [
     questionType: "REAL_DATA",
     id: 35,
     questionId: QUESTION_UUIDS[34],
-    answerBiasLevel: "TOP",
+    answerBiasLevel: "MID",
     situation:
       "2023年MLBのStatcastで、大谷翔平の「バレル率（Barrel%）」は打者全体でどのレンジだった？",
     count: "MLB 2023 / metric: Barrel%",
     choices: [
       { id: "a", text: "上位5％" },
       { id: "b", text: "上位10％" },
-      { id: "c", text: "上位20％" },
-      { id: "d", text: "上位30％" },
+      { id: "c", text: "上位25％" },
+      { id: "d", text: "平均付近以下" },
     ],
-    answerChoiceId: "a",
+    answerChoiceId: "b",
     explanation:
-      "実データ問題：2023年大谷はBarrel%でリーグ上位。出典：Baseball Savant / season 2023 / metric Barrel%。",
+      "実データ問題：2023年大谷はBarrel%で打者全体の上位約10％帯。出典：Baseball Savant / season 2023 / metric Barrel%。",
     sourceLabel: "Baseball Savant",
     sourceUrl: "https://baseballsavant.mlb.com/leaderboard/statcast",
     sourceType: "data",
@@ -856,6 +864,7 @@ const QUESTIONS_POOL: Question[] = [
     questionType: "REAL_DATA",
     id: 36,
     questionId: QUESTION_UUIDS[35],
+    answerBiasLevel: "TOP",
     situation:
       "2024年MLBで今永昇太が記録した被打率（AVG）は、規定投球回達成投手のうちリーグで何位タイ程度だった？",
     count: "MLB 2024 / metric: 被打率",
@@ -882,6 +891,7 @@ const QUESTIONS_POOL: Question[] = [
     questionType: "REAL_DATA",
     id: 37,
     questionId: QUESTION_UUIDS[36],
+    answerBiasLevel: "AVG",
     situation:
       "NPB公式記録によると、2024年パ・リーグで最多本塁打を記録した選手の所属チームは？",
     count: "NPB 2024 / metric: 本塁打",
@@ -1145,6 +1155,15 @@ export function isJapaneseStarQuestion(q: Question): boolean {
   return JAPANESE_STAR_MARKERS.some((m) => text.includes(m));
 }
 
+/** 問題の正解バイアスレベル（未設定の REAL_DATA は AVG 扱いで出題バランス用） */
+export function getAnswerBiasLevel(q: Question): AnswerBiasLevel {
+  if (q.answerBiasLevel) return q.answerBiasLevel;
+  return getQuestionType(q) === "REAL_DATA" ? "AVG" : "AVG";
+}
+
+/** 出題バランス用のレベル順（ラウンドロビン用） */
+const BIAS_LEVEL_ORDER: AnswerBiasLevel[] = ["TOP", "MID", "AVG", "LOW"];
+
 /** 実データ問題の出典短縮表示（例: "NPB 2022", "MLB 2023"） */
 export function getDataSourceShort(q: Question): string | null {
   if (q.sourceType !== "data" && q.kind !== "stat") return null;
@@ -1184,6 +1203,96 @@ function shuffleDraw<T extends { questionId: string }>(pool: T[], n: number, exc
   return copy.slice(0, n);
 }
 
+/** REAL_DATA を answerBiasLevel でグループ化（未設定は AVG） */
+function groupRealByBiasLevel(
+  pool: Question[],
+  exclude?: string[]
+): Record<AnswerBiasLevel, Question[]> {
+  const filtered = exclude?.length
+    ? pool.filter((q) => !exclude.includes(q.questionId))
+    : [...pool];
+  const groups: Record<AnswerBiasLevel, Question[]> = {
+    TOP: [],
+    MID: [],
+    AVG: [],
+    LOW: [],
+  };
+  for (const q of filtered) {
+    const level = getAnswerBiasLevel(q);
+    groups[level].push(q);
+  }
+  return groups;
+}
+
+/** レベル均等を意識して REAL から n 問選ぶ（ラウンドロビン＋スターTOP最大1問） */
+function drawRealWithBalance(pool: Question[], n: number, exclude?: string[]): Question[] {
+  const groups = groupRealByBiasLevel(pool, exclude);
+  const total =
+    groups.TOP.length + groups.MID.length + groups.AVG.length + groups.LOW.length;
+  if (total === 0) return [];
+  if (n >= total) {
+    const all = [...groups.TOP, ...groups.MID, ...groups.AVG, ...groups.LOW];
+    const copy = [...all];
+    for (let i = copy.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [copy[i], copy[j]] = [copy[j], copy[i]];
+    }
+    return copy.slice(0, n);
+  }
+  const selected: Question[] = [];
+  const usedIds = new Set<string>();
+  const pickOne = (arr: Question[]): Question | null => {
+    const avail = arr.filter((q) => !usedIds.has(q.questionId));
+    if (avail.length === 0) return null;
+    const q = avail[Math.floor(Math.random() * avail.length)];
+    usedIds.add(q.questionId);
+    return q;
+  };
+  let round = 0;
+  while (selected.length < n) {
+    let added = 0;
+    for (const level of BIAS_LEVEL_ORDER) {
+      if (selected.length >= n) break;
+      const cand = pickOne(groups[level]);
+      if (!cand) continue;
+      const isStarTop =
+        isJapaneseStarQuestion(cand) && getAnswerBiasLevel(cand) === "TOP";
+      const starTopCount = selected.filter(
+        (q) => isJapaneseStarQuestion(q) && getAnswerBiasLevel(q) === "TOP"
+      ).length;
+      if (isStarTop && starTopCount >= 1) {
+        usedIds.delete(cand.questionId);
+        const altPool = [...groups.MID, ...groups.AVG, ...groups.LOW].filter(
+          (q) => !usedIds.has(q.questionId)
+        );
+        const alt = altPool.length > 0 ? pickOne(altPool) : null;
+        if (alt) {
+          selected.push(alt);
+          added++;
+        } else {
+          usedIds.add(cand.questionId);
+          selected.push(cand);
+          added++;
+        }
+      } else {
+        selected.push(cand);
+        added++;
+      }
+    }
+    if (added === 0) break;
+    round++;
+    if (round > 20) break;
+  }
+  while (selected.length < n) {
+    const rest = pool.filter((q) => !usedIds.has(q.questionId));
+    if (rest.length === 0) break;
+    const q = rest[Math.floor(Math.random() * rest.length)];
+    usedIds.add(q.questionId);
+    selected.push(q);
+  }
+  return selected.slice(0, n);
+}
+
 /** 制約を満たす構成 [REAL, THEORY, KNOW]。REAL>=2, KNOW<=1。REAL多めを少し優遇。 */
 const SESSION_COMPOSITIONS: { r: number; t: number; k: number; weight: number }[] = [
   { r: 5, t: 0, k: 0, weight: 2 },
@@ -1210,7 +1319,9 @@ function pickComposition(): { r: number; t: number; k: number } {
  * 1セッション用に5問を選ぶ（soft constraints 付きランダム）。
  * - 同日にすでに出題した questionId は excludeQuestionIds で除外
  * - 構成 [REAL, THEORY, KNOW] を重み付きでランダムに選択（REAL>=2, KNOW<=1）
- * - 各プールから重複なしで抽選し、最後に並び順をシャッフル
+ * - REAL は TOP/MID/AVG/LOW の比率がなるべく均等になるよう抽選（不足レベル優先）
+ * - 日本人スター問題の TOP はセッション内で最大1問まで
+ * - 最後に並び順をシャッフル
  * @param options.dataOnly true のとき実データ5問のみ
  * @param options.excludeQuestionIds 同日使用済み questionId（除外して抽選）
  */
@@ -1218,10 +1329,14 @@ export function getSessionQuestions(options?: SessionOptions): Question[] {
   const exclude = options?.excludeQuestionIds;
 
   if (options?.dataOnly === true) {
-    return shuffleDraw(REAL_DATA_POOL, 5, exclude);
+    const five = drawRealWithBalance(REAL_DATA_POOL, 5, exclude);
+    if (process.env.NODE_ENV === "development") {
+      logSessionBiasLevels(five);
+    }
+    return five;
   }
   const { r, t, k } = pickComposition();
-  const real = shuffleDraw(REAL_DATA_POOL, r, exclude);
+  const real = drawRealWithBalance(REAL_DATA_POOL, r, exclude);
   const theory = shuffleDraw(THEORY_POOL, t, exclude);
   const know = shuffleDraw(KNOWLEDGE_POOL, k, exclude);
   const five = [...real, ...theory, ...know];
@@ -1230,7 +1345,40 @@ export function getSessionQuestions(options?: SessionOptions): Question[] {
     const j = Math.floor(Math.random() * (i + 1));
     [copy[i], copy[j]] = [copy[j], copy[i]];
   }
-  return copy.slice(0, 5);
+  const session = copy.slice(0, 5);
+  if (process.env.NODE_ENV === "development") {
+    logSessionBiasLevels(session);
+  }
+  return session;
+}
+
+/**
+ * 開発者向け: セッション内の REAL_DATA の TOP/MID/AVG/LOW 比率をログし、偏りが強い場合は warn。
+ */
+export function logSessionBiasLevels(session: Question[]): void {
+  const real = session.filter((q) => getQuestionType(q) === "REAL_DATA");
+  if (real.length === 0) return;
+  const counts: Record<AnswerBiasLevel, number> = {
+    TOP: 0,
+    MID: 0,
+    AVG: 0,
+    LOW: 0,
+  };
+  for (const q of real) {
+    counts[getAnswerBiasLevel(q)]++;
+  }
+  const total = real.length;
+  const ratio = `TOP:${counts.TOP} MID:${counts.MID} AVG:${counts.AVG} LOW:${counts.LOW}`;
+  /* eslint-disable no-console */
+  console.log(`[logSessionBiasLevels] REAL_DATA ${total}問 バイアスレベル比率: ${ratio}`);
+  const maxCount = Math.max(counts.TOP, counts.MID, counts.AVG, counts.LOW);
+  if (maxCount >= total - 1 && total >= 2) {
+    console.warn(
+      "[logSessionBiasLevels] バイアスレベルが偏っています。TOP/MID/AVG/LOW の均等化を推奨:",
+      ratio
+    );
+  }
+  /* eslint-enable no-console */
 }
 
 /**
@@ -1246,20 +1394,39 @@ export function verifySessionQuestionsDistribution(runs: number = 100): void {
   let violationsReal = 0;
   let violationsKnow = 0;
 
+  const biasTop: number[] = [];
+  const biasMid: number[] = [];
+  const biasAvg: number[] = [];
+  const biasLow: number[] = [];
+
   for (let i = 0; i < runs; i++) {
     const session = getSessionQuestions();
     let r = 0,
       t = 0,
       k = 0;
+    let top = 0,
+      mid = 0,
+      avg = 0,
+      low = 0;
     for (const q of session) {
       const type = getQuestionType(q);
-      if (type === "REAL_DATA") r++;
-      else if (type === "THEORY") t++;
+      if (type === "REAL_DATA") {
+        r++;
+        const level = getAnswerBiasLevel(q);
+        if (level === "TOP") top++;
+        else if (level === "MID") mid++;
+        else if (level === "AVG") avg++;
+        else low++;
+      } else if (type === "THEORY") t++;
       else k++;
     }
     realCounts.push(r);
     theoryCounts.push(t);
     knowCounts.push(k);
+    biasTop.push(top);
+    biasMid.push(mid);
+    biasAvg.push(avg);
+    biasLow.push(low);
     if (r < 2) violationsReal++;
     if (k > 1) violationsKnow++;
   }
@@ -1271,6 +1438,16 @@ export function verifySessionQuestionsDistribution(runs: number = 100): void {
   console.log("REAL_DATA 出現: 平均", avg(realCounts).toFixed(2), "回/セッション");
   console.log("THEORY 出現: 平均", avg(theoryCounts).toFixed(2), "回/セッション");
   console.log("KNOWLEDGE 出現: 平均", avg(knowCounts).toFixed(2), "回/セッション");
+  console.log(
+    "REAL_DATA バイアスレベル（平均/セッション）: TOP",
+    avg(biasTop).toFixed(2),
+    "MID",
+    avg(biasMid).toFixed(2),
+    "AVG",
+    avg(biasAvg).toFixed(2),
+    "LOW",
+    avg(biasLow).toFixed(2)
+  );
   console.log("制約違反: REAL<2 →", violationsReal, "件, KNOW>1 →", violationsKnow, "件");
   warnRealDataAnswerBias();
   /* eslint-enable no-console */
