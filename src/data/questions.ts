@@ -6,9 +6,18 @@ export interface Choice {
   text: string;
 }
 
+/**
+ * 表示用番号（1〜13）。検索・表示用。
+ * DB参照には questionId (uuid) を使用する。
+ */
+export type QuestionNo = number;
+
 /** 共通フィールド（難易度 1〜5、1が易しい） */
 interface QuestionBase {
+  /** 表示用番号（第N問など） */
   id: number;
+  /** DB参照用。Supabase answer_logs / question_stats の question_id (uuid) */
+  questionId: string;
   situation: string;
   count: string;
   choices: Choice[];
@@ -36,10 +45,28 @@ export interface StatQuestion extends QuestionBase {
 /** 1問の型（定義ベース or 統計ベース） */
 export type Question = DefinitionQuestion | StatQuestion;
 
+/** 問題ごとの安定 uuid（Supabase answer_logs / question_stats の question_id 用） */
+const QUESTION_UUIDS = [
+  "a1000001-0000-4000-8000-000000000001",
+  "a1000002-0000-4000-8000-000000000002",
+  "a1000003-0000-4000-8000-000000000003",
+  "a1000004-0000-4000-8000-000000000004",
+  "a1000005-0000-4000-8000-000000000005",
+  "a1000006-0000-4000-8000-000000000006",
+  "a1000007-0000-4000-8000-000000000007",
+  "a1000008-0000-4000-8000-000000000008",
+  "a1000009-0000-4000-8000-000000000009",
+  "a100000a-0000-4000-8000-00000000000a",
+  "a100000b-0000-4000-8000-00000000000b",
+  "a100000c-0000-4000-8000-00000000000c",
+  "a100000d-0000-4000-8000-00000000000d",
+] as const;
+
 const QUESTIONS_POOL: Question[] = [
   {
     kind: "definition",
     id: 1,
+    questionId: QUESTION_UUIDS[0],
     situation: "9回裏・2アウト・満塁",
     count: "カウント 2-2",
     choices: [
@@ -57,6 +84,7 @@ const QUESTIONS_POOL: Question[] = [
   {
     kind: "definition",
     id: 2,
+    questionId: QUESTION_UUIDS[1],
     situation: "1回表・無死・1塁",
     count: "カウント 0-0",
     choices: [
@@ -74,6 +102,7 @@ const QUESTIONS_POOL: Question[] = [
   {
     kind: "definition",
     id: 3,
+    questionId: QUESTION_UUIDS[2],
     situation: "7回裏・1アウト・2塁3塁",
     count: "カウント 1-2",
     choices: [
@@ -91,6 +120,7 @@ const QUESTIONS_POOL: Question[] = [
   {
     kind: "definition",
     id: 4,
+    questionId: QUESTION_UUIDS[3],
     situation: "3回表・2アウト・走者なし",
     count: "カウント 3-2",
     choices: [
@@ -108,6 +138,7 @@ const QUESTIONS_POOL: Question[] = [
   {
     kind: "definition",
     id: 5,
+    questionId: QUESTION_UUIDS[4],
     situation: "5回裏・無死・満塁",
     count: "カウント 2-1",
     choices: [
@@ -125,6 +156,7 @@ const QUESTIONS_POOL: Question[] = [
   {
     kind: "definition",
     id: 6,
+    questionId: QUESTION_UUIDS[5],
     situation: "8回表・2アウト・1塁2塁",
     count: "カウント 0-2",
     choices: [
@@ -141,6 +173,7 @@ const QUESTIONS_POOL: Question[] = [
   {
     kind: "definition",
     id: 7,
+    questionId: QUESTION_UUIDS[6],
     situation: "延長10回裏・無死・2塁",
     count: "カウント 1-1",
     choices: [
@@ -157,6 +190,7 @@ const QUESTIONS_POOL: Question[] = [
   {
     kind: "definition",
     id: 8,
+    questionId: QUESTION_UUIDS[7],
     situation: "2回裏・1アウト・走者なし",
     count: "カウント 2-0",
     choices: [
@@ -173,6 +207,7 @@ const QUESTIONS_POOL: Question[] = [
   {
     kind: "definition",
     id: 9,
+    questionId: QUESTION_UUIDS[8],
     situation: "6回表・1アウト・満塁",
     count: "カウント 2-2",
     choices: [
@@ -189,6 +224,7 @@ const QUESTIONS_POOL: Question[] = [
   {
     kind: "definition",
     id: 10,
+    questionId: QUESTION_UUIDS[9],
     situation: "4回裏・無死・1塁3塁",
     count: "カウント 1-0",
     choices: [
@@ -206,6 +242,7 @@ const QUESTIONS_POOL: Question[] = [
   {
     kind: "stat",
     id: 11,
+    questionId: QUESTION_UUIDS[10],
     situation:
       "右投手×右打者、1-2カウントで「最も空振り率（Whiff%）が高い球種」は？",
     count: "MLB 2023 / metric: Whiff%",
@@ -229,6 +266,7 @@ const QUESTIONS_POOL: Question[] = [
   {
     kind: "stat",
     id: 12,
+    questionId: QUESTION_UUIDS[11],
     situation:
       "得点圏（ランナー2塁以上）で最も打率が高かった打球方向は？",
     count: "NPB 2022 / metric: Batting Average (RISP)",
@@ -252,6 +290,7 @@ const QUESTIONS_POOL: Question[] = [
   {
     kind: "stat",
     id: 13,
+    questionId: QUESTION_UUIDS[12],
     situation:
       "シフト制限後（2023年MLB）、左打者で最も打率が上がった打球方向は？",
     count: "metric: Batting Average by Spray Angle",

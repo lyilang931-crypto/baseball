@@ -51,7 +51,7 @@ export async function POST(request: Request) {
       );
     }
 
-    // question_id は Supabase 側で TEXT 型（uuid ではない）。問題の安定ID（数値の文字列など）を格納。
+    // question_id は Supabase 側で uuid 型。フロントは questionId (uuid) を送る。
     const payload = {
       user_id: body.userId,
       question_id: body.questionId,

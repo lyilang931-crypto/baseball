@@ -106,7 +106,7 @@ export default function Home() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             userId,
-            questionId: String(q.id),
+            questionId: q.questionId,
             selectedOption: "",
             isCorrect: false,
             sourceUrl: q.sourceUrl || undefined,
@@ -116,11 +116,11 @@ export default function Home() {
         }).catch((err) => console.error("[answer log]", err));
       }
     }
-    saveAnswer(String(q.id), false).catch(() => {});
+    saveAnswer(q.questionId, false).catch(() => {});
     fetch("/api/stats/answer", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ questionId: String(q.id), isCorrect: false }),
+      body: JSON.stringify({ questionId: q.questionId, isCorrect: false }),
     }).catch(() => {});
     setRatingState(newRating);
     persistRating(newRating);
@@ -260,7 +260,7 @@ export default function Home() {
     if (!q) return null;
     return (
       <ResultView
-        questionId={String(q.id)}
+        questionId={q.questionId}
         isCorrect={lastCorrect}
         explanation={q.explanation}
         sourceLabel={q.sourceLabel}
