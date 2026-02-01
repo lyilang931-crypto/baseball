@@ -13,6 +13,12 @@ export interface PostAnswerBody {
   ratingAfter?: number;
 }
 
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+function isUuid(s: string): boolean {
+  return UUID_REGEX.test(s);
+}
+
 function parseBody(body: unknown): PostAnswerBody | null {
   if (!body || typeof body !== "object") return null;
   const o = body as Record<string, unknown>;
@@ -50,6 +56,17 @@ export async function POST(request: Request) {
         { status: 400 }
       );
     }
+    if (!isUuid(body.questionId)) {
+      console.error("[POST /api/answers] questionId is not uuid. payload:", {
+        questionId: body.questionId,
+        userId: body.userId,
+        isCorrect: body.isCorrect,
+      });
+      return NextResponse.json(
+        { error: "questionId must be a valid uuid" },
+        { status: 400 }
+      );
+    }
 
     // question_id は Supabase 側で uuid 型。フロントは questionId (uuid) を送る。
     const payload = {
@@ -62,8 +79,7 @@ export async function POST(request: Request) {
       rating_after: body.ratingAfter ?? null,
       meta: null,
     };
-    // ログには user_id, question_id, is_correct を必ず含める
-    console.log("[POST /api/answers] Supabase insert payload:", payload);
+    console.log("[payload]", payload);
 
     const { error } = await supabase.from("answer_logs").insert(payload);
 

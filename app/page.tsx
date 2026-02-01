@@ -162,7 +162,7 @@ export default function Home() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             userId,
-            questionId: String(q.id),
+            questionId: q.questionId,
             selectedOption: choiceId,
             isCorrect,
             sourceUrl: q.sourceUrl || undefined,
@@ -172,12 +172,12 @@ export default function Home() {
         }).catch((err) => console.error("[answer log]", err));
       }
     }
-    saveAnswer(String(q.id), isCorrect).catch(() => {});
+    saveAnswer(q.questionId, isCorrect).catch(() => {});
     try {
       await fetch("/api/stats/answer", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ questionId: String(q.id), isCorrect }),
+        body: JSON.stringify({ questionId: q.questionId, isCorrect }),
       });
     } catch {
       // 集計送信失敗時もプレイは継続
