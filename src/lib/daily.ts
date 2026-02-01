@@ -136,7 +136,16 @@ export function addDailyUsedQuestionIds(ids: string[]): void {
   try {
     const today = getTodayDate();
     const current = getDailyUsedQuestionIds();
-    const next = [...new Set([...current, ...ids])];
+    const merged = current.concat(ids);
+    const seen: Record<string, true> = {};
+    const next: string[] = [];
+    for (let i = 0; i < merged.length; i++) {
+      const id = merged[i];
+      if (!seen[id]) {
+        seen[id] = true;
+        next.push(id);
+      }
+    }
     localStorage.setItem(DAILY_USED_QUESTIONS_KEY, JSON.stringify({ date: today, used: next }));
   } catch {
     // ignore
