@@ -81,6 +81,17 @@ const QUESTION_UUIDS = [
   "a1000016-0000-4000-8000-000000000016",
   "a1000017-0000-4000-8000-000000000017",
   "a1000018-0000-4000-8000-000000000018",
+  // 追加10問用 (id 23-32)
+  "a1000019-0000-4000-8000-000000000019",
+  "a100001a-0000-4000-8000-00000000001a",
+  "a100001b-0000-4000-8000-00000000001b",
+  "a100001c-0000-4000-8000-00000000001c",
+  "a100001d-0000-4000-8000-00000000001d",
+  "a100001e-0000-4000-8000-00000000001e",
+  "a100001f-0000-4000-8000-00000000001f",
+  "a1000020-0000-4000-8000-000000000020",
+  "a1000021-0000-4000-8000-000000000021",
+  "a1000022-0000-4000-8000-000000000022",
 ] as const;
 
 const QUESTIONS_POOL: Question[] = [
@@ -541,6 +552,201 @@ const QUESTIONS_POOL: Question[] = [
     league: "NPB",
     source_url: "https://npb.jp/bis/2022/stats/tmb_c.html",
   },
+  // ---------- 追加 REAL_DATA 5問（MLB 3+ / NPB、有名選手 2問以上） ----------
+  {
+    kind: "stat",
+    questionType: "REAL_DATA",
+    id: 23,
+    questionId: QUESTION_UUIDS[22],
+    situation:
+      "2024年MLBで山本由伸が記録した防御率（ERA）は、規定投球回達成投手のうちリーグで何位タイだった？",
+    count: "MLB 2024 / metric: ERA",
+    choices: [
+      { id: "a", text: "1位" },
+      { id: "b", text: "2位タイ" },
+      { id: "c", text: "5位以内" },
+      { id: "d", text: "10位以内" },
+    ],
+    answerChoiceId: "a",
+    explanation:
+      "実データ問題：2024年山本由伸はナ・リーグで防御率1位タイ。出典：MLB.com / season 2024 / metric ERA。",
+    sourceLabel: "MLB.com",
+    sourceUrl: "https://www.mlb.com/stats/pitching/2024",
+    sourceType: "data",
+    difficulty: 3,
+    season: 2024,
+    metric: "ERA",
+    league: "MLB",
+    source_url: "https://www.mlb.com/stats/pitching/2024",
+  },
+  {
+    kind: "stat",
+    questionType: "REAL_DATA",
+    id: 24,
+    questionId: QUESTION_UUIDS[23],
+    situation:
+      "2023年MLBでダルビッシュ有が記録した奪三振数は、リーグ内で上位何位程度だった？",
+    count: "MLB 2023 / metric: 奪三振",
+    choices: [
+      { id: "a", text: "5位以内" },
+      { id: "b", text: "10位以内" },
+      { id: "c", text: "15位以内" },
+      { id: "d", text: "20位以下" },
+    ],
+    answerChoiceId: "a",
+    explanation:
+      "実データ問題：2023年ダルビッシュ有はナ・リーグで奪三振上位。出典：Baseball-Reference / season 2023 / metric 奪三振。",
+    sourceLabel: "Baseball-Reference",
+    sourceUrl: "https://www.baseball-reference.com/players/d/darvish01.shtml",
+    sourceType: "data",
+    difficulty: 3,
+    season: 2023,
+    metric: "奪三振",
+    league: "MLB",
+    source_url: "https://www.baseball-reference.com/players/d/darvish01.shtml",
+  },
+  {
+    kind: "stat",
+    questionType: "REAL_DATA",
+    id: 25,
+    questionId: QUESTION_UUIDS[24],
+    situation:
+      "2024年MLBのStatcastデータで、大谷翔平の「打球速度（Exit Velocity）平均」は打者全体で上位何％程度だった？",
+    count: "MLB 2024 / metric: 平均打球速度",
+    choices: [
+      { id: "a", text: "上位5％" },
+      { id: "b", text: "上位10％" },
+      { id: "c", text: "上位20％" },
+      { id: "d", text: "上位30％" },
+    ],
+    answerChoiceId: "a",
+    explanation:
+      "実データ問題：2024年大谷は平均打球速度でリーグ上位。出典：Baseball Savant / season 2024 / metric Exit Velocity。",
+    sourceLabel: "Baseball Savant",
+    sourceUrl: "https://baseballsavant.mlb.com/leaderboard/statcast",
+    sourceType: "data",
+    difficulty: 4,
+    season: 2024,
+    metric: "平均打球速度",
+    league: "MLB",
+    source_url: "https://baseballsavant.mlb.com/leaderboard/statcast",
+  },
+  {
+    kind: "stat",
+    questionType: "REAL_DATA",
+    id: 26,
+    questionId: QUESTION_UUIDS[25],
+    situation:
+      "2023年MLBで「wOBA（加重出塁率）がリーグ上位だった打者」に日本人は何人含まれていた？（トップ30程度で）",
+    count: "MLB 2023 / metric: wOBA",
+    choices: [
+      { id: "a", text: "2人以上" },
+      { id: "b", text: "1人" },
+      { id: "c", text: "0人" },
+      { id: "d", text: "3人以上" },
+    ],
+    answerChoiceId: "a",
+    explanation:
+      "実データ問題：2023年大谷・鈴木誠也らがwOBA上位。出典：FanGraphs / season 2023 / metric wOBA。",
+    sourceLabel: "FanGraphs",
+    sourceUrl: "https://www.fangraphs.com/leaders.aspx?pos=all&stats=bat&lg=all&qual=0&type=8&season=2023",
+    sourceType: "data",
+    difficulty: 4,
+    season: 2023,
+    metric: "wOBA",
+    league: "MLB",
+    source_url: "https://www.fangraphs.com/leaders.aspx?pos=all&stats=bat&lg=all&qual=0&type=8&season=2023",
+  },
+  {
+    kind: "stat",
+    questionType: "REAL_DATA",
+    id: 27,
+    questionId: QUESTION_UUIDS[26],
+    situation:
+      "NPB公式記録によると、2024年セ・リーグでチーム打率1位だった球団は？",
+    count: "NPB 2024 / metric: チーム打率",
+    choices: [
+      { id: "a", text: "ヤクルト" },
+      { id: "b", text: "巨人" },
+      { id: "c", text: "DeNA" },
+      { id: "d", text: "広島" },
+    ],
+    answerChoiceId: "b",
+    explanation:
+      "実データ問題：2024年セ・リーグチーム打率1位は巨人。出典：NPB公式 / season 2024 / metric チーム打率。",
+    sourceLabel: "NPB 公式",
+    sourceUrl: "https://npb.jp/bis/2024/stats/tmb_c.html",
+    sourceType: "data",
+    difficulty: 2,
+    season: 2024,
+    metric: "チーム打率",
+    league: "NPB",
+    source_url: "https://npb.jp/bis/2024/stats/tmb_c.html",
+  },
+  // ---------- 追加 THEORY 3問（カウント・走者・判断理由が説明できる） ----------
+  {
+    kind: "definition",
+    questionType: "THEORY",
+    id: 28,
+    questionId: QUESTION_UUIDS[27],
+    situation: "1回表・無死・2塁、カウント 1-2",
+    count: "カウント 1-2",
+    choices: [
+      { id: "a", text: "外角低めのスライダーで空振り狙い" },
+      { id: "b", text: "初球から内角ストレート" },
+      { id: "c", text: "敬遠して1塁2塁" },
+      { id: "d", text: "フォークで打者を落とす" },
+    ],
+    answerChoiceId: "a",
+    explanation:
+      "1-2で無死2塁では『外角低めのスライダー』で空振りを狙うのが有効。打者はストライクゾーンを広く見がちで、外に逃げる球に手を出しやすい。",
+    sourceLabel: "カウント別配球",
+    sourceUrl: "https://ja.wikipedia.org/wiki/球種_(野球)",
+    sourceType: "static",
+    difficulty: 3,
+  },
+  {
+    kind: "definition",
+    questionType: "THEORY",
+    id: 29,
+    questionId: QUESTION_UUIDS[28],
+    situation: "8回裏・1アウト・1塁3塁、同点、カウント 2-1",
+    count: "カウント 2-1",
+    choices: [
+      { id: "a", text: "ストレートでストライクを取りにいく" },
+      { id: "b", text: "スキッシュのサインを出す" },
+      { id: "c", text: "変化球で打者を惑わす" },
+      { id: "d", text: "敬遠して満塁" },
+    ],
+    answerChoiceId: "a",
+    explanation:
+      "同点の1塁3塁・2-1では『ストライクを取りにいく』のが基本。ボールを重ねると満塁やワイルドピッチのリスクが増えるため、まずカウントを戻す。",
+    sourceLabel: "危機的場面の配球",
+    sourceUrl: "https://ja.wikipedia.org/wiki/ボールカウント",
+    sourceType: "static",
+    difficulty: 4,
+  },
+  {
+    kind: "definition",
+    questionType: "THEORY",
+    id: 30,
+    questionId: QUESTION_UUIDS[29],
+    situation: "5回表・2アウト・走者なし、カウント 0-2",
+    count: "カウント 0-2",
+    choices: [
+      { id: "a", text: "外角低めに逃げる球で打者を追い込む" },
+      { id: "b", text: "真っ直ぐで勝負する" },
+      { id: "c", text: "内角高めで抑える" },
+      { id: "d", text: "フォークで決め球" },
+    ],
+    answerChoiceId: "a",
+    explanation:
+      "0-2・2アウト走者なしでは『外角低めに逃げる球』で打者を追い込むのがセオリー。ストライクゾーン外に振らせて空振り・凡打を狙う。",
+    sourceLabel: "追い込み配球",
+    sourceUrl: "https://ja.wikipedia.org/wiki/球種_(野球)",
+    sourceType: "static",
+    difficulty: 2,
+  },
 ];
 
 /** 出題プール用: id で指定した問題を順に返す */
@@ -550,13 +756,13 @@ function pickByIds(pool: Question[], ids: readonly number[]): Question[] {
     .filter((q): q is Question => q != null);
 }
 
-/** 実データ問題プール（厳密に5問）。questionType は REAL_DATA で明示。 */
-const REAL_DATA_POOL: Question[] = pickByIds(QUESTIONS_POOL, [11, 12, 14, 15, 18]);
+/** 実データ問題プール（10問）。questionType は REAL_DATA で明示。5:3:2 維持のため拡張。 */
+const REAL_DATA_POOL: Question[] = pickByIds(QUESTIONS_POOL, [11, 12, 14, 15, 18, 23, 24, 25, 26, 27]);
 
-/** 配球セオリー問題プール（厳密に3問）。questionType は THEORY で明示。 */
-const THEORY_POOL: Question[] = pickByIds(QUESTIONS_POOL, [1, 4, 7]);
+/** 配球セオリー問題プール（6問）。questionType は THEORY で明示。5:3:2 維持のため拡張。 */
+const THEORY_POOL: Question[] = pickByIds(QUESTIONS_POOL, [1, 4, 7, 28, 29, 30]);
 
-/** 知識問題プール（厳密に2問）。questionType は KNOWLEDGE で明示。 */
+/** 知識問題プール（4問）。questionType は KNOWLEDGE で明示。5:3:2 維持のため拡張。 */
 const KNOWLEDGE_POOL: Question[] = [
   {
     kind: "definition",
@@ -595,6 +801,46 @@ const KNOWLEDGE_POOL: Question[] = [
     sourceUrl: "https://www.mlb.com",
     sourceType: "static",
     difficulty: 1,
+  },
+  {
+    kind: "definition",
+    questionType: "KNOWLEDGE",
+    id: 31,
+    questionId: QUESTION_UUIDS[30],
+    situation: "2024年NPBでセ・リーグ優勝した球団は？",
+    count: "知識問題",
+    choices: [
+      { id: "a", text: "巨人" },
+      { id: "b", text: "ヤクルト" },
+      { id: "c", text: "DeNA" },
+      { id: "d", text: "広島" },
+    ],
+    answerChoiceId: "a",
+    explanation: "2024年セ・リーグ優勝は読売巨人軍です。",
+    sourceLabel: "NPB公式",
+    sourceUrl: "https://npb.jp",
+    sourceType: "static",
+    difficulty: 1,
+  },
+  {
+    kind: "definition",
+    questionType: "KNOWLEDGE",
+    id: 32,
+    questionId: QUESTION_UUIDS[31],
+    situation: "2024年MLBでナ・リーグ西地区優勝した球団は？",
+    count: "知識問題",
+    choices: [
+      { id: "a", text: "ドジャース" },
+      { id: "b", text: "パドレス" },
+      { id: "c", text: "ダイヤモンドバックス" },
+      { id: "d", text: "ジャイアンツ" },
+    ],
+    answerChoiceId: "a",
+    explanation: "2024年ナ・リーグ西地区優勝はロサンゼルス・ドジャースです。",
+    sourceLabel: "MLB公式",
+    sourceUrl: "https://www.mlb.com",
+    sourceType: "static",
+    difficulty: 2,
   },
 ];
 
