@@ -2,8 +2,8 @@
 
 /**
  * 即体験UX（TikTok型の抽象化）
- * - カウント表示は「カウント：1-2」+ 補助「(ボール 1 / ストライク 2)」に統一（色分けで直感的に）
- * - 選択肢は seeded shuffle で表示順をランダム化（正解が常に上にならない／リロードで安定）
+ * - カウントは常に B/S 表記（B{balls} | S{strikes}）を主表示、補助で（nボールnストライク）
+ * - 選択肢は seeded shuffle で表示順をランダム化
  * - 回・アウトは補助で小さく表示
  */
 
@@ -87,10 +87,6 @@ export default function QuestionView({
     };
   }, [question.questionId]);
 
-  /** メイン表示: カウント + 塁状況 または 従来表示（統計問題など） */
-  const showMainCountAndBase =
-    countParsed && situationParsed;
-
   const qType = getQuestionType(question);
   const dataSourceShort = getDataSourceShort(question);
 
@@ -127,41 +123,34 @@ export default function QuestionView({
           </p>
         )}
 
-        {/* メイン: カウント：1-2（色分け）+ 補助（ボール/ストライク）+ 塁状況 */}
-        {showMainCountAndBase ? (
+        {/* メイン: B/S バッジ（常時表示・迷い防止）+ 補助（nボールnストライク）+ 塁状況 or 問題文 */}
+        {countParsed ? (
           <div className="text-center mb-8">
-            <p className="text-2xl font-bold text-gray-900 tracking-tight">
-              <span className="text-gray-700">カウント：</span>
-              <span className="text-green-600" aria-label={`ボール${countParsed!.balls}`}>{countParsed!.balls}</span>
-              <span className="text-gray-400">-</span>
-              <span className="text-red-600" aria-label={`ストライク${countParsed!.strikes}`}>{countParsed!.strikes}</span>
-              <span className="text-gray-400 mx-2">｜</span>
-              <span className="text-gray-900">{situationParsed!.baseSituation}</span>
+            <p className="text-2xl font-bold text-gray-900 tracking-tight flex flex-wrap items-center justify-center gap-2">
+              <span className="inline-flex items-center rounded-lg bg-green-100 px-3 py-1 text-green-800 font-bold" aria-label={`ボール${countParsed.balls}`}>B{countParsed.balls}</span>
+              <span className="text-gray-400" aria-hidden>|</span>
+              <span className="inline-flex items-center rounded-lg bg-red-100 px-3 py-1 text-red-800 font-bold" aria-label={`ストライク${countParsed.strikes}`}>S{countParsed.strikes}</span>
+              {situationParsed && (
+                <>
+                  <span className="text-gray-400 mx-1" aria-hidden>｜</span>
+                  <span className="text-gray-900">{situationParsed.baseSituation}</span>
+                </>
+              )}
             </p>
-            <p className="text-xs text-gray-500 mt-1" aria-hidden>
-              {formatCountSub(countParsed!.balls, countParsed!.strikes)}
+            <p className="text-xs text-gray-500 mt-1">
+              {formatCountSub(countParsed.balls, countParsed.strikes)}
             </p>
+            {!situationParsed && question.situation && (
+              <h2 className="text-lg font-bold text-gray-900 mt-3 mb-1">{question.situation}</h2>
+            )}
           </div>
         ) : (
           <div className="text-center mb-6">
             <h2 className="text-lg font-bold text-gray-900 mb-1">
               {question.situation}
             </h2>
-            {countParsed ? (
-              <p className="text-sm text-gray-600">
-                <span className="font-semibold">
-                  <span className="text-gray-700">カウント：</span>
-                  <span className="text-green-600">{countParsed.balls}</span>
-                  <span className="text-gray-400">-</span>
-                  <span className="text-red-600">{countParsed.strikes}</span>
-                </span>
-                <span className="block text-xs text-gray-500 mt-0.5">
-                  {formatCountSub(countParsed.balls, countParsed.strikes)}
-                </span>
-              </p>
-            ) : (
-              <p className="text-sm text-gray-600">{question.count}</p>
-            )}
+            <p className="text-sm text-gray-600">{question.count}</p>
+            <p className="text-xs text-gray-500 mt-1">B=ボール S=ストライク</p>
           </div>
         )}
 
@@ -187,10 +176,10 @@ export default function QuestionView({
           </summary>
           <div className="mt-2 pl-0 text-xs text-gray-500 border-l-0">
             <p className="mb-1">
-              <strong className="text-gray-600">ボール</strong>：打者が打たなかったり、ストライクゾーン外の球で審判がボールと判定した数（カウントの前半の数字）。
+              <strong className="text-gray-600">B（ボール）</strong>：打者が打たなかったり、ストライクゾーン外の球で審判がボールと判定した数。
             </p>
             <p>
-              <strong className="text-gray-600">ストライク</strong>：ストライクゾーンを通過した球、空振り、ファウル（2ストライク未満時）などでカウントされる数（カウントの後半の数字）。
+              <strong className="text-gray-600">S（ストライク）</strong>：ストライクゾーンを通過した球、空振り、ファウル（2ストライク未満時）などでカウントされる数。
             </p>
           </div>
         </details>

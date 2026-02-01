@@ -1,14 +1,17 @@
 /**
- * カウント表記の統一（ストライク/ボールの混同を防ぐ）
- * UI表示は「カウント：1-2」+ 補助「(ボール 1 / ストライク 2)」に統一。
- * B/S 表記は内部・非表示用途のみ。
+ * カウント表記の統一（B/S を常時表示して迷い防止）
+ * メイン: B{balls} | S{strikes}、補助: （nボールnストライク）
+ * "カウント 1-2" または "1-2" をパースして balls/strikes を復元。
  */
 
 const COUNT_REGEX = /カウント\s*(\d)-(\d)/;
+const PLAIN_XY_REGEX = /^(\d)-(\d)$/;
 
-/** "カウント X-Y" をパース。X=ボール, Y=ストライク。該当しなければ null */
+/** "カウント X-Y" または "X-Y" をパース。X=ボール, Y=ストライク。該当しなければ null */
 export function parseCountDisplay(countStr: string): { balls: number; strikes: number } | null {
-  const m = countStr.trim().match(COUNT_REGEX);
+  const s = countStr.trim();
+  let m = s.match(COUNT_REGEX);
+  if (!m) m = s.match(PLAIN_XY_REGEX);
   if (!m) return null;
   const balls = parseInt(m[1], 10);
   const strikes = parseInt(m[2], 10);
@@ -16,14 +19,9 @@ export function parseCountDisplay(countStr: string): { balls: number; strikes: n
   return { balls, strikes };
 }
 
-/** UI用メイン表示「カウント：1-2」（数字部分はコンポーネントで色分けする想定） */
-export function formatCountMain(balls: number, strikes: number): string {
-  return `カウント：${balls}-${strikes}`;
-}
-
-/** UI用補助表示「(ボール 1 / ストライク 2)」*/
+/** 補助表示「（nボールnストライク）」*/
 export function formatCountSub(balls: number, strikes: number): string {
-  return `（ボール ${balls} / ストライク ${strikes}）`;
+  return `（${balls}ボール${strikes}ストライク）`;
 }
 
 /** 内部用 B/S 短い文字列 "B0 S2"（UIには表示しない） */
