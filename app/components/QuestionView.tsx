@@ -10,7 +10,7 @@
 
 import { useState, useEffect } from "react";
 import type { Question } from "@/data/questions";
-import { isDataQuestion, getDataSourceShort } from "@/data/questions";
+import { getQuestionType, getDataSourceShort } from "@/data/questions";
 import { parseCountDisplay } from "@/utils/countDisplay";
 import { parseSituation } from "@/utils/situationDisplay";
 
@@ -25,6 +25,9 @@ interface QuestionViewProps {
   question: Question;
   questionNumber: number;
   totalQuestions: number;
+  /** 今日の何回目か（1〜3） */
+  attemptIndex?: number;
+  maxAttempts?: number;
   secondsLeft: number;
   onSelect: (choiceId: string) => void;
 }
@@ -35,6 +38,8 @@ export default function QuestionView({
   question,
   questionNumber,
   totalQuestions,
+  attemptIndex,
+  maxAttempts,
   secondsLeft,
   onSelect,
 }: QuestionViewProps) {
@@ -62,25 +67,30 @@ export default function QuestionView({
   const showMainCountAndBase =
     countParsed && situationParsed;
 
-  const isData = isDataQuestion(question);
+  const qType = getQuestionType(question);
   const dataSourceShort = getDataSourceShort(question);
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-between px-6 py-10 max-w-md mx-auto">
       <p className="text-xs text-gray-400 w-full text-center">
+        {attemptIndex != null && maxAttempts != null && (
+          <span>今日 {attemptIndex}/{maxAttempts} 回目 · </span>
+        )}
         {questionNumber}/{totalQuestions} · 残り{secondsLeft}秒
       </p>
 
       <div className="flex-1 flex flex-col items-center justify-center w-full py-4">
-        {/* 実データ / 配球セオリー（定石・傾向） */}
+        {/* 実データ / 配球セオリー / 知識問題 */}
         <p className="text-xs text-gray-500 mb-3 text-center">
-          {isData ? (
+          {qType === "REAL_DATA" ? (
             <>
               <span className="font-medium text-green-700">実データ</span>
               {dataSourceShort && (
                 <span className="ml-2 text-gray-500">出典: {dataSourceShort}</span>
               )}
             </>
+          ) : qType === "KNOWLEDGE" ? (
+            <span className="text-gray-500">知識問題</span>
           ) : (
             <span className="text-gray-500">配球セオリー</span>
           )}

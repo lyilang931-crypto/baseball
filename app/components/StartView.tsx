@@ -2,38 +2,40 @@
 
 import { useState } from "react";
 import { getStreakCount } from "@/utils/streak";
+import {
+  getTodayAttemptsUsed,
+  getTodayAttemptsRemaining,
+  MAX_DAILY_ATTEMPTS,
+} from "@/lib/daily";
 
 /**
- * 即体験UX（TikTok型の抽象化）
- * - 画面中央に1つの強いCTA
- * - テキストは極力短く、説明・チュートリアルなし
- *
- * デイリー体験（Duolingo型の抽象化）
- * - 未プレイ時: 「今日の1球に挑戦」＋オプションで「実データ問題のみ」
- * - プレイ後: 「今日の結果を見る」のみ
- * - 連続日数 Streak を小さく表示
+ * 1日3回まで挑戦可能。残り回数 / ○/3 回目 を表示。
+ * 3回使い切ったら「今日の結果を見る」のみ。
  */
 
 export interface StartOptions {
-  /** 実データ問題のみ出題（NPB/MLB 等の統計問題のみ） */
+  /** 実データ問題のみ出題 */
   dataOnly?: boolean;
+  /** 今回の挑戦が何回目か（1〜3） */
+  attemptIndex?: number;
 }
 
 interface StartViewProps {
-  hasPlayedToday: boolean;
   onStart: (options?: StartOptions) => void;
   onViewTodayResult: () => void;
 }
 
 export default function StartView({
-  hasPlayedToday,
   onStart,
   onViewTodayResult,
 }: StartViewProps) {
   const streak = getStreakCount();
   const [dataOnly, setDataOnly] = useState(false);
+  const attemptsUsed = getTodayAttemptsUsed();
+  const remaining = getTodayAttemptsRemaining();
+  const allUsed = remaining === 0;
 
-  if (hasPlayedToday) {
+  if (allUsed) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center px-6 py-12 max-w-md mx-auto">
         <h1 className="text-2xl font-bold text-center text-gray-900 mb-2">
@@ -42,8 +44,8 @@ export default function StartView({
         {streak > 0 && (
           <p className="text-sm text-gray-500 mb-2">連続: {streak}日</p>
         )}
-        <p className="text-gray-600 text-center mb-8">
-          今日の挑戦は完了しました
+        <p className="text-gray-600 text-center mb-6">
+          今日の挑戦は完了しました（{MAX_DAILY_ATTEMPTS}/{MAX_DAILY_ATTEMPTS}回）
         </p>
         <div className="w-full max-w-sm">
           <button
@@ -54,9 +56,14 @@ export default function StartView({
             今日の結果を見る
           </button>
         </div>
+        <p className="text-xs text-gray-400 text-center mt-6">
+          明日の0:00（JST）に次の1球が解放されます
+        </p>
       </div>
     );
   }
+
+  const nextAttempt = attemptsUsed + 1;
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-6 py-12 max-w-md mx-auto">
@@ -66,6 +73,9 @@ export default function StartView({
       {streak > 0 && (
         <p className="text-sm text-gray-500 mb-2">連続: {streak}日</p>
       )}
+      <p className="text-sm text-gray-500 mb-1">
+        今日 {nextAttempt}/{MAX_DAILY_ATTEMPTS} 回目 · 残り {remaining} 回
+      </p>
       <p className="text-gray-600 text-center mb-6">あなたなら、どうする？</p>
 
       <label className="flex items-center gap-2 mb-6 text-sm text-gray-600 cursor-pointer select-none">
@@ -81,12 +91,24 @@ export default function StartView({
 
       <button
         type="button"
-        onClick={() => onStart({ dataOnly: dataOnly || undefined })}
+        onClick={() =>
+          onStart({ dataOnly: dataOnly || undefined, attemptIndex: nextAttempt })
+        }
         className="w-full max-w-sm py-4 px-6 rounded-2xl bg-blue-500 text-white font-bold text-lg flex items-center justify-center gap-2 hover:bg-blue-600 active:bg-blue-700 transition-colors"
       >
         <span aria-hidden>▶</span>
         今日の1球に挑戦
       </button>
+
+      {attemptsUsed >= 1 && (
+        <button
+          type="button"
+          onClick={onViewTodayResult}
+          className="mt-4 text-sm text-gray-500 underline hover:text-gray-700"
+        >
+          今日の結果を見る
+        </button>
+      )}
     </div>
   );
 }

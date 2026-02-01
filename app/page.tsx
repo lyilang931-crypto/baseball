@@ -31,11 +31,11 @@ import {
   appendHistory,
 } from "@/lib/storage";
 import {
-  hasPlayedToday,
-  setLastPlayedToday,
   setTodayResult,
   getTodayResult,
   getLastPlayedDate,
+  consumeOneAttempt,
+  MAX_DAILY_ATTEMPTS,
 } from "@/lib/daily";
 import { updateStreakAndReturn } from "@/utils/streak";
 import { getOrCreateUserId } from "@/lib/userId";
@@ -61,6 +61,7 @@ export default function Home() {
     null
   );
   const answerLogSentForIndex = useRef<number>(-1);
+  const [currentAttemptIndex, setCurrentAttemptIndex] = useState<number | null>(null);
 
   /** 回答後に GET で取得した最新 stats（ResultView に渡して即反映） */
   const [latestQuestionStats, setLatestQuestionStats] = useState<{
@@ -184,6 +185,7 @@ export default function Home() {
     setCurrentIndex(0);
     setCorrectCount(0);
     setRatingAtSessionStart(rating);
+    setCurrentAttemptIndex(options?.attemptIndex ?? null);
     setScreen("question");
   };
 
@@ -245,8 +247,8 @@ export default function Home() {
     if (lastCorrect) setCorrectCount((c) => c + 1);
     if (currentIndex + 1 >= sessionQuestions.length) {
       const finalCorrect = lastCorrect ? correctCount + 1 : correctCount;
+      consumeOneAttempt();
       updateStreakAndReturn(getLastPlayedDate());
-      setLastPlayedToday();
       setTodayResult({
         correctCount: finalCorrect,
         totalQuestions: sessionQuestions.length,
@@ -278,7 +280,6 @@ export default function Home() {
   if (screen === "start") {
     return (
       <StartView
-        hasPlayedToday={hasPlayedToday()}
         onStart={handleStart}
         onViewTodayResult={handleViewTodayResult}
       />
@@ -292,7 +293,9 @@ export default function Home() {
       <QuestionView
         question={q}
         questionNumber={currentIndex + 1}
-        totalQuestions={QUESTIONS_PER_SESSION}
+        totalQuestions={sessionQuestions.length}
+        attemptIndex={currentAttemptIndex ?? undefined}
+        maxAttempts={MAX_DAILY_ATTEMPTS}
         secondsLeft={secondsLeft}
         onSelect={handleSelect}
       />
@@ -315,6 +318,7 @@ export default function Home() {
         sourceLabel={q.sourceLabel}
         sourceUrl={q.sourceUrl}
         sourceType={q.sourceType}
+        questionType={getQuestionType(q)}
         sourceDataSourceShort={getDataSourceShort(q) ?? undefined}
         sourceGameId={q.sourceGameId}
         rating={rating}

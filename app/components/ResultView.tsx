@@ -22,6 +22,8 @@ interface ResultViewProps {
   sourceLabel: string;
   sourceUrl: string;
   sourceType?: SourceType;
+  /** 実データ / 配球セオリー / 知識問題 */
+  questionType?: "REAL_DATA" | "THEORY" | "KNOWLEDGE";
   /** 実データ時の出典短縮表示（例: "NPB 2022", "MLB 2023"） */
   sourceDataSourceShort?: string;
   sourceGameId?: string;
@@ -40,6 +42,7 @@ export default function ResultView({
   sourceLabel,
   sourceUrl,
   sourceType,
+  questionType,
   sourceDataSourceShort,
   sourceGameId,
   rating,
@@ -104,7 +107,25 @@ export default function ResultView({
           <section className="w-full mb-4 text-left">
             <h3 className="text-sm font-bold text-gray-500 mb-1">出典</h3>
             <p className="text-gray-700 text-sm">
-              {sourceType === "data" ? (
+              {questionType === "KNOWLEDGE" ? (
+                <>
+                  <span className="text-gray-600">知識問題</span>
+                  {sourceUrl ? (
+                    <span className="block mt-1">
+                      <a
+                        href={sourceUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 underline break-all"
+                      >
+                        {sourceLabel || sourceUrl}
+                      </a>
+                    </span>
+                  ) : sourceLabel ? (
+                    <span className="block mt-1">{sourceLabel}</span>
+                  ) : null}
+                </>
+              ) : sourceType === "data" ? (
                 <>
                   <span className="font-medium text-green-700">実データ</span>
                   {sourceDataSourceShort && (
@@ -151,19 +172,26 @@ export default function ResultView({
           </section>
         ) : null}
 
-        {stats != null && (stats.answered_count > 0 || stats.total_attempts > 0) ? (
-          <section className="w-full mb-4 text-left">
-            <h3 className="text-sm font-bold text-gray-500 mb-1">みんなの正答率</h3>
-            <p className="text-gray-700 text-sm">
-              正解率: {Math.round(stats.accuracy * 100)}%（
-              {stats.correct_count ?? stats.total_correct}人正解 / {stats.answered_count ?? stats.total_attempts}人回答）
-            </p>
-          </section>
-        ) : stats != null && stats.answered_count === 0 && stats.total_attempts === 0 ? null : (
+        {stats != null ? (
+          (stats.answered_count ?? stats.total_attempts) >= 5 ? (
+            <section className="w-full mb-4 text-left">
+              <h3 className="text-sm font-bold text-gray-500 mb-1">みんなの正答率</h3>
+              <p className="text-gray-700 text-sm">
+                {stats.correct_count ?? stats.total_correct}人中
+                {stats.answered_count ?? stats.total_attempts}人正解（正答率
+                {Math.round(stats.accuracy * 100)}%）
+              </p>
+            </section>
+          ) : (stats.answered_count ?? stats.total_attempts) > 0 ? (
+            <section className="w-full mb-4 text-left">
+              <p className="text-gray-500 text-sm">統計集計中</p>
+            </section>
+          ) : null
+        ) : (
           <section className="w-full mb-4 text-left">
             <p className="text-gray-400 text-sm">集計中</p>
           </section>
-        ) }
+        )}
 
         <p className="text-center mt-4">
           <span className="text-gray-600">レート: </span>

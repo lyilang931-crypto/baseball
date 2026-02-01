@@ -16,9 +16,9 @@ export interface ShareImageParams {
 }
 
 const SIZE = 1080;
-const PADDING = 56;
-const CARD_PADDING_V = 44;
-const CARD_PADDING_H = 48;
+const PADDING = 40;
+const CARD_PADDING_V = 36;
+const CARD_PADDING_H = 40;
 const BG = "#f7f9fb";
 const CARD_BG = "#ffffff";
 const TEXT_MAIN = "#111827";
@@ -59,33 +59,31 @@ export function generateShareImage(params: ShareImageParams): Promise<Blob> {
     const ratingDeltaStr =
       ratingDelta > 0 ? `（+${ratingDelta}）` : ratingDelta < 0 ? `（${ratingDelta}）` : "";
 
-    // カード内の高さを先に計算（タイトル・サブは小さめ、成績ブロック最優先）
-    const titleH = 32;
-    const subH = 28;
-    const lineHeights = [72, 52, 52, 52]; // 正解・正答率・レート・レベル
+    // カード内の高さ（タイトル・サブは小さめ、見出し 4/5 正解 を強調）
+    const titleH = 28;
+    const subH = 24;
+    const lineHeights = [80, 52, 52, 52]; // 1行目 4/5 正解 を大きく
     const cardInnerH = lineHeights[0] + lineHeights[1] + lineHeights[2] + (levelLabel ? lineHeights[3] : 0);
     const cardH = cardInnerH + CARD_PADDING_V * 2;
     const cardW = SIZE - PADDING * 2;
     const cardX = PADDING;
-    const gapTitleSub = 24;
-    const gapSubCard = 36;
-    const gapCardFooter = 40;
-    const footerH = url ? 32 : 0;
+    const gapTitleSub = 20;
+    const gapSubCard = 28;
+    const gapCardFooter = 32;
+    const footerH = url ? 28 : 0;
     const totalContentH =
       titleH + gapTitleSub + subH + gapSubCard + cardH + gapCardFooter + footerH;
-    // カードを縦方向中央よりやや上に（上の余白を減らす）
-    const offsetUp = 48;
+    const offsetUp = 32;
     let y = (SIZE - totalContentH) / 2 - offsetUp;
 
-    // タイトル（小さめ・成績ブロックが最優先で目に入る構成）
-    ctx.font = "26px sans-serif";
+    ctx.font = "24px sans-serif";
     ctx.fillStyle = TEXT_MUTED;
     ctx.textAlign = "center";
     ctx.textBaseline = "top";
     ctx.fillText("⚾ 今日の1球", centerX, y);
     y += titleH + gapTitleSub;
 
-    ctx.font = "22px sans-serif";
+    ctx.font = "20px sans-serif";
     ctx.fillStyle = TEXT_SUB;
     ctx.fillText("あなたなら、どうする？", centerX, y);
     y += subH + gapSubCard;
@@ -117,8 +115,8 @@ export function generateShareImage(params: ShareImageParams): Promise<Blob> {
     ctx.textBaseline = "top";
     let ly = cardY + CARD_PADDING_V;
 
-    // 1行目: 4 / 5 正解
-    ctx.font = "bold 56px sans-serif";
+    // 1行目: 4 / 5 正解（見出し強調）
+    ctx.font = "bold 64px sans-serif";
     ctx.fillStyle = TEXT_MAIN;
     ctx.fillText(
       `${correctCount} / ${totalQuestions} 正解`,

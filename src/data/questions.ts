@@ -15,12 +15,17 @@ export type QuestionNo = number;
 /** 出典種別（配球セオリー=static / 実データ=data） */
 export type SourceType = "static" | "data";
 
+/** 問題タイプ（UI・出題ロジック用） */
+export type QuestionType = "REAL_DATA" | "THEORY" | "KNOWLEDGE";
+
 /** 共通フィールド（難易度 1〜5、1が易しい） */
 interface QuestionBase {
   /** 表示用番号（第N問など） */
   id: number;
   /** DB参照用。Supabase answer_logs / question_stats の question_id (uuid) */
   questionId: string;
+  /** 実データ / 配球セオリー / 知識問題 */
+  questionType?: QuestionType;
   situation: string;
   count: string;
   choices: Choice[];
@@ -67,11 +72,21 @@ const QUESTION_UUIDS = [
   "a100000b-0000-4000-8000-00000000000b",
   "a100000c-0000-4000-8000-00000000000c",
   "a100000d-0000-4000-8000-00000000000d",
+  "a1000010-0000-4000-8000-000000000010",
+  "a1000011-0000-4000-8000-000000000011",
+  "a1000012-0000-4000-8000-000000000012",
+  "a1000013-0000-4000-8000-000000000013",
+  "a1000014-0000-4000-8000-000000000014",
+  "a1000015-0000-4000-8000-000000000015",
+  "a1000016-0000-4000-8000-000000000016",
+  "a1000017-0000-4000-8000-000000000017",
+  "a1000018-0000-4000-8000-000000000018",
 ] as const;
 
 const QUESTIONS_POOL: Question[] = [
   {
     kind: "definition",
+    questionType: "THEORY",
     id: 1,
     questionId: QUESTION_UUIDS[0],
     situation: "9回裏・2アウト・満塁",
@@ -331,14 +346,259 @@ const QUESTIONS_POOL: Question[] = [
     league: "MLB",
     source_url: "https://baseballsavant.mlb.com/leaderboard/spray-angle",
   },
+  // ---------- 追加 REAL_DATA 7問（合計10問: MLB 6 / NPB 4、大谷2問以上） ----------
+  {
+    kind: "stat",
+    questionType: "REAL_DATA",
+    id: 14,
+    questionId: QUESTION_UUIDS[15],
+    situation:
+      "2023年MLBで大谷翔平が記録した本塁打数は、リーグで何位だった？",
+    count: "MLB 2023 / metric: 本塁打",
+    choices: [
+      { id: "a", text: "1位" },
+      { id: "b", text: "2位" },
+      { id: "c", text: "3位" },
+      { id: "d", text: "5位以内" },
+    ],
+    answerChoiceId: "a",
+    explanation:
+      "実データ問題：2023年MLBで大谷翔平は44本塁打でア・リーグ1位（MLB全体でも1位）。出典：Baseball-Reference / season 2023 / metric HR。",
+    sourceLabel: "Baseball-Reference",
+    sourceUrl: "https://www.baseball-reference.com/players/o/ohtansh01.shtml",
+    sourceType: "data",
+    difficulty: 2,
+    season: 2023,
+    metric: "本塁打",
+    league: "MLB",
+    source_url: "https://www.baseball-reference.com/players/o/ohtansh01.shtml",
+  },
+  {
+    kind: "stat",
+    questionType: "REAL_DATA",
+    id: 15,
+    questionId: QUESTION_UUIDS[16],
+    situation:
+      "2024年MLBで大谷翔平が打者として記録したOPS（出塁率+長打率）は、リーグ上位何位程度だった？",
+    count: "MLB 2024 / metric: OPS",
+    choices: [
+      { id: "a", text: "1位" },
+      { id: "b", text: "3位以内" },
+      { id: "c", text: "10位以内" },
+      { id: "d", text: "20位以内" },
+    ],
+    answerChoiceId: "a",
+    explanation:
+      "実データ問題：2024年MLBで大谷翔平はOPSでナ・リーグ1位クラス。出典：MLB公式 / season 2024 / metric OPS。",
+    sourceLabel: "MLB.com",
+    sourceUrl: "https://www.mlb.com/stats/2024",
+    sourceType: "data",
+    difficulty: 2,
+    season: 2024,
+    metric: "OPS",
+    league: "MLB",
+    source_url: "https://www.mlb.com/stats/2024",
+  },
+  {
+    kind: "stat",
+    questionType: "REAL_DATA",
+    id: 16,
+    questionId: QUESTION_UUIDS[17],
+    situation:
+      "2023年MLBのStatcastデータで、2ストライクから「空振り率（Whiff%）が最も高かった球種」は？",
+    count: "MLB 2023 / metric: Whiff% (2ストライク)",
+    choices: [
+      { id: "a", text: "スライダー" },
+      { id: "b", text: "チェンジアップ" },
+      { id: "c", text: "フォーク・スプリット" },
+      { id: "d", text: "カーブ" },
+    ],
+    answerChoiceId: "c",
+    explanation:
+      "実データ問題：MLB 2023のStatcastでは2ストライク後のWhiff%はフォーク・スプリット系が最も高い傾向。出典：Baseball Savant / season 2023 / metric Whiff%。",
+    sourceLabel: "Baseball Savant",
+    sourceUrl: "https://baseballsavant.mlb.com/statcast_leaderboard",
+    sourceType: "data",
+    difficulty: 4,
+    season: 2023,
+    metric: "Whiff% (2ストライク)",
+    league: "MLB",
+    source_url: "https://baseballsavant.mlb.com/statcast_leaderboard",
+  },
+  {
+    kind: "stat",
+    questionType: "REAL_DATA",
+    id: 17,
+    questionId: QUESTION_UUIDS[18],
+    situation:
+      "2023年MLBで、打者の「飛距離（平均打球速度×打撃角度）」がリーグ上位だった打球方向は？",
+    count: "MLB 2023 / metric: 飛距離・打球方向",
+    choices: [
+      { id: "a", text: "引っ張り" },
+      { id: "b", text: "センター" },
+      { id: "c", text: "逆方向" },
+      { id: "d", text: "どれも同程度" },
+    ],
+    answerChoiceId: "a",
+    explanation:
+      "実データ問題：Statcastでは引っ張り方向の打球が飛距離・xwOBAで有利な傾向。出典：Baseball Savant / season 2023 / metric 飛距離・打球方向。",
+    sourceLabel: "Baseball Savant",
+    sourceUrl: "https://baseballsavant.mlb.com/leaderboard/statcast",
+    sourceType: "data",
+    difficulty: 3,
+    season: 2023,
+    metric: "飛距離・打球方向",
+    league: "MLB",
+    source_url: "https://baseballsavant.mlb.com/leaderboard/statcast",
+  },
+  {
+    kind: "stat",
+    questionType: "REAL_DATA",
+    id: 18,
+    questionId: QUESTION_UUIDS[19],
+    situation:
+      "NPB公式記録によると、2023年セ・リーグで最多本塁打を記録した選手の所属チームは？",
+    count: "NPB 2023 / metric: 本塁打",
+    choices: [
+      { id: "a", text: "ヤクルト" },
+      { id: "b", text: "巨人" },
+      { id: "c", text: "DeNA" },
+      { id: "d", text: "広島" },
+    ],
+    answerChoiceId: "a",
+    explanation:
+      "実データ問題：2023年セ・リーグ最多本塁打は村上宗隆（ヤクルト）。出典：NPB公式 / season 2023 / metric 本塁打。",
+    sourceLabel: "NPB 公式",
+    sourceUrl: "https://npb.jp/bis/2023/stats/bat_c.html",
+    sourceType: "data",
+    difficulty: 2,
+    season: 2023,
+    metric: "本塁打",
+    league: "NPB",
+    source_url: "https://npb.jp/bis/2023/stats/bat_c.html",
+  },
+  {
+    kind: "stat",
+    questionType: "REAL_DATA",
+    id: 19,
+    questionId: QUESTION_UUIDS[20],
+    situation:
+      "NPB公式記録より、2023年パ・リーグで最多奪三振を記録した投手の球団は？",
+    count: "NPB 2023 / metric: 奪三振",
+    choices: [
+      { id: "a", text: "ロッテ" },
+      { id: "b", text: "ソフトバンク" },
+      { id: "c", text: "西武" },
+      { id: "d", text: "日本ハム" },
+    ],
+    answerChoiceId: "a",
+    explanation:
+      "実データ問題：2023年パ・リーグ最多奪三振は佐々木朗希（ロッテ）。出典：NPB公式 / season 2023 / metric 奪三振。",
+    sourceLabel: "NPB 公式",
+    sourceUrl: "https://npb.jp/bis/2023/stats/pit_c.html",
+    sourceType: "data",
+    difficulty: 2,
+    season: 2023,
+    metric: "奪三振",
+    league: "NPB",
+    source_url: "https://npb.jp/bis/2023/stats/pit_c.html",
+  },
+  {
+    kind: "stat",
+    questionType: "REAL_DATA",
+    id: 22,
+    questionId: QUESTION_UUIDS[21],
+    situation:
+      "NPB公式の2022年シーズン記録で、セ・リーグのチーム打率1位だった球団は？",
+    count: "NPB 2022 / metric: チーム打率",
+    choices: [
+      { id: "a", text: "ヤクルト" },
+      { id: "b", text: "巨人" },
+      { id: "c", text: "DeNA" },
+      { id: "d", text: "中日" },
+    ],
+    answerChoiceId: "a",
+    explanation:
+      "実データ問題：2022年セ・リーグチーム打率1位はヤクルト。出典：NPB公式 / season 2022 / metric チーム打率。",
+    sourceLabel: "NPB 公式",
+    sourceUrl: "https://npb.jp/bis/2022/stats/tmb_c.html",
+    sourceType: "data",
+    difficulty: 3,
+    season: 2022,
+    metric: "チーム打率",
+    league: "NPB",
+    source_url: "https://npb.jp/bis/2022/stats/tmb_c.html",
+  },
+];
+
+/**
+ * 追加 REAL_DATA 7問 一覧（league / season / metric / 出典URL）
+ * ----------------------------------------
+ * 1. MLB / 2023 / 本塁打 / https://www.baseball-reference.com/players/o/ohtansh01.shtml （大谷翔平）
+ * 2. MLB / 2024 / OPS / https://www.mlb.com/stats/2024 （大谷翔平）
+ * 3. MLB / 2023 / Whiff% (2ストライク) / https://baseballsavant.mlb.com/statcast_leaderboard
+ * 4. MLB / 2023 / 飛距離・打球方向 / https://baseballsavant.mlb.com/leaderboard/statcast
+ * 5. NPB / 2023 / 本塁打 / https://npb.jp/bis/2023/stats/bat_c.html
+ * 6. NPB / 2023 / 奪三振 / https://npb.jp/bis/2023/stats/pit_c.html
+ * 7. NPB / 2022 / チーム打率 / https://npb.jp/bis/2022/stats/tmb_c.html
+ * ----------------------------------------
+ * REAL_DATA 合計: 10問（既存3 + 追加7）。MLB 6問 / NPB 4問。大谷翔平 2問。
+ */
+
+/** 知識問題（5問目のみ出題） */
+const KNOWLEDGE_POOL: Question[] = [
+  {
+    kind: "definition",
+    questionType: "KNOWLEDGE",
+    id: 20,
+    questionId: QUESTION_UUIDS[13],
+    situation: "2024年MLBで最多勝を挙げた日本人投手は？",
+    count: "知識問題",
+    choices: [
+      { id: "a", text: "山本由伸" },
+      { id: "b", text: "今永昇太" },
+      { id: "c", text: "ダルビッシュ有" },
+    ],
+    answerChoiceId: "a",
+    explanation: "2024年は山本由伸が最多勝のタイトルを獲得しました。",
+    sourceLabel: "MLB公式",
+    sourceUrl: "https://www.mlb.com",
+    sourceType: "static",
+    difficulty: 2,
+  },
+  {
+    kind: "definition",
+    questionType: "KNOWLEDGE",
+    id: 21,
+    questionId: QUESTION_UUIDS[14],
+    situation: "2023年ワールドシリーズ優勝チームは？",
+    count: "知識問題",
+    choices: [
+      { id: "a", text: "レンジャーズ" },
+      { id: "b", text: "ダイヤモンドバックス" },
+      { id: "c", text: "フィリーズ" },
+    ],
+    answerChoiceId: "a",
+    explanation: "2023年はテキサス・レンジャーズが優勝しました。",
+    sourceLabel: "MLB公式",
+    sourceUrl: "https://www.mlb.com",
+    sourceType: "static",
+    difficulty: 1,
+  },
 ];
 
 /** 1セッションで出題する問題数 */
 export const QUESTIONS_PER_SESSION = 5;
 
-/** 実データ問題か（sourceType === "data" または kind === "stat"） */
+/** 問題タイプを取得（未設定なら kind から推定） */
+export function getQuestionType(q: Question): QuestionType {
+  if (q.questionType) return q.questionType;
+  return q.kind === "stat" ? "REAL_DATA" : "THEORY";
+}
+
+/** 実データ問題か */
 export function isDataQuestion(q: Question): boolean {
-  return q.sourceType === "data" || q.kind === "stat";
+  return getQuestionType(q) === "REAL_DATA";
 }
 
 /** 実データ問題の出典短縮表示（例: "NPB 2022", "MLB 2023"） */
@@ -355,15 +615,22 @@ export interface SessionOptions {
 }
 
 /**
- * 1セッション用にランダムでN問を選ぶ（重複なし）
- * @param options.dataOnly true のとき実データ問題のみから出題
+ * 1セッション用に5問を選ぶ。
+ * 1〜4問目: REAL_DATA + THEORY からランダム、5問目: KNOWLEDGE のみ。
+ * @param options.dataOnly true のとき実データ問題のみ（1〜4問目、5問目はKNOWLEDGE）
  */
 export function getSessionQuestions(options?: SessionOptions): Question[] {
-  const pool =
+  const mainPool =
     options?.dataOnly === true
       ? QUESTIONS_POOL.filter(isDataQuestion)
-      : [...QUESTIONS_POOL];
-  const n = Math.min(QUESTIONS_PER_SESSION, pool.length);
-  const shuffled = [...pool].sort(() => Math.random() - 0.5);
-  return shuffled.slice(0, n);
+      : QUESTIONS_POOL.filter((q) => getQuestionType(q) !== "KNOWLEDGE");
+  const knowledgePool = [...KNOWLEDGE_POOL];
+  const mainCount = Math.min(4, mainPool.length);
+  const shuffledMain = [...mainPool].sort(() => Math.random() - 0.5);
+  const four = shuffledMain.slice(0, mainCount);
+  const oneKnowledge =
+    knowledgePool.length > 0
+      ? knowledgePool[Math.floor(Math.random() * knowledgePool.length)]
+      : null;
+  return oneKnowledge ? [...four, oneKnowledge] : four;
 }

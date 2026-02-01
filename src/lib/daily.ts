@@ -1,13 +1,17 @@
 /**
  * デイリー体験（Duolingo型の抽象化）
- * - 今日プレイ済みかどうかを lastPlayedDate で管理
- * - 日付が変わったら再挑戦可能（JST 基準）
+ * - 1日最大3回まで挑戦可能（1回=5問）
+ * - 回数は localStorage で管理（日付が変わったらリセット）
  * - 今日の結果を保存して「今日の結果を見る」で再表示
  * - 日付キーは必ず JST の "YYYY-MM-DD"（toISOString 禁止）
  */
 
 const LAST_PLAYED_KEY = "baseball_quiz_last_played_date";
 const TODAY_RESULT_KEY = "baseball_quiz_today_result";
+const DAILY_ATTEMPTS_KEY = "baseball_quiz_daily_attempts";
+
+/** 1日の最大挑戦回数 */
+export const MAX_DAILY_ATTEMPTS = 3;
 
 export interface TodayResult {
   correctCount: number;
@@ -49,9 +53,44 @@ export function getLastPlayedDate(): string | null {
   }
 }
 
-/** 今日プレイ済みか */
+/** 今日プレイ済みか（1回以上プレイしたか） */
 export function hasPlayedToday(): boolean {
   return getLastPlayedDate() === getTodayDate();
+}
+
+/** 今日すでに使った挑戦回数（0〜3）。日付が違えば0 */
+export function getTodayAttemptsUsed(): number {
+  if (typeof window === "undefined") return 0;
+  try {
+    const s = localStorage.getItem(DAILY_ATTEMPTS_KEY);
+    if (!s) return 0;
+    const parsed = JSON.parse(s) as { date?: string; used?: number };
+    const today = getTodayDate();
+    if (parsed?.date !== today) return 0;
+    const used = Number(parsed.used);
+    return Number.isFinite(used) && used >= 0 ? Math.min(used, MAX_DAILY_ATTEMPTS) : 0;
+  } catch {
+    return 0;
+  }
+}
+
+/** 今日残りの挑戦回数（0〜3） */
+export function getTodayAttemptsRemaining(): number {
+  return Math.max(0, MAX_DAILY_ATTEMPTS - getTodayAttemptsUsed());
+}
+
+/** 1回分の挑戦を消費（セッション完了時に呼ぶ） */
+export function consumeOneAttempt(): void {
+  if (typeof window === "undefined") return;
+  try {
+    const today = getTodayDate();
+    const used = getTodayAttemptsUsed();
+    if (used >= MAX_DAILY_ATTEMPTS) return;
+    localStorage.setItem(DAILY_ATTEMPTS_KEY, JSON.stringify({ date: today, used: used + 1 }));
+    setLastPlayedToday();
+  } catch {
+    // ignore
+  }
 }
 
 /** 最終プレイ日を今日で保存（セッション完了時に呼ぶ） */
