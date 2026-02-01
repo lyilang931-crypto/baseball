@@ -39,13 +39,15 @@ export function shuffleWithSeed<T>(array: T[], seed: number): T[] {
 
 /** 今日の日付を JST で yyyy-mm-dd に（選択肢 seed 用） */
 export function getTodayJST(): string {
-  if (typeof Intl !== "undefined" && Intl.DateTimeFormat) {
-    return new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Tokyo" });
-  }
-  const d = new Date();
-  const jst = new Date(d.getTime() + (9 * 60 * 60 * 1000));
-  const y = jst.getUTCFullYear();
-  const m = String(jst.getUTCMonth() + 1).padStart(2, "0");
-  const day = String(jst.getUTCDate()).padStart(2, "0");
-  return `${y}-${m}-${day}`;
+  const formatter = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Tokyo",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  });
+  const parts = formatter.formatToParts(new Date());
+  const y = parts.find((p) => p.type === "year")?.value ?? "";
+  const m = parts.find((p) => p.type === "month")?.value ?? "";
+  const d = parts.find((p) => p.type === "day")?.value ?? "";
+  return `${y}-${m}-${d}`;
 }
