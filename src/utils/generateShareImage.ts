@@ -1,7 +1,7 @@
 /**
- * シェア用カード画像を Canvas で生成（外部SDKなし）
- * 1080x1920 縦型・モバイル向け
- * 白背景・太字・中央・角丸カード風
+ * シェア用「成果カード」画像を Canvas で生成（画像保存・作成して共有専用）
+ * 1080x1080 正方形・カード型・情報密度高・数値強調
+ * X/LINE の OGP は別なので触らない
  */
 
 export interface ShareImageParams {
@@ -14,15 +14,21 @@ export interface ShareImageParams {
   url?: string;
 }
 
-const W = 1080;
-const H = 1920;
-const PADDING = 80;
+const SIZE = 1080;
+const PADDING = 56;
+const CARD_PADDING_V = 44;
+const CARD_PADDING_H = 48;
+const BG = "#f7f9fb";
+const CARD_BG = "#ffffff";
+const TEXT_MAIN = "#111827";
+const TEXT_SUB = "#4b5563";
+const TEXT_MUTED = "#6b7280";
 
 export function generateShareImage(params: ShareImageParams): Promise<Blob> {
   return new Promise((resolve, reject) => {
     const canvas = document.createElement("canvas");
-    canvas.width = W;
-    canvas.height = H;
+    canvas.width = SIZE;
+    canvas.height = SIZE;
     const ctx = canvas.getContext("2d");
     if (!ctx) {
       reject(new Error("Canvas not supported"));
@@ -34,68 +40,97 @@ export function generateShareImage(params: ShareImageParams): Promise<Blob> {
       totalQuestions,
       accuracy,
       rating,
-      streak = 0,
       levelLabel = "",
       url = "",
     } = params;
 
-    // 白背景
-    ctx.fillStyle = "#ffffff";
-    ctx.fillRect(0, 0, W, H);
+    // 背景
+    ctx.fillStyle = BG;
+    ctx.fillRect(0, 0, SIZE, SIZE);
 
-    let y = PADDING + 60;
+    let y = PADDING;
 
-    const drawTitle = (text: string, fontSize: number, bold = true) => {
-      ctx.font = `${bold ? "bold " : ""}${fontSize}px sans-serif`;
-      ctx.fillStyle = "#111827";
-      ctx.textAlign = "center";
-      ctx.textBaseline = "top";
-      const lines = text.split("\n");
-      lines.forEach((line) => {
-        ctx.fillText(line, W / 2, y);
-        y += fontSize * 1.3;
-      });
-      y += 20;
-    };
+    const centerX = SIZE / 2;
 
-    const drawCard = (lines: string[], fontSize: number) => {
-      const lineHeight = fontSize * 1.4;
-      const cardH = lines.length * lineHeight + 48;
-      const cardY = y - 12;
-      ctx.fillStyle = "#f3f4f6";
-      ctx.fillRect(PADDING, cardY, W - PADDING * 2, cardH);
-      ctx.fillStyle = "#374151";
-      ctx.font = `${fontSize}px sans-serif`;
-      ctx.textAlign = "center";
-      ctx.textBaseline = "top";
-      let ly = cardY + 24;
-      lines.forEach((line) => {
-        ctx.fillText(line, W / 2, ly);
-        ly += lineHeight;
-      });
-      y = cardY + cardH + 24;
-    };
+    // タイトル（小さめ）
+    ctx.font = "28px sans-serif";
+    ctx.fillStyle = TEXT_MUTED;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "top";
+    ctx.fillText("⚾ 今日の1球", centerX, y);
+    y += 36;
 
-    // アプリ名
-    drawTitle("⚾ 今日の1球", 56);
-    drawTitle("あなたなら、どうする？", 36, false);
+    // サブ
+    ctx.font = "24px sans-serif";
+    ctx.fillStyle = TEXT_SUB;
+    ctx.fillText("あなたなら、どうする？", centerX, y);
+    y += 52;
 
-    y += 20;
+    // メインブロック（カード・最大4行・数値強調）
+    const accuracyRounded = Math.round(accuracy);
+    const line1 = `${correctCount} / ${totalQuestions} 正解`;
+    const line2 = `正答率 ${accuracyRounded}%`;
+    const line3 = `レート ${rating}`;
+    const line4 = levelLabel || "";
 
-    // 結果カード
-    const resultLines = [
-      `${correctCount} / ${totalQuestions} 正解`,
-      `正答率 ${Math.round(accuracy)}%`,
-      `レート ${rating}`,
+    const mainLines = [line1, line2, line3].filter(Boolean);
+    if (line4) mainLines.push(line4);
+
+    const lineHeights = [72, 52, 52, 44]; // 1行目だけ大きく
+    const fonts = [
+      "bold 56px sans-serif",
+      "bold 44px sans-serif",
+      "bold 44px sans-serif",
+      "36px sans-serif",
     ];
-    if (streak > 0) resultLines.push(`連続 ${streak}日`);
-    if (levelLabel) resultLines.push(levelLabel);
-    drawCard(resultLines, 42);
+    const cardInnerH = mainLines.reduce(
+      (acc, _, i) => acc + (lineHeights[i] ?? 44),
+      0
+    );
+    const cardH = cardInnerH + CARD_PADDING_V * 2;
+    const cardW = SIZE - PADDING * 2;
+    const cardX = PADDING;
+    const cardY = y;
 
+    // 角丸カード
+    const radius = 24;
+    ctx.fillStyle = CARD_BG;
+    ctx.beginPath();
+    ctx.moveTo(cardX + radius, cardY);
+    ctx.lineTo(cardX + cardW - radius, cardY);
+    ctx.quadraticCurveTo(cardX + cardW, cardY, cardX + cardW, cardY + radius);
+    ctx.lineTo(cardX + cardW, cardY + cardH - radius);
+    ctx.quadraticCurveTo(
+      cardX + cardW,
+      cardY + cardH,
+      cardX + cardW - radius,
+      cardY + cardH
+    );
+    ctx.lineTo(cardX + radius, cardY + cardH);
+    ctx.quadraticCurveTo(cardX, cardY + cardH, cardX, cardY + cardH - radius);
+    ctx.lineTo(cardX, cardY + radius);
+    ctx.quadraticCurveTo(cardX, cardY, cardX + radius, cardY);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.fillStyle = TEXT_MAIN;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "top";
+    let ly = cardY + CARD_PADDING_V;
+
+    mainLines.forEach((line, i) => {
+      ctx.font = fonts[i] ?? "36px sans-serif";
+      ctx.fillText(line, centerX, ly);
+      ly += lineHeights[i] ?? 44;
+    });
+
+    y = cardY + cardH + 40;
+
+    // フッター（URL 小さく）
     if (url) {
-      ctx.font = "28px sans-serif";
-      ctx.fillStyle = "#6b7280";
-      ctx.fillText(url, W / 2, y);
+      ctx.font = "22px sans-serif";
+      ctx.fillStyle = TEXT_MUTED;
+      ctx.fillText(url, centerX, y);
     }
 
     canvas.toBlob(
