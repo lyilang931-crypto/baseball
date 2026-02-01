@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { replaceCountInText } from "@/utils/countDisplay";
 
 export interface QuestionStatsResult {
   questionId: string;
@@ -100,7 +101,7 @@ export default function ResultView({
 
         <section className="w-full mb-4 text-left">
           <h3 className="text-sm font-bold text-gray-500 mb-1">解説</h3>
-          <p className="text-gray-700 text-sm">{explanation}</p>
+          <p className="text-gray-700 text-sm">{replaceCountInText(explanation)}</p>
         </section>
 
         {(sourceUrl || sourceLabel || sourceType) ? (

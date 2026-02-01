@@ -9,7 +9,7 @@
 import { useState, useEffect, useMemo } from "react";
 import type { Question } from "@/data/questions";
 import { getQuestionType, getDataSourceShort } from "@/data/questions";
-import { parseCountDisplay, formatCountJP } from "@/utils/countDisplay";
+import { parseCountDisplay, formatCountJP, replaceCountInText } from "@/utils/countDisplay";
 import { parseSituation } from "@/utils/situationDisplay";
 import { hashSeed, shuffleWithSeed, getTodayJST } from "@/utils/seededShuffle";
 
@@ -115,32 +115,39 @@ export default function QuestionView({
           )}
         </p>
 
-        {/* 補助: 回・アウト（小さく） */}
+        {/* 補助: 回・アウト（小さく）。カウント表記は「XボールYストライク」に統一 */}
         {situationParsed && (
           <p className="text-xs text-gray-400 text-center mb-2">
-            {situationParsed.inningOuts}
+            {replaceCountInText(situationParsed.inningOuts)}
           </p>
         )}
 
-        {/* メイン: カウントは「XボールYストライク」のみ表示 + 塁状況 or 問題文 */}
+        {/* メイン: カウントは「XボールYストライク」のみ表示 + 塁状況 or 問題文（重複なし） */}
         {countParsed ? (
           <div className="text-center mb-8">
             <p className="text-2xl font-bold text-gray-900 tracking-tight">
               {formatCountJP(countParsed.balls, countParsed.strikes)}
             </p>
-            {situationParsed && (
-              <p className="text-lg text-gray-700 mt-2">{situationParsed.baseSituation}</p>
-            )}
+            {situationParsed && (() => {
+              const countStr = formatCountJP(countParsed.balls, countParsed.strikes);
+              let baseStr = replaceCountInText(situationParsed.baseSituation);
+              if (baseStr.endsWith("、" + countStr)) baseStr = baseStr.slice(0, baseStr.length - (countStr.length + 1));
+              return (
+                <p className="text-lg text-gray-700 mt-2">{baseStr}</p>
+              );
+            })()}
             {!situationParsed && question.situation && (
-              <h2 className="text-lg font-bold text-gray-900 mt-3 mb-1">{question.situation}</h2>
+              <h2 className="text-lg font-bold text-gray-900 mt-3 mb-1">
+                {replaceCountInText(question.situation)}
+              </h2>
             )}
           </div>
         ) : (
           <div className="text-center mb-6">
             <h2 className="text-lg font-bold text-gray-900 mb-1">
-              {question.situation}
+              {replaceCountInText(question.situation)}
             </h2>
-            <p className="text-sm text-gray-600">{question.count}</p>
+            <p className="text-sm text-gray-600">{replaceCountInText(question.count)}</p>
           </div>
         )}
 
