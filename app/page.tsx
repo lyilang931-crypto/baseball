@@ -361,6 +361,9 @@ export default function Home() {
             : undefined
         }
         isCorrect={lastCorrect}
+        correctChoiceText={
+          q.choices.find((c) => c.id === q.answerChoiceId)?.text ?? ""
+        }
         explanation={q.explanation}
         sourceLabel={q.sourceLabel}
         sourceUrl={q.sourceUrl}

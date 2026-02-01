@@ -19,6 +19,8 @@ interface ResultViewProps {
   /** 回答直後に親が GET で取得した最新 stats（即反映用） */
   initialStats?: QuestionStatsResult;
   isCorrect: boolean;
+  /** 正解の選択肢の表示テキスト（「正解：◯◯」で表示） */
+  correctChoiceText?: string;
   explanation: string;
   sourceLabel: string;
   sourceUrl: string;
@@ -39,6 +41,7 @@ export default function ResultView({
   questionId,
   initialStats,
   isCorrect,
+  correctChoiceText,
   explanation,
   sourceLabel,
   sourceUrl,
@@ -98,6 +101,10 @@ export default function ResultView({
         <h2 className="text-2xl font-bold text-gray-900 mb-4">
           {isCorrect ? "正解!" : "不正解"}
         </h2>
+
+        {correctChoiceText != null && correctChoiceText !== "" ? (
+          <p className="text-gray-700 text-sm mb-4">正解：{correctChoiceText}</p>
+        ) : null}
 
         <section className="w-full mb-4 text-left">
           <h3 className="text-sm font-bold text-gray-500 mb-1">解説</h3>
