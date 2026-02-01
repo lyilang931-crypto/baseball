@@ -2,7 +2,7 @@
 
 /**
  * 即体験UX（TikTok型の抽象化）
- * - メインは「B/Sカウント + 塁状況」のみ大きく中央表示
+ * - カウント表示は「カウント：1-2」+ 補助「(ボール 1 / ストライク 2)」に統一（色分けで直感的に）
  * - 回・アウトは補助で小さく表示
  * - みんなの成績（正解率・correct/answered）を表示
  * - カウント説明は折りたたみ（初期は非表示）
@@ -11,7 +11,7 @@
 import { useState, useEffect } from "react";
 import type { Question } from "@/data/questions";
 import { getQuestionType, getDataSourceShort } from "@/data/questions";
-import { parseCountDisplay } from "@/utils/countDisplay";
+import { parseCountDisplay, formatCountSub } from "@/utils/countDisplay";
 import { parseSituation } from "@/utils/situationDisplay";
 
 export interface QuestionStatsDisplay {
@@ -66,7 +66,7 @@ export default function QuestionView({
     };
   }, [question.questionId]);
 
-  /** メイン表示: B/S + 塁状況 または 従来表示（統計問題など） */
+  /** メイン表示: カウント + 塁状況 または 従来表示（統計問題など） */
   const showMainCountAndBase =
     countParsed && situationParsed;
 
@@ -106,14 +106,19 @@ export default function QuestionView({
           </p>
         )}
 
-        {/* メイン: B/Sカウント + 塁状況 を大きく中央 */}
+        {/* メイン: カウント：1-2（色分け）+ 補助（ボール/ストライク）+ 塁状況 */}
         {showMainCountAndBase ? (
           <div className="text-center mb-8">
-            <p className="text-3xl font-bold text-gray-900 tracking-tight">
-              <span className="text-green-600">B{countParsed!.balls}</span>
-              <span className="text-red-600"> S{countParsed!.strikes}</span>
+            <p className="text-2xl font-bold text-gray-900 tracking-tight">
+              <span className="text-gray-700">カウント：</span>
+              <span className="text-green-600" aria-label={`ボール${countParsed!.balls}`}>{countParsed!.balls}</span>
+              <span className="text-gray-400">-</span>
+              <span className="text-red-600" aria-label={`ストライク${countParsed!.strikes}`}>{countParsed!.strikes}</span>
               <span className="text-gray-400 mx-2">｜</span>
               <span className="text-gray-900">{situationParsed!.baseSituation}</span>
+            </p>
+            <p className="text-xs text-gray-500 mt-1" aria-hidden>
+              {formatCountSub(countParsed!.balls, countParsed!.strikes)}
             </p>
           </div>
         ) : (
@@ -121,17 +126,21 @@ export default function QuestionView({
             <h2 className="text-lg font-bold text-gray-900 mb-1">
               {question.situation}
             </h2>
-            <p className="text-sm text-gray-600">
-              {countParsed ? (
+            {countParsed ? (
+              <p className="text-sm text-gray-600">
                 <span className="font-semibold">
-                  <span className="text-green-600">B{countParsed.balls}</span>
-                  <span className="text-gray-400 mx-1">/</span>
-                  <span className="text-red-600">S{countParsed.strikes}</span>
+                  <span className="text-gray-700">カウント：</span>
+                  <span className="text-green-600">{countParsed.balls}</span>
+                  <span className="text-gray-400">-</span>
+                  <span className="text-red-600">{countParsed.strikes}</span>
                 </span>
-              ) : (
-                question.count
-              )}
-            </p>
+                <span className="block text-xs text-gray-500 mt-0.5">
+                  {formatCountSub(countParsed.balls, countParsed.strikes)}
+                </span>
+              </p>
+            ) : (
+              <p className="text-sm text-gray-600">{question.count}</p>
+            )}
           </div>
         )}
 
@@ -151,16 +160,16 @@ export default function QuestionView({
         <details className="w-full mb-6 text-left group">
           <summary className="text-xs text-gray-400 cursor-pointer list-none py-1 select-none">
             <span className="inline-flex items-center gap-1">
-              <span className="group-open:hidden">カウントの説明（B/S）を表示</span>
-              <span className="hidden group-open:inline">カウントの説明（B/S）を閉じる</span>
+              <span className="group-open:hidden">カウントの説明を表示</span>
+              <span className="hidden group-open:inline">カウントの説明を閉じる</span>
             </span>
           </summary>
           <div className="mt-2 pl-0 text-xs text-gray-500 border-l-0">
             <p className="mb-1">
-              <strong className="text-gray-600">B（ボール）</strong>：打者が打たなかったり、ストライクゾーン外の球で審判がボールと判定した数。
+              <strong className="text-gray-600">ボール</strong>：打者が打たなかったり、ストライクゾーン外の球で審判がボールと判定した数（カウントの前半の数字）。
             </p>
             <p>
-              <strong className="text-gray-600">S（ストライク）</strong>：ストライクゾーンを通過した球、空振り、ファウル（2ストライク未満時）などでカウントされる数。
+              <strong className="text-gray-600">ストライク</strong>：ストライクゾーンを通過した球、空振り、ファウル（2ストライク未満時）などでカウントされる数（カウントの後半の数字）。
             </p>
           </div>
         </details>
