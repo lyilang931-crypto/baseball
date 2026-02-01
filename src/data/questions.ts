@@ -18,6 +18,9 @@ export type SourceType = "static" | "data";
 /** 問題タイプ（UI・出題ロジック用） */
 export type QuestionType = "REAL_DATA" | "THEORY" | "KNOWLEDGE";
 
+/** 正解のバイアスレベル（日本人スター等で「最上位＝正解」を避けるための目安） */
+export type AnswerBiasLevel = "TOP" | "MID" | "AVG";
+
 /** 共通フィールド（難易度 1〜5、1が易しい） */
 interface QuestionBase {
   /** 表示用番号（第N問など） */
@@ -26,6 +29,8 @@ interface QuestionBase {
   questionId: string;
   /** 実データ / 配球セオリー / 知識問題 */
   questionType?: QuestionType;
+  /** 正解が「最上位レンジ」かどうか（REAL_DATA の日本人スター系は MID/AVG 推奨） */
+  answerBiasLevel?: AnswerBiasLevel;
   situation: string;
   count: string;
   choices: Choice[];
@@ -386,14 +391,15 @@ const QUESTIONS_POOL: Question[] = [
     questionType: "REAL_DATA",
     id: 14,
     questionId: QUESTION_UUIDS[15],
+    answerBiasLevel: "TOP",
     situation:
-      "2023年MLBで大谷翔平が記録した本塁打数は、リーグで何位だった？",
+      "2023年MLBで大谷翔平が記録した本塁打数は、リーグでどのレンジだった？",
     count: "MLB 2023 / metric: 本塁打",
     choices: [
       { id: "a", text: "1位" },
-      { id: "b", text: "2位" },
-      { id: "c", text: "3位" },
-      { id: "d", text: "5位以内" },
+      { id: "b", text: "上位2-5位" },
+      { id: "c", text: "上位6-10位" },
+      { id: "d", text: "10位以下" },
     ],
     answerChoiceId: "a",
     explanation:
@@ -412,14 +418,15 @@ const QUESTIONS_POOL: Question[] = [
     questionType: "REAL_DATA",
     id: 15,
     questionId: QUESTION_UUIDS[16],
+    answerBiasLevel: "TOP",
     situation:
-      "2024年MLBで大谷翔平が打者として記録したOPS（出塁率+長打率）は、リーグ上位何位程度だった？",
+      "2024年MLBで大谷翔平が打者として記録したOPS（出塁率+長打率）は、リーグでどのレンジだった？",
     count: "MLB 2024 / metric: OPS",
     choices: [
       { id: "a", text: "1位" },
-      { id: "b", text: "3位以内" },
-      { id: "c", text: "10位以内" },
-      { id: "d", text: "20位以内" },
+      { id: "b", text: "上位2-5位" },
+      { id: "c", text: "上位6-15位" },
+      { id: "d", text: "15位以下" },
     ],
     answerChoiceId: "a",
     explanation:
@@ -516,6 +523,7 @@ const QUESTIONS_POOL: Question[] = [
     questionType: "REAL_DATA",
     id: 19,
     questionId: QUESTION_UUIDS[20],
+    answerBiasLevel: "AVG",
     situation:
       "NPB公式記録より、2023年パ・リーグで最多奪三振を記録した投手の球団は？",
     count: "NPB 2023 / metric: 奪三振",
@@ -569,14 +577,15 @@ const QUESTIONS_POOL: Question[] = [
     questionType: "REAL_DATA",
     id: 23,
     questionId: QUESTION_UUIDS[22],
+    answerBiasLevel: "TOP",
     situation:
-      "2024年MLBで山本由伸が記録した防御率（ERA）は、規定投球回達成投手のうちリーグで何位タイだった？",
+      "2024年MLBで山本由伸が記録した防御率（ERA）は、規定投球回達成投手のうちリーグでどのレンジだった？",
     count: "MLB 2024 / metric: ERA",
     choices: [
-      { id: "a", text: "1位" },
-      { id: "b", text: "2位タイ" },
-      { id: "c", text: "5位以内" },
-      { id: "d", text: "10位以内" },
+      { id: "a", text: "1位タイ" },
+      { id: "b", text: "上位2-5位" },
+      { id: "c", text: "上位6-10位" },
+      { id: "d", text: "10位以下" },
     ],
     answerChoiceId: "a",
     explanation:
@@ -595,18 +604,19 @@ const QUESTIONS_POOL: Question[] = [
     questionType: "REAL_DATA",
     id: 24,
     questionId: QUESTION_UUIDS[23],
+    answerBiasLevel: "MID",
     situation:
-      "2023年MLBでダルビッシュ有が記録した奪三振数は、リーグ内で上位何位程度だった？",
+      "2023年MLBでダルビッシュ有が記録した奪三振数は、リーグ内でどのレンジだった？",
     count: "MLB 2023 / metric: 奪三振",
     choices: [
-      { id: "a", text: "5位以内" },
-      { id: "b", text: "10位以内" },
-      { id: "c", text: "15位以内" },
-      { id: "d", text: "20位以下" },
+      { id: "a", text: "上位1-3位" },
+      { id: "b", text: "上位4-8位" },
+      { id: "c", text: "上位9-15位" },
+      { id: "d", text: "16位以下" },
     ],
-    answerChoiceId: "a",
+    answerChoiceId: "b",
     explanation:
-      "実データ問題：2023年ダルビッシュ有はナ・リーグで奪三振上位。出典：Baseball-Reference / season 2023 / metric 奪三振。",
+      "実データ問題：2023年ダルビッシュ有はナ・リーグで奪三振4-8位程度。出典：Baseball-Reference / season 2023 / metric 奪三振。",
     sourceLabel: "Baseball-Reference",
     sourceUrl: "https://www.baseball-reference.com/players/d/darvish01.shtml",
     sourceType: "data",
@@ -621,8 +631,9 @@ const QUESTIONS_POOL: Question[] = [
     questionType: "REAL_DATA",
     id: 25,
     questionId: QUESTION_UUIDS[24],
+    answerBiasLevel: "TOP",
     situation:
-      "2024年MLBのStatcastデータで、大谷翔平の「打球速度（Exit Velocity）平均」は打者全体で上位何％程度だった？",
+      "2024年MLBのStatcastデータで、大谷翔平の「打球速度（Exit Velocity）平均」は打者全体でどのレンジだった？",
     count: "MLB 2024 / metric: 平均打球速度",
     choices: [
       { id: "a", text: "上位5％" },
@@ -764,14 +775,15 @@ const QUESTIONS_POOL: Question[] = [
     questionType: "REAL_DATA",
     id: 33,
     questionId: QUESTION_UUIDS[32],
+    answerBiasLevel: "TOP",
     situation:
-      "2024年MLBで大谷翔平が打者として記録したOPSは、規定打席達成打者のうちリーグで何位だった？",
+      "2024年MLBで大谷翔平が打者として記録したOPSは、規定打席達成打者のうちリーグでどのレンジだった？",
     count: "MLB 2024 / metric: OPS",
     choices: [
       { id: "a", text: "1位" },
-      { id: "b", text: "3位以内" },
-      { id: "c", text: "5位以内" },
-      { id: "d", text: "10位以内" },
+      { id: "b", text: "上位2-5位" },
+      { id: "c", text: "上位6-15位" },
+      { id: "d", text: "15位以下" },
     ],
     answerChoiceId: "a",
     explanation:
@@ -790,18 +802,19 @@ const QUESTIONS_POOL: Question[] = [
     questionType: "REAL_DATA",
     id: 34,
     questionId: QUESTION_UUIDS[33],
+    answerBiasLevel: "MID",
     situation:
-      "2024年MLBで山本由伸が記録した与四球率（BB/9）は、規定投球回達成投手のうちリーグで上位何位程度だった？",
+      "2024年MLBで山本由伸が記録した与四球率（BB/9）は、規定投球回達成投手のうちリーグでどのレンジだった？",
     count: "MLB 2024 / metric: BB/9",
     choices: [
-      { id: "a", text: "上位5位以内" },
-      { id: "b", text: "上位10位以内" },
-      { id: "c", text: "上位15位以内" },
-      { id: "d", text: "20位以下" },
+      { id: "a", text: "上位1-3位" },
+      { id: "b", text: "上位4-8位" },
+      { id: "c", text: "上位9-15位" },
+      { id: "d", text: "16位以下" },
     ],
-    answerChoiceId: "a",
+    answerChoiceId: "b",
     explanation:
-      "実データ問題：2024年山本由伸は与四球率の低さでリーグ上位。出典：Baseball-Reference / season 2024 / metric BB/9。",
+      "実データ問題：2024年山本由伸は与四球率の低さでリーグ4-8位程度。出典：Baseball-Reference / season 2024 / metric BB/9。",
     sourceLabel: "Baseball-Reference",
     sourceUrl: "https://www.baseball-reference.com/players/y/yamamo01.shtml",
     sourceType: "data",
@@ -816,8 +829,9 @@ const QUESTIONS_POOL: Question[] = [
     questionType: "REAL_DATA",
     id: 35,
     questionId: QUESTION_UUIDS[34],
+    answerBiasLevel: "TOP",
     situation:
-      "2023年MLBのStatcastで、大谷翔平の「バレル率（Barrel%）」は打者全体で上位何％程度だった？",
+      "2023年MLBのStatcastで、大谷翔平の「バレル率（Barrel%）」は打者全体でどのレンジだった？",
     count: "MLB 2023 / metric: Barrel%",
     choices: [
       { id: "a", text: "上位5％" },
@@ -1119,6 +1133,18 @@ export function isDataQuestion(q: Question): boolean {
   return getQuestionType(q) === "REAL_DATA";
 }
 
+const JAPANESE_STAR_MARKERS = ["大谷", "山本", "ダル", "佐々木"] as const;
+
+/**
+ * 日本人スター（大谷/山本/ダル/佐々木）を扱う問題かどうか。
+ * situation（問題文）または name/players 相当のフィールドにマーカーが含まれるかで判定。
+ */
+export function isJapaneseStarQuestion(q: Question): boolean {
+  const text = q.situation;
+  if (!text) return false;
+  return JAPANESE_STAR_MARKERS.some((m) => text.includes(m));
+}
+
 /** 実データ問題の出典短縮表示（例: "NPB 2022", "MLB 2023"） */
 export function getDataSourceShort(q: Question): string | null {
   if (q.sourceType !== "data" && q.kind !== "stat") return null;
@@ -1251,10 +1277,28 @@ export function verifySessionQuestionsDistribution(runs: number = 100): void {
 }
 
 /**
+ * 開発者向け: 日本人スター問題で answerBiasLevel が TOP のときに warn。
+ * questionId と questionText（situation）を出す。
+ */
+export function warnJapaneseStarTopBias(): void {
+  if (typeof process !== "undefined" && process.env?.NODE_ENV !== "development") return;
+  for (const q of QUESTIONS_POOL) {
+    if (!isJapaneseStarQuestion(q)) continue;
+    if (q.answerBiasLevel !== "TOP") continue;
+    /* eslint-disable-next-line no-console */
+    console.warn(
+      "[warnJapaneseStarTopBias] 日本人スター問題で answerBiasLevel が TOP です。MID/AVG とレンジ型選択肢の検討を推奨:",
+      { questionId: q.questionId, questionText: q.situation }
+    );
+  }
+}
+
+/**
  * 開発者向け: REAL_DATA 問題で正解が「常に1番目」や「上位表現」に偏っていないか検知する。
  * 問題追加時や scripts/debug.ts から呼ぶ想定。本番では呼ばなくてよい。
  */
 export function warnRealDataAnswerBias(): void {
+  warnJapaneseStarTopBias();
   const realQuestions = QUESTIONS_POOL.filter((q) => getQuestionType(q) === "REAL_DATA");
   const topBias: { id: number; text: string }[] = [];
   const upperBias: { id: number; text: string }[] = [];
