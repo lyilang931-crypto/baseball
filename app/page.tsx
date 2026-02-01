@@ -305,6 +305,10 @@ export default function Home() {
     } else {
       setCurrentIndex((i) => i + 1);
       setScreen("question");
+      setSecondsLeft(TIMER_SECONDS);
+      setLastCorrect(false);
+      setLastRatingDelta(0);
+      clearTimer();
     }
   };
 
