@@ -37,7 +37,6 @@ import {
 } from "@/lib/daily";
 import { updateStreakAndReturn } from "@/utils/streak";
 import { getOrCreateUserId } from "@/lib/userId";
-import { saveAnswer } from "@/lib/answers";
 
 type Screen = "start" | "question" | "result" | "final";
 
@@ -116,7 +115,6 @@ export default function Home() {
         }).catch((err) => console.error("[answer log]", err));
       }
     }
-    saveAnswer(q.questionId, false).catch(() => {});
     fetch("/api/stats/answer", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -172,7 +170,6 @@ export default function Home() {
         }).catch((err) => console.error("[answer log]", err));
       }
     }
-    saveAnswer(q.questionId, isCorrect).catch(() => {});
     try {
       await fetch("/api/stats/answer", {
         method: "POST",
