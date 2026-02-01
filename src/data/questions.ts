@@ -901,13 +901,13 @@ const QUESTIONS_POOL: Question[] = [
     questionId: QUESTION_UUIDS[35],
     answerBiasLevel: "TOP",
     situation:
-      "2024年MLBで今永昇太が記録した被打率（AVG）は、規定投球回達成投手のうちリーグで何位タイ程度だった？",
+      "2024年MLBで今永昇太が記録した被打率（AVG）は、規定投球回達成投手のうちリーグで何位帯だった？",
     count: "MLB 2024 / metric: 被打率",
     choices: [
-      { id: "a", text: "上位3位以内" },
-      { id: "b", text: "上位5位以内" },
-      { id: "c", text: "上位10位以内" },
-      { id: "d", text: "15位以下" },
+      { id: "a", text: "1〜3位" },
+      { id: "b", text: "4〜10位" },
+      { id: "c", text: "11〜20位" },
+      { id: "d", text: "21位以下" },
     ],
     answerChoiceId: "a",
     explanation:
@@ -956,13 +956,13 @@ const QUESTIONS_POOL: Question[] = [
     questionId: QUESTION_UUIDS[42],
     answerBiasLevel: "TOP",
     situation:
-      "2024年MLBで規定打席達成打者の打率（AVG）は、リーグ内でどのレンジに分布していた？（上位打者層）",
+      "2024年MLBで規定打席達成打者の打率（AVG）上位打者層は、リーグ内でどの順位帯に分布していた？",
     count: "MLB 2024 / metric: 打率",
     choices: [
-      { id: "a", text: "上位10％程度" },
-      { id: "b", text: "上位30％程度" },
-      { id: "c", text: "平均付近" },
-      { id: "d", text: "平均以下" },
+      { id: "a", text: "1〜3位" },
+      { id: "b", text: "4〜10位" },
+      { id: "c", text: "11〜20位" },
+      { id: "d", text: "21位以下" },
     ],
     answerChoiceId: "a",
     explanation:
@@ -983,13 +983,13 @@ const QUESTIONS_POOL: Question[] = [
     questionId: QUESTION_UUIDS[43],
     answerBiasLevel: "MID",
     situation:
-      "2023年MLBで規定投球回達成投手の奪三振数（K）は、リーグ内でどのレンジに分布していた？（中位層）",
+      "2023年MLBで規定投球回達成投手の奪三振数（K）中位層は、リーグ内でどの順位帯に分布していた？",
     count: "MLB 2023 / metric: 奪三振",
     choices: [
-      { id: "a", text: "上位10％程度" },
-      { id: "b", text: "上位30％程度" },
-      { id: "c", text: "平均付近" },
-      { id: "d", text: "平均以下" },
+      { id: "a", text: "1〜3位" },
+      { id: "b", text: "4〜10位" },
+      { id: "c", text: "11〜20位" },
+      { id: "d", text: "21位以下" },
     ],
     answerChoiceId: "b",
     explanation:
@@ -1010,13 +1010,13 @@ const QUESTIONS_POOL: Question[] = [
     questionId: QUESTION_UUIDS[44],
     answerBiasLevel: "AVG",
     situation:
-      "2024年MLBで規定打席達成打者の出塁率（OBP）は、リーグ内でどのレンジに分布していた？（中位層）",
+      "2024年MLBで規定打席達成打者の出塁率（OBP）中位層は、リーグ内でどの順位帯に分布していた？",
     count: "MLB 2024 / metric: 出塁率",
     choices: [
-      { id: "a", text: "上位10％程度" },
-      { id: "b", text: "上位30％程度" },
-      { id: "c", text: "平均付近" },
-      { id: "d", text: "平均以下" },
+      { id: "a", text: "1〜3位" },
+      { id: "b", text: "4〜10位" },
+      { id: "c", text: "11〜20位" },
+      { id: "d", text: "21位以下" },
     ],
     answerChoiceId: "c",
     explanation:
@@ -1037,13 +1037,13 @@ const QUESTIONS_POOL: Question[] = [
     questionId: QUESTION_UUIDS[45],
     answerBiasLevel: "LOW",
     situation:
-      "2023年MLBで規定投球回達成投手の与四球率（BB/9）が高かった層は、リーグ内でどのレンジに分布していた？",
+      "2023年MLBで規定投球回達成投手の与四球率（BB/9）が高かった層は、リーグ内でどの順位帯に分布していた？",
     count: "MLB 2023 / metric: BB/9",
     choices: [
-      { id: "a", text: "上位10％程度（低い方）" },
-      { id: "b", text: "上位30％程度" },
-      { id: "c", text: "平均付近" },
-      { id: "d", text: "平均以下（与四球多い方）" },
+      { id: "a", text: "1〜3位（与四球少ない方）" },
+      { id: "b", text: "4〜10位" },
+      { id: "c", text: "11〜20位" },
+      { id: "d", text: "21位以下（与四球多い方）" },
     ],
     answerChoiceId: "d",
     explanation:
@@ -1118,13 +1118,13 @@ const QUESTIONS_POOL: Question[] = [
     questionId: QUESTION_UUIDS[48],
     answerBiasLevel: "TOP",
     situation:
-      "NPB公式記録によると、2024年セ・リーグのチーム打率上位球団は、リーグ内でどのレンジに位置していた？",
+      "NPB公式記録によると、2024年セ・リーグのチーム打率上位球団は、リーグ内でどの順位帯に位置していた？",
     count: "NPB 2024 / metric: チーム打率",
     choices: [
-      { id: "a", text: "上位10％程度" },
-      { id: "b", text: "上位30％程度" },
-      { id: "c", text: "平均付近" },
-      { id: "d", text: "平均以下" },
+      { id: "a", text: "1〜3位" },
+      { id: "b", text: "4〜10位" },
+      { id: "c", text: "11〜20位" },
+      { id: "d", text: "21位以下" },
     ],
     answerChoiceId: "a",
     explanation:
@@ -1145,13 +1145,13 @@ const QUESTIONS_POOL: Question[] = [
     questionId: QUESTION_UUIDS[49],
     answerBiasLevel: "MID",
     situation:
-      "NPB公式記録によると、2023年パ・リーグのチーム本塁打数中位球団は、リーグ内でどのレンジに位置していた？",
+      "NPB公式記録によると、2023年パ・リーグのチーム本塁打数中位球団は、リーグ内でどの順位帯に位置していた？",
     count: "NPB 2023 / metric: チーム本塁打",
     choices: [
-      { id: "a", text: "上位10％程度" },
-      { id: "b", text: "上位30％程度" },
-      { id: "c", text: "平均付近" },
-      { id: "d", text: "平均以下" },
+      { id: "a", text: "1〜3位" },
+      { id: "b", text: "4〜10位" },
+      { id: "c", text: "11〜20位" },
+      { id: "d", text: "21位以下" },
     ],
     answerChoiceId: "b",
     explanation:
@@ -1172,13 +1172,13 @@ const QUESTIONS_POOL: Question[] = [
     questionId: QUESTION_UUIDS[50],
     answerBiasLevel: "LOW",
     situation:
-      "NPB公式記録によると、2024年セ・リーグで失点が多かった球団層は、リーグ内でどのレンジに位置していた？",
+      "NPB公式記録によると、2024年セ・リーグで失点が多かった球団層は、リーグ内でどの順位帯に位置していた？",
     count: "NPB 2024 / metric: チーム失点",
     choices: [
-      { id: "a", text: "上位10％程度（少ない方）" },
-      { id: "b", text: "上位30％程度" },
-      { id: "c", text: "平均付近" },
-      { id: "d", text: "平均以下（失点多い方）" },
+      { id: "a", text: "1〜3位（失点少ない方）" },
+      { id: "b", text: "4〜10位" },
+      { id: "c", text: "11〜20位" },
+      { id: "d", text: "21位以下（失点多い方）" },
     ],
     answerChoiceId: "d",
     explanation:
@@ -1227,17 +1227,17 @@ const QUESTIONS_POOL: Question[] = [
     questionId: QUESTION_UUIDS[52],
     answerBiasLevel: "MID",
     situation:
-      "2023年MLBのStatcastで、0-2カウントから「空振り率（Whiff%）が最も高かった球種」はどのレンジに属する？",
+      "2023年MLBのStatcastで、0-2カウントから「空振り率（Whiff%）が最も高かった球種」は？",
     count: "MLB 2023 / metric: Whiff% (0-2)",
     choices: [
-      { id: "a", text: "上位10％程度の球種" },
-      { id: "b", text: "上位30％程度の球種" },
-      { id: "c", text: "平均付近の球種" },
-      { id: "d", text: "平均以下の球種" },
+      { id: "a", text: "4シーム" },
+      { id: "b", text: "スライダー" },
+      { id: "c", text: "フォーク・スプリット" },
+      { id: "d", text: "カーブ" },
     ],
-    answerChoiceId: "b",
+    answerChoiceId: "c",
     explanation:
-      "実データ：0-2ではフォーク・スプリット系がWhiff%上位30％帯。出典：Baseball Savant / season 2023 / Whiff% by count。",
+      "実データ：0-2ではフォーク・スプリット系がWhiff%上位帯。出典：Baseball Savant / season 2023 / Whiff% by count。",
     sourceLabel: "Baseball Savant",
     sourceUrl: "https://baseballsavant.mlb.com/leaderboard/statcast",
     sourceType: "data",
@@ -1257,10 +1257,10 @@ const QUESTIONS_POOL: Question[] = [
       "2024年MLBで、2ストライク後の「追い込み球」として使用率が平均付近だった球種は？",
     count: "MLB 2024 / metric: 使用率（2ストライク）",
     choices: [
-      { id: "a", text: "上位10％程度" },
-      { id: "b", text: "上位30％程度" },
-      { id: "c", text: "平均付近" },
-      { id: "d", text: "平均以下" },
+      { id: "a", text: "4シーム" },
+      { id: "b", text: "スライダー" },
+      { id: "c", text: "チェンジアップ" },
+      { id: "d", text: "フォーク" },
     ],
     answerChoiceId: "c",
     explanation:
@@ -1281,17 +1281,17 @@ const QUESTIONS_POOL: Question[] = [
     questionId: QUESTION_UUIDS[54],
     answerBiasLevel: "TOP",
     situation:
-      "2023年MLBで、3-2カウントから「見逃し率が低い（打者が振りにいく）球種」はどのレンジ？",
+      "2023年MLBで、3-2カウントから「見逃し率が低い（打者が振りにいく）球種」は？",
     count: "MLB 2023 / metric: Swing% (3-2)",
     choices: [
-      { id: "a", text: "上位10％程度（振りやすい）" },
-      { id: "b", text: "上位30％程度" },
-      { id: "c", text: "平均付近" },
-      { id: "d", text: "平均以下" },
+      { id: "a", text: "4シーム" },
+      { id: "b", text: "スライダー" },
+      { id: "c", text: "カーブ" },
+      { id: "d", text: "フォーク" },
     ],
     answerChoiceId: "a",
     explanation:
-      "実データ：3-2ではストレート系が打者に振らせやすい上位10％帯。出典：Baseball Savant / season 2023。",
+      "実データ：3-2ではストレート系が打者に振らせやすい。出典：Baseball Savant / season 2023。",
     sourceLabel: "Baseball Savant",
     sourceUrl: "https://baseballsavant.mlb.com",
     sourceType: "data",
@@ -1308,23 +1308,23 @@ const QUESTIONS_POOL: Question[] = [
     questionId: QUESTION_UUIDS[55],
     answerBiasLevel: "LOW",
     situation:
-      "2024年MLBで、初球の「見逃し率が高い（打者が振らない）球種」はどのレンジに分布？",
-    count: "MLB 2024 / metric: Take% (初球)",
+      "2024年MLBで、初球の「見逃し率が低い（打者が振りにいく）球種」は？",
+    count: "MLB 2024 / metric: Swing% (初球・振り率)",
     choices: [
-      { id: "a", text: "上位10％程度" },
-      { id: "b", text: "上位30％程度" },
-      { id: "c", text: "平均付近" },
-      { id: "d", text: "平均以下（振られやすい）" },
+      { id: "a", text: "4シーム" },
+      { id: "b", text: "スライダー" },
+      { id: "c", text: "カーブ" },
+      { id: "d", text: "フォーク" },
     ],
-    answerChoiceId: "d",
+    answerChoiceId: "a",
     explanation:
-      "実データ：初球で見逃されやすい球種は平均以下のレンジに分布。出典：Baseball Savant / season 2024。",
+      "実データ：初球で打者が振りにいくのはストレート系が多い。出典：Baseball Savant / season 2024。",
     sourceLabel: "Baseball Savant",
     sourceUrl: "https://baseballsavant.mlb.com",
     sourceType: "data",
     difficulty: 3,
     season: 2024,
-    metric: "Take% (初球)",
+    metric: "Swing% (初球)",
     league: "MLB",
     source_url: "https://baseballsavant.mlb.com",
   },
@@ -1379,17 +1379,17 @@ const QUESTIONS_POOL: Question[] = [
     questionId: QUESTION_UUIDS[58],
     answerBiasLevel: "TOP",
     situation:
-      "2023年MLBで、得点圏（RISP）の場面で「被打率が低い球種」はどのレンジに属する？",
+      "2023年MLBで、得点圏（RISP）の場面で「被打率が低い球種」は？",
     count: "MLB 2023 / metric: AVG against (RISP)",
     choices: [
-      { id: "a", text: "上位10％程度（被打率低い）" },
-      { id: "b", text: "上位30％程度" },
-      { id: "c", text: "平均付近" },
-      { id: "d", text: "平均以下" },
+      { id: "a", text: "4シーム" },
+      { id: "b", text: "スライダー" },
+      { id: "c", text: "チェンジアップ" },
+      { id: "d", text: "フォーク" },
     ],
-    answerChoiceId: "a",
+    answerChoiceId: "b",
     explanation:
-      "実データ：得点圏ではスライダー・チェンジアップ系が被打率上位10％（低い）帯。出典：Baseball Savant / 2023。",
+      "実データ：得点圏ではスライダー・チェンジアップ系が被打率の低い帯。出典：Baseball Savant / 2023。",
     sourceLabel: "Baseball Savant",
     sourceUrl: "https://baseballsavant.mlb.com",
     sourceType: "data",
@@ -1482,17 +1482,17 @@ const QUESTIONS_POOL: Question[] = [
     questionId: QUESTION_UUIDS[62],
     answerBiasLevel: "TOP",
     situation:
-      "2023年MLBで、0-2カウントから「ゾーン外に振らせた率（Chase%）」が高い球種はどのレンジ？",
+      "2023年MLBで、0-2カウントから「ゾーン外に振らせた率（Chase%）」が高い球種は？",
     count: "MLB 2023 / metric: Chase% (0-2)",
     choices: [
-      { id: "a", text: "上位10％程度" },
-      { id: "b", text: "上位30％程度" },
-      { id: "c", text: "平均付近" },
-      { id: "d", text: "平均以下" },
+      { id: "a", text: "4シーム" },
+      { id: "b", text: "スライダー" },
+      { id: "c", text: "カーブ" },
+      { id: "d", text: "フォーク" },
     ],
-    answerChoiceId: "a",
+    answerChoiceId: "b",
     explanation:
-      "実データ：0-2ではスライダー・カーブ系がChase%上位10％帯。出典：Baseball Savant / season 2023。",
+      "実データ：0-2ではスライダー・カーブ系がChase%上位帯。出典：Baseball Savant / season 2023。",
     sourceLabel: "Baseball Savant",
     sourceUrl: "https://baseballsavant.mlb.com",
     sourceType: "data",
@@ -1558,15 +1558,15 @@ const QUESTIONS_POOL: Question[] = [
     questionId: QUESTION_UUIDS[65],
     answerBiasLevel: "AVG",
     situation:
-      "2024年MLBで、1-1カウントの「ストレート使用率」がリーグ平均付近だった球団はどのレンジ？",
-    count: "MLB 2024 / metric: ストレート使用率（1-1）",
+      "2024年MLBで、1-1カウントの「使用率がリーグ平均付近だった球種」は？",
+    count: "MLB 2024 / metric: 使用率（1-1）",
     choices: [
-      { id: "a", text: "上位10％程度" },
-      { id: "b", text: "上位30％程度" },
-      { id: "c", text: "平均付近" },
-      { id: "d", text: "平均以下" },
+      { id: "a", text: "4シーム" },
+      { id: "b", text: "スライダー" },
+      { id: "c", text: "カーブ" },
+      { id: "d", text: "フォーク" },
     ],
-    answerChoiceId: "c",
+    answerChoiceId: "a",
     explanation:
       "実データ：1-1でのストレート使用率はリーグ平均付近に分布。出典：Baseball Savant / season 2024。",
     sourceLabel: "Baseball Savant",
@@ -1683,17 +1683,17 @@ const QUESTIONS_POOL: Question[] = [
     questionId: QUESTION_UUIDS[70],
     answerBiasLevel: "TOP",
     situation:
-      "2023年MLBで、1-2カウントから「球速が遅い球種」の空振り率はどのレンジに属する？",
+      "2023年MLBで、1-2カウントから「球速が遅い球種」の空振り率（Whiff%）が最も高かった球種は？",
     count: "MLB 2023 / metric: Whiff% (低速球)",
     choices: [
-      { id: "a", text: "上位10％程度" },
-      { id: "b", text: "上位30％程度" },
-      { id: "c", text: "平均付近" },
-      { id: "d", text: "平均以下" },
+      { id: "a", text: "4シーム" },
+      { id: "b", text: "スライダー" },
+      { id: "c", text: "フォーク" },
+      { id: "d", text: "カーブ" },
     ],
-    answerChoiceId: "a",
+    answerChoiceId: "c",
     explanation:
-      "実データ：1-2での変化球（低速）はWhiff%上位10％帯。出典：Baseball Savant / season 2023。",
+      "実データ：1-2での変化球（低速）はWhiff%上位帯。出典：Baseball Savant / season 2023。",
     sourceLabel: "Baseball Savant",
     sourceUrl: "https://baseballsavant.mlb.com",
     sourceType: "data",
@@ -1732,17 +1732,17 @@ const QUESTIONS_POOL: Question[] = [
     questionId: QUESTION_UUIDS[72],
     answerBiasLevel: "MID",
     situation:
-      "2023年MLBで、先発投手の「球種別Whiff%」のリーグ内レンジで最も高かった球種は？",
+      "2023年MLBで、先発投手の「球種別Whiff%」がリーグ内で最も高かった球種は？",
     count: "MLB 2023 / metric: Whiff% by pitch",
     choices: [
-      { id: "a", text: "上位10％程度" },
-      { id: "b", text: "上位30％程度" },
-      { id: "c", text: "平均付近" },
-      { id: "d", text: "平均以下" },
+      { id: "a", text: "4シーム" },
+      { id: "b", text: "スライダー" },
+      { id: "c", text: "スプリット" },
+      { id: "d", text: "カーブ" },
     ],
     answerChoiceId: "b",
     explanation:
-      "実データ：2023年MLB先発のスプリット・スライダー系はWhiff%でリーグ上位30％帯。出典：Baseball Savant / 2023。",
+      "実データ：2023年MLB先発のスプリット・スライダー系はWhiff%でリーグ上位帯。出典：Baseball Savant / 2023。",
     sourceLabel: "Baseball Savant",
     sourceUrl: "https://baseballsavant.mlb.com/leaderboard/statcast",
     sourceType: "data",
@@ -1981,6 +1981,11 @@ const THEORY_POOL: Question[] = pickByIds(QUESTIONS_POOL, [
  * THEORY に変更した問題（WEAK→PITCHING_THEORY）: id 12, 57, 58, 60, 64, 67, 70, 72, 75, 77
  * 差し替えた問題（WEAK→SAFE 指標）: id 62（初球ストライク率 MLB）, id 69（佐々木朗希 K/9 NPB）
  * 削除した問題: なし（全件 THEORY 変換または指標差し替え）
+ *
+ * 選択肢表現統一（STATS_REAL 順位帯 / PITCHING_REAL 球種4択）で変更した問題:
+ * - STATS_REAL 順位帯4択（1〜3位 / 4〜10位 / 11〜20位 / 21位以下）: id 36, 43, 44, 45, 46, 49, 50, 51
+ * - PITCHING_REAL 球種4択へ差し替え: id 53, 54, 55, 56, 59, 63, 66, 71, 73
+ * - 日本人スター（大谷/山本/ダル/佐々木）を含む STATS_REAL・PITCHING_REAL はレンジ維持: id 14, 15, 23, 24, 25, 33, 34, 35, 47, 48, 52, 61, 65, 69
  */
 
 /** 知識問題プール（6問）。questionType は KNOWLEDGE で明示。5:3:2 維持のため拡張。 */
