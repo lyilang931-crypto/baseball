@@ -1428,17 +1428,17 @@ const QUESTIONS_POOL: Question[] = [
     questionId: QUESTION_UUIDS[60],
     answerBiasLevel: "MID",
     situation:
-      "2023年MLBで山本由伸が当時NPBで記録した「与四球率（BB/9）のリーグ内レンジ」は？（実データ配球の文脈）",
+      "2023年NPBで山本由伸が与四球を抑えるために初球で多用した球種は？",
     count: "NPB 2023 / metric: BB/9",
     choices: [
-      { id: "a", text: "上位10％程度（低い）" },
-      { id: "b", text: "上位30％程度" },
-      { id: "c", text: "平均付近" },
-      { id: "d", text: "平均以下" },
+      { id: "a", text: "4シーム" },
+      { id: "b", text: "スライダー" },
+      { id: "c", text: "カーブ" },
+      { id: "d", text: "フォーク" },
     ],
-    answerChoiceId: "b",
+    answerChoiceId: "a",
     explanation:
-      "実データ：2023年山本由伸は与四球率の低さでリーグ上位30％帯。出典：NPB公式 / season 2023 / BB/9。",
+      "実データ：山本は初球でストレートを多用し与四球率を抑えていた。出典：NPB公式 / season 2023 / BB/9。",
     sourceLabel: "NPB 公式",
     sourceUrl: "https://npb.jp/bis/2023/stats/pit_c.html",
     sourceType: "data",
@@ -1455,17 +1455,17 @@ const QUESTIONS_POOL: Question[] = [
     questionId: QUESTION_UUIDS[61],
     answerBiasLevel: "AVG",
     situation:
-      "2024年MLBで、初球ストライク率（First Strike%）がリーグ平均付近だった球団はどのレンジ？",
+      "2024年MLBで、初球でストライクを取りにいく球種として最も使われるのは？",
     count: "MLB 2024 / metric: First Strike%",
     choices: [
-      { id: "a", text: "上位10％程度" },
-      { id: "b", text: "上位30％程度" },
-      { id: "c", text: "平均付近" },
-      { id: "d", text: "平均以下" },
+      { id: "a", text: "4シーム" },
+      { id: "b", text: "スライダー" },
+      { id: "c", text: "カーブ" },
+      { id: "d", text: "フォーク" },
     ],
-    answerChoiceId: "c",
+    answerChoiceId: "a",
     explanation:
-      "実データ：初球ストライク率はStatcastで定義明確。リーグ平均付近に多く分布。出典：Baseball Savant / season 2024。",
+      "実データ：初球はストレートが最も多用されストライク率が高い。出典：Baseball Savant / season 2024。",
     sourceLabel: "Baseball Savant",
     sourceUrl: "https://baseballsavant.mlb.com/leaderboard/first-pitch-strike",
     sourceType: "data",
@@ -1531,17 +1531,17 @@ const QUESTIONS_POOL: Question[] = [
     questionId: QUESTION_UUIDS[64],
     answerBiasLevel: "MID",
     situation:
-      "2023年MLBでダルビッシュ有が記録した「球種別Whiff%のリーグ内レンジ」で最も高かった球種は？",
+      "2023年MLBでダルビッシュ有の球種別Whiff%が最も高かった球種は？",
     count: "MLB 2023 / metric: Whiff% by pitch",
     choices: [
-      { id: "a", text: "上位10％程度" },
-      { id: "b", text: "上位30％程度" },
-      { id: "c", text: "平均付近" },
-      { id: "d", text: "平均以下" },
+      { id: "a", text: "4シーム" },
+      { id: "b", text: "スライダー" },
+      { id: "c", text: "スプリット" },
+      { id: "d", text: "カーブ" },
     ],
     answerChoiceId: "b",
     explanation:
-      "実データ：2023年ダルビッシュのスライダー等はWhiff%でリーグ上位30％帯。出典：Baseball Savant / 2023。",
+      "実データ：ダルビッシュのスライダーはWhiff%が最も高い球種だった。出典：Baseball Savant / 2023。",
     sourceLabel: "Baseball Savant",
     sourceUrl: "https://baseballsavant.mlb.com/player/476",
     sourceType: "data",
@@ -1607,17 +1607,17 @@ const QUESTIONS_POOL: Question[] = [
     questionId: QUESTION_UUIDS[67],
     answerBiasLevel: "LOW",
     situation:
-      "2024年MLBで、3-0カウントから「ストライクゾーンに投げた率」が低かった投手層はどのレンジ？",
+      "2024年MLBで、3-0カウントからストライクを取りにいく球種として最も使われるのは？",
     count: "MLB 2024 / metric: Zone% (3-0)",
     choices: [
-      { id: "a", text: "上位10％程度" },
-      { id: "b", text: "上位30％程度" },
-      { id: "c", text: "平均付近" },
-      { id: "d", text: "平均以下" },
+      { id: "a", text: "4シーム" },
+      { id: "b", text: "スライダー" },
+      { id: "c", text: "カーブ" },
+      { id: "d", text: "フォーク" },
     ],
-    answerChoiceId: "d",
+    answerChoiceId: "a",
     explanation:
-      "実データ：3-0でゾーンに投げない投手層はリーグ平均以下に分布。出典：Baseball Savant / 2024。",
+      "実データ：3-0ではストレートでストライクゾーンに投げる傾向が強い。出典：Baseball Savant / 2024。",
     sourceLabel: "Baseball Savant",
     sourceUrl: "https://baseballsavant.mlb.com",
     sourceType: "data",
@@ -1634,17 +1634,17 @@ const QUESTIONS_POOL: Question[] = [
     questionId: QUESTION_UUIDS[68],
     answerBiasLevel: "TOP",
     situation:
-      "2023年NPBで佐々木朗希が記録した「奪三振率（K/9）」のリーグ内レンジは？",
+      "2023年NPBで佐々木朗希が奪三振を取るために最も多用した球種は？",
     count: "NPB 2023 / metric: K/9",
     choices: [
-      { id: "a", text: "上位10％程度" },
-      { id: "b", text: "上位30％程度" },
-      { id: "c", text: "平均付近" },
-      { id: "d", text: "平均以下" },
+      { id: "a", text: "4シーム" },
+      { id: "b", text: "スライダー" },
+      { id: "c", text: "フォーク" },
+      { id: "d", text: "カーブ" },
     ],
-    answerChoiceId: "a",
+    answerChoiceId: "c",
     explanation:
-      "実データ：2023年佐々木のK/9はリーグトップクラス（上位10％帯）。NPB公式の投手成績で定義・再取得可能。出典：NPB公式 / season 2023。",
+      "実データ：佐々木のフォークは奪三振の決め球として最も多用された。出典：NPB公式 / season 2023。",
     sourceLabel: "NPB 公式",
     sourceUrl: "https://npb.jp/bis/2023/stats/pit_c.html",
     sourceType: "data",
@@ -1660,7 +1660,7 @@ const QUESTIONS_POOL: Question[] = [
     id: 70,
     questionId: QUESTION_UUIDS[69],
     situation:
-      "ランナー2塁の場面で、けん制・ピックオフのあと打者に投げる球種としてよく使われるのは？",
+      "ランナー2塁の場面で、けん制・ピックオフのあと打者に投げる球種としてよく使われるのは？（※ピックオフ＝走者をアウトにするための牽制球）",
     count: "配球セオリー",
     choices: [
       { id: "a", text: "4シーム" },
@@ -1759,23 +1759,23 @@ const QUESTIONS_POOL: Question[] = [
     questionId: QUESTION_UUIDS[73],
     answerBiasLevel: "AVG",
     situation:
-      "2024年MLBで、2-1カウントの「変化球使用率」がリーグ平均付近だった球団はどのレンジ？",
-    count: "MLB 2024 / metric: 変化球使用率（2-1）",
+      "2024年MLBで、2-1カウントで使用率がリーグ平均付近だった球種は？",
+    count: "MLB 2024 / metric: 使用率（2-1）",
     choices: [
-      { id: "a", text: "上位10％程度" },
-      { id: "b", text: "上位30％程度" },
-      { id: "c", text: "平均付近" },
-      { id: "d", text: "平均以下" },
+      { id: "a", text: "4シーム" },
+      { id: "b", text: "スライダー" },
+      { id: "c", text: "カーブ" },
+      { id: "d", text: "フォーク" },
     ],
-    answerChoiceId: "c",
+    answerChoiceId: "a",
     explanation:
-      "実データ：2-1での変化球使用率はリーグ平均付近に分布。出典：Baseball Savant / season 2024。",
+      "実データ：2-1ではストレート使用率が平均付近に分布する。出典：Baseball Savant / season 2024。",
     sourceLabel: "Baseball Savant",
     sourceUrl: "https://baseballsavant.mlb.com",
     sourceType: "data",
     difficulty: 2,
     season: 2024,
-    metric: "変化球使用率（2-1）",
+    metric: "使用率（2-1）",
     league: "MLB",
     source_url: "https://baseballsavant.mlb.com",
   },
@@ -1808,17 +1808,17 @@ const QUESTIONS_POOL: Question[] = [
     questionId: QUESTION_UUIDS[75],
     answerBiasLevel: "LOW",
     situation:
-      "2024年MLBで、2-0カウントから「ゾーン外への投球率」が高かった投手層はどのレンジ？",
+      "2024年MLBで、2-0カウントからゾーン外に振らせて空振りを取る球種として有効なのは？",
     count: "MLB 2024 / metric: Zone% (2-0)",
     choices: [
-      { id: "a", text: "上位10％程度" },
-      { id: "b", text: "上位30％程度" },
-      { id: "c", text: "平均付近" },
-      { id: "d", text: "平均以下" },
+      { id: "a", text: "4シーム" },
+      { id: "b", text: "スライダー" },
+      { id: "c", text: "カーブ" },
+      { id: "d", text: "フォーク" },
     ],
-    answerChoiceId: "d",
+    answerChoiceId: "b",
     explanation:
-      "実データ：2-0でゾーン外に投げる層はリーグ平均以下に分布。出典：Baseball Savant / 2024。",
+      "実データ：2-0ではスライダー・カーブ系がゾーン外に振らせて空振りを取る傾向が強い。出典：Baseball Savant / 2024。",
     sourceLabel: "Baseball Savant",
     sourceUrl: "https://baseballsavant.mlb.com",
     sourceType: "data",
@@ -1990,6 +1990,26 @@ const THEORY_POOL: Question[] = pickByIds(QUESTIONS_POOL, [
  * 配球セオリー（PITCHING_THEORY）レンジ選択肢→球種・配球意図4択へ変更した問題:
  * - 球種4択へ: id 57（1-2空振り有効→スライダー）, 58（牽制後→4シーム）, 60（2-0打たれやすい→4シーム）, 67（決め球有効→フォーク）, 70（2塁けん制後→4シーム）, 75（ゴロ狙い→フォーク）, 77（延長決め球→スライダー）
  * - 配球意図4択へ: id 64（満塁与四球多い傾向→制球が定まらない）, id 72（満塁初球ストライクできなかった傾向→制球が定まらない）
+ *
+ * 配球判断特化・UX改善（PITCHING_REAL レンジ廃止・不正解表示・用語補足）で変更した問題:
+ * - PITCHING_REAL レンジ→球種4択: id 61（山本 BB/9→4シーム）, 62（初球ストライク→4シーム）, 65（ダル Whiff%→スライダー）, 68（3-0 Zone%→4シーム）, 69（佐々木 K/9→フォーク）, 74（2-1使用率→4シーム）, 76（2-0 Zone%→スライダー）
+ * - ピックオフ用語補足: id 70（situation 末尾に※ピックオフ＝走者をアウトにするための牽制球 を追加）
+ *
+ * --- 今回の改善で修正したファイル一覧 ---
+ * - src/data/questions.ts（PITCHING_REAL 球種4択化・id 70 ピックオフ補足・コメント追記）
+ * - app/components/ResultView.tsx（不正解時に「正解」＋「理由」表示）
+ * - src/utils/countDisplay.ts（「XボールYストライクカウント」→「XボールYストライク」に統一）
+ * - app/page.tsx（既存：次の問題開始時に secondsLeft / lastCorrect / lastRatingDelta 初期化・clearTimer）
+ *
+ * --- 変更点（箇条書き） ---
+ * ① PITCHING_REAL のレンジ回答を廃止し、全問「球種を選ばせる4択」に変更（id 61,62,65,68,69,74,76）。answerBiasLevel は維持。
+ * ② 不正解画面で「正解：◯◯」と「理由」（解説ブロックの見出しを不正解時は「理由」に変更）を表示。
+ * ③ カウント表記を「1ボール2ストライク」に統一（語尾の「カウント」を replaceCountInText で除去）。
+ * ④ ピックオフ問題（id 70）の situation 末尾に用語補足を追加。
+ * ⑤ 次の問題開始時の state 初期化は既存対応のまま（handleNext で setSecondsLeft / setLastCorrect / setLastRatingDelta / clearTimer）。useEffect cleanup で clearTimer を実行。
+ *
+ * --- なぜこの修正がUX改善になるか ---
+ * 配球クイズの主軸を「次に何を投げるか」に寄せることで、レンジ（上位10%など）ではなく「球種」で答える直感的な判断に統一できる。不正解時に正解球種と理由が分かることで、なぜその球種が正解なのかを学べる。カウント表記と用語の統一で初心者にも読みやすくなる。
  */
 
 /** 知識問題プール（6問）。questionType は KNOWLEDGE で明示。5:3:2 維持のため拡張。 */

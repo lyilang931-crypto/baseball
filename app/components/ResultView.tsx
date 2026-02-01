@@ -103,11 +103,13 @@ export default function ResultView({
         </h2>
 
         {correctChoiceText != null && correctChoiceText !== "" ? (
-          <p className="text-gray-700 text-sm mb-4">正解：{correctChoiceText}</p>
+          <p className="text-gray-700 text-sm font-medium mb-2">正解：{correctChoiceText}</p>
         ) : null}
 
         <section className="w-full mb-4 text-left">
-          <h3 className="text-sm font-bold text-gray-500 mb-1">解説</h3>
+          <h3 className="text-sm font-bold text-gray-500 mb-1">
+            {!isCorrect ? "理由" : "解説"}
+          </h3>
           <p className="text-gray-700 text-sm">{replaceCountInText(explanation)}</p>
         </section>
 
