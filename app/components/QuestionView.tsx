@@ -4,12 +4,21 @@
  * 即体験UX（TikTok型の抽象化）
  * - メインは「B/Sカウント + 塁状況」のみ大きく中央表示
  * - 回・アウトは補助で小さく表示
+ * - みんなの成績（正解率・correct/answered）を表示
  * - カウント説明は折りたたみ（初期は非表示）
  */
 
+import { useState, useEffect } from "react";
 import type { Question } from "@/data/questions";
 import { parseCountDisplay } from "@/utils/countDisplay";
 import { parseSituation } from "@/utils/situationDisplay";
+
+export interface QuestionStatsDisplay {
+  questionId: string;
+  answered_count: number;
+  correct_count: number;
+  accuracy: number;
+}
 
 interface QuestionViewProps {
   question: Question;
@@ -18,6 +27,8 @@ interface QuestionViewProps {
   secondsLeft: number;
   onSelect: (choiceId: string) => void;
 }
+
+const STATS_OPTIONS: RequestInit = { cache: "no-store" };
 
 export default function QuestionView({
   question,
@@ -28,6 +39,23 @@ export default function QuestionView({
 }: QuestionViewProps) {
   const countParsed = parseCountDisplay(question.count);
   const situationParsed = parseSituation(question.situation);
+  const [stats, setStats] = useState<QuestionStatsDisplay | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch(
+      `/api/stats/question?questionId=${encodeURIComponent(question.questionId)}`,
+      STATS_OPTIONS
+    )
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (!cancelled && data) setStats(data);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [question.questionId]);
 
   /** メイン表示: B/S + 塁状況 または 従来表示（統計問題など） */
   const showMainCountAndBase =
@@ -74,6 +102,18 @@ export default function QuestionView({
               )}
             </p>
           </div>
+        )}
+
+        {/* みんなの成績（正解率・correct/answered） */}
+        {stats != null && (
+          <p className="text-xs text-gray-500 text-center mb-4">
+            正解率: {stats.answered_count === 0 ? "—" : `${Math.round(stats.accuracy * 100)}%`}
+            {stats.answered_count > 0 && (
+              <span className="ml-2">
+                みんなの成績: {stats.correct_count} / {stats.answered_count}
+              </span>
+            )}
+          </p>
         )}
 
         {/* カウント説明は折りたたみ（初期非表示） */}

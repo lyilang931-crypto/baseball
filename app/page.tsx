@@ -59,6 +59,33 @@ export default function Home() {
   );
   const answerLogSentForIndex = useRef<number>(-1);
 
+  /** 回答後に GET で取得した最新 stats（ResultView に渡して即反映） */
+  const [latestQuestionStats, setLatestQuestionStats] = useState<{
+    questionId: string;
+    answered_count: number;
+    correct_count: number;
+    total_attempts: number;
+    total_correct: number;
+    accuracy: number;
+  } | null>(null);
+
+  const fetchLatestStats = useCallback(async (questionId: string) => {
+    const res = await fetch(
+      `/api/stats/question?questionId=${encodeURIComponent(questionId)}`,
+      { cache: "no-store" }
+    );
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data as {
+      questionId: string;
+      answered_count: number;
+      correct_count: number;
+      total_attempts: number;
+      total_correct: number;
+      accuracy: number;
+    };
+  }, []);
+
   useEffect(() => {
     setRatingState(getStoredRating(getInitialRating()));
   }, []);
@@ -119,7 +146,18 @@ export default function Home() {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ questionId: q.questionId, isCorrect: false }),
-    }).catch(() => {});
+    })
+      .then(() =>
+        fetch(
+          `/api/stats/question?questionId=${encodeURIComponent(q.questionId)}`,
+          { cache: "no-store" }
+        )
+      )
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (data) setLatestQuestionStats(data);
+      })
+      .catch(() => {});
     setRatingState(newRating);
     persistRating(newRating);
     appendHistory({
@@ -176,6 +214,8 @@ export default function Home() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ questionId: q.questionId, isCorrect }),
       });
+      const stats = await fetchLatestStats(q.questionId);
+      if (stats) setLatestQuestionStats(stats);
     } catch {
       // 集計送信失敗時もプレイは継続
     }
@@ -258,6 +298,11 @@ export default function Home() {
     return (
       <ResultView
         questionId={q.questionId}
+        initialStats={
+          latestQuestionStats?.questionId === q.questionId
+            ? latestQuestionStats
+            : undefined
+        }
         isCorrect={lastCorrect}
         explanation={q.explanation}
         sourceLabel={q.sourceLabel}
