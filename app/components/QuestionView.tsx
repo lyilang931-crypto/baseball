@@ -72,7 +72,7 @@ export default function QuestionView({
       </p>
 
       <div className="flex-1 flex flex-col items-center justify-center w-full py-4">
-        {/* 実データ / 仮想シナリオ ＋ 出典（NPB/MLB 年度） */}
+        {/* 実データ / 配球セオリー（定石・傾向） */}
         <p className="text-xs text-gray-500 mb-3 text-center">
           {isData ? (
             <>
@@ -82,7 +82,7 @@ export default function QuestionView({
               )}
             </>
           ) : (
-            <span className="text-gray-500">仮想シナリオ</span>
+            <span className="text-gray-500">配球セオリー</span>
           )}
         </p>
 

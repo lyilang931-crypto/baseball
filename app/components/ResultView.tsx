@@ -127,7 +127,7 @@ export default function ResultView({
                 </>
               ) : (
                 <>
-                  <span className="text-gray-600">仮想シナリオ</span>
+                  <span className="text-gray-600">配球セオリー</span>
                   {sourceUrl ? (
                     <span className="block mt-1">
                       <a

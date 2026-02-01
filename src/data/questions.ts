@@ -12,7 +12,7 @@ export interface Choice {
  */
 export type QuestionNo = number;
 
-/** 出典種別（固定問題か実データ由来か判別用） */
+/** 出典種別（配球セオリー=static / 実データ=data） */
 export type SourceType = "static" | "data";
 
 /** 共通フィールド（難易度 1〜5、1が易しい） */
@@ -28,7 +28,7 @@ interface QuestionBase {
   explanation: string;
   sourceLabel: string;
   sourceUrl: string;
-  /** 固定問題=static / 実データ=data（UIで出典表示に利用） */
+  /** 配球セオリー=static / 実データ=data（UIで出典表示に利用） */
   sourceType?: SourceType;
   /** 実データ由来の場合の試合/データID（任意） */
   sourceGameId?: string;
