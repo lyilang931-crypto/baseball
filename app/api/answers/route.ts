@@ -51,7 +51,8 @@ export async function POST(request: Request) {
       );
     }
 
-    const { error } = await supabase.from("answer_logs").insert({
+    // question_id は Supabase 側で TEXT 型（uuid ではない）。問題の安定ID（数値の文字列など）を格納。
+    const payload = {
       user_id: body.userId,
       question_id: body.questionId,
       selected_option: body.selectedOption,
@@ -60,7 +61,11 @@ export async function POST(request: Request) {
       rating_before: body.ratingBefore ?? null,
       rating_after: body.ratingAfter ?? null,
       meta: null,
-    });
+    };
+    // ログには user_id, question_id, is_correct を必ず含める
+    console.log("[POST /api/answers] Supabase insert payload:", payload);
+
+    const { error } = await supabase.from("answer_logs").insert(payload);
 
     if (error) {
       console.error("[POST /api/answers]", error);
