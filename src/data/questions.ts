@@ -1221,5 +1221,43 @@ export function verifySessionQuestionsDistribution(runs: number = 100): void {
   console.log("THEORY 出現: 平均", avg(theoryCounts).toFixed(2), "回/セッション");
   console.log("KNOWLEDGE 出現: 平均", avg(knowCounts).toFixed(2), "回/セッション");
   console.log("制約違反: REAL<2 →", violationsReal, "件, KNOW>1 →", violationsKnow, "件");
+  warnRealDataAnswerBias();
   /* eslint-enable no-console */
+}
+
+/**
+ * 開発者向け: REAL_DATA 問題で正解が「常に1番目」や「上位表現」に偏っていないか検知する。
+ * 問題追加時や scripts/debug.ts から呼ぶ想定。本番では呼ばなくてよい。
+ */
+export function warnRealDataAnswerBias(): void {
+  const realQuestions = QUESTIONS_POOL.filter((q) => getQuestionType(q) === "REAL_DATA");
+  const topBias: { id: number; text: string }[] = [];
+  const upperBias: { id: number; text: string }[] = [];
+
+  for (const q of realQuestions) {
+    const correctChoice = q.choices.find((c) => c.id === q.answerChoiceId);
+    if (!correctChoice) continue;
+    const isFirst = q.choices[0]?.id === q.answerChoiceId;
+    if (isFirst) topBias.push({ id: q.id, text: correctChoice.text });
+    if (/1位|上位\d*位以内|^1位/.test(correctChoice.text)) {
+      upperBias.push({ id: q.id, text: correctChoice.text });
+    }
+  }
+
+  if (topBias.length > 0 || upperBias.length > 0) {
+    /* eslint-disable no-console */
+    if (topBias.length > 0) {
+      console.warn(
+        "[warnRealDataAnswerBias] 正解が choices の1番目になっている REAL_DATA があります（表示順はシャッフルされるので表示上は散らばります）:",
+        topBias
+      );
+    }
+    if (upperBias.length > 0) {
+      console.warn(
+        "[warnRealDataAnswerBias] 正解が「1位」「上位○位以内」等の表現の REAL_DATA が多くあります。順位・指標を散らすと偏り対策になります:",
+        upperBias
+      );
+    }
+    /* eslint-enable no-console */
+  }
 }

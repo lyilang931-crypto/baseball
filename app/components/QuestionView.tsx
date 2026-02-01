@@ -3,16 +3,16 @@
 /**
  * 即体験UX（TikTok型の抽象化）
  * - カウント表示は「カウント：1-2」+ 補助「(ボール 1 / ストライク 2)」に統一（色分けで直感的に）
+ * - 選択肢は seeded shuffle で表示順をランダム化（正解が常に上にならない／リロードで安定）
  * - 回・アウトは補助で小さく表示
- * - みんなの成績（正解率・correct/answered）を表示
- * - カウント説明は折りたたみ（初期は非表示）
  */
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import type { Question } from "@/data/questions";
 import { getQuestionType, getDataSourceShort } from "@/data/questions";
 import { parseCountDisplay, formatCountSub } from "@/utils/countDisplay";
 import { parseSituation } from "@/utils/situationDisplay";
+import { hashSeed, shuffleWithSeed, getTodayJST } from "@/utils/seededShuffle";
 
 export interface QuestionStatsDisplay {
   questionId: string;
@@ -49,6 +49,27 @@ export default function QuestionView({
   const countParsed = parseCountDisplay(question.count);
   const situationParsed = parseSituation(question.situation);
   const [stats, setStats] = useState<QuestionStatsDisplay | null>(null);
+
+  /** 選択肢の表示順を seeded shuffle（同じ日・同じ挑戦回・同じ設問なら安定） */
+  const shuffledChoices = useMemo(() => {
+    const todayJST = getTodayJST();
+    const seedStr = [
+      question.questionId,
+      attemptIndex ?? 0,
+      questionNumber,
+      todayJST,
+    ].join("-");
+    const seed = hashSeed(seedStr);
+    const shuffled = shuffleWithSeed(question.choices, seed);
+    if (process.env.NODE_ENV === "development") {
+      const pos = shuffled.findIndex((c) => c.id === question.answerChoiceId);
+      if (pos >= 0) {
+        // eslint-disable-next-line no-console
+        console.log(`[dev] 正解の表示位置: ${pos + 1}/${shuffled.length} (questionId: ${question.questionId.slice(0, 8)}…)`);
+      }
+    }
+    return shuffled;
+  }, [question.questionId, question.choices, question.answerChoiceId, attemptIndex, questionNumber]);
 
   useEffect(() => {
     let cancelled = false;
@@ -175,7 +196,7 @@ export default function QuestionView({
         </details>
 
         <div className="w-full space-y-2">
-          {question.choices.map((choice) => (
+          {shuffledChoices.map((choice) => (
             <button
               key={choice.id}
               type="button"
