@@ -17,6 +17,7 @@ import {
   getSessionQuestions,
   QUESTIONS_PER_SESSION,
   getDataSourceShort,
+  getQuestionType,
 } from "@/data/questions";
 import type { StartOptions } from "./components/StartView";
 import type { Question } from "@/data/questions";
