@@ -37,6 +37,8 @@ import {
   getLastPlayedDate,
   consumeOneAttempt,
   MAX_DAILY_ATTEMPTS,
+  getDailyUsedQuestionIds,
+  addDailyUsedQuestionIds,
 } from "@/lib/daily";
 import { updateStreakAndReturn } from "@/utils/streak";
 import { getOrCreateUserId } from "@/lib/userId";
@@ -205,9 +207,19 @@ export default function Home() {
 
   const handleStart = (options?: StartOptions) => {
     lastSfxPlayedKeyRef.current = null;
-    setSessionQuestions(
-      getSessionQuestions(options?.dataOnly ? { dataOnly: true } : undefined)
-    );
+    const used = getDailyUsedQuestionIds();
+    const questions = getSessionQuestions({
+      dataOnly: options?.dataOnly ?? false,
+      excludeQuestionIds: used,
+    });
+    if (questions.length === 0) {
+      if (typeof window !== "undefined") {
+        window.alert("今日の出題が不足しています（問題追加中）。明日またお試しください。");
+      }
+      return;
+    }
+    addDailyUsedQuestionIds(questions.map((q) => q.questionId));
+    setSessionQuestions(questions);
     setCurrentIndex(0);
     setCorrectCount(0);
     setRatingAtSessionStart(rating);

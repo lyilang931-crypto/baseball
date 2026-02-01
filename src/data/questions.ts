@@ -1130,11 +1130,27 @@ export function getDataSourceShort(q: Question): string | null {
 export interface SessionOptions {
   /** 実データ問題のみ出題する（野球判断力トレーニング向け） */
   dataOnly?: boolean;
+  /** 同日にすでに出題した questionId。これらを除外して抽選する */
+  excludeQuestionIds?: string[];
 }
 
+/**
+ * 候補不足時に重複を許可するか。
+ * true: 除外後プールが足りなければ元のプールから抽選（同日に同じ問題が出る可能性あり）
+ * false: 除外後のプールのみで抽選（5問に満たない場合あり。呼び出し側でメッセージ表示推奨）
+ */
+const ALLOW_DUPLICATE_WHEN_INSUFFICIENT = true;
+
 /** 配列を Fisher–Yates でシャッフルし、先頭 n 件を返す（同一セッション内重複なし） */
-function shuffleDraw<T>(pool: T[], n: number): T[] {
-  const copy = [...pool];
+function shuffleDraw<T extends { questionId: string }>(pool: T[], n: number, exclude?: string[]): T[] {
+  const filtered = exclude?.length
+    ? pool.filter((q) => !exclude.includes(q.questionId))
+    : [...pool];
+  const source =
+    ALLOW_DUPLICATE_WHEN_INSUFFICIENT && filtered.length < n && (exclude?.length ?? 0) > 0
+      ? [...pool]
+      : filtered;
+  const copy = [...source];
   for (let i = copy.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [copy[i], copy[j]] = [copy[j], copy[i]];
@@ -1166,20 +1182,29 @@ function pickComposition(): { r: number; t: number; k: number } {
 
 /**
  * 1セッション用に5問を選ぶ（soft constraints 付きランダム）。
+ * - 同日にすでに出題した questionId は excludeQuestionIds で除外
  * - 構成 [REAL, THEORY, KNOW] を重み付きでランダムに選択（REAL>=2, KNOW<=1）
  * - 各プールから重複なしで抽選し、最後に並び順をシャッフル
- * @param options.dataOnly true のとき実データ5問のみシャッフルして出題
+ * @param options.dataOnly true のとき実データ5問のみ
+ * @param options.excludeQuestionIds 同日使用済み questionId（除外して抽選）
  */
 export function getSessionQuestions(options?: SessionOptions): Question[] {
+  const exclude = options?.excludeQuestionIds;
+
   if (options?.dataOnly === true) {
-    return shuffleDraw(REAL_DATA_POOL, 5);
+    return shuffleDraw(REAL_DATA_POOL, 5, exclude);
   }
   const { r, t, k } = pickComposition();
-  const real = shuffleDraw(REAL_DATA_POOL, r);
-  const theory = shuffleDraw(THEORY_POOL, t);
-  const know = shuffleDraw(KNOWLEDGE_POOL, k);
+  const real = shuffleDraw(REAL_DATA_POOL, r, exclude);
+  const theory = shuffleDraw(THEORY_POOL, t, exclude);
+  const know = shuffleDraw(KNOWLEDGE_POOL, k, exclude);
   const five = [...real, ...theory, ...know];
-  return shuffleDraw(five, 5);
+  const copy = [...five];
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy.slice(0, 5);
 }
 
 /**

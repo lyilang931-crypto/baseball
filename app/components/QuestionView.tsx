@@ -2,15 +2,14 @@
 
 /**
  * 即体験UX（TikTok型の抽象化）
- * - カウントは常に B/S 表記（B{balls} | S{strikes}）を主表示、補助で（nボールnストライク）
+ * - カウントは「XボールYストライク」のみ表示（全問題タイプで統一）
  * - 選択肢は seeded shuffle で表示順をランダム化
- * - 回・アウトは補助で小さく表示
  */
 
 import { useState, useEffect, useMemo } from "react";
 import type { Question } from "@/data/questions";
 import { getQuestionType, getDataSourceShort } from "@/data/questions";
-import { parseCountDisplay, formatCountSub } from "@/utils/countDisplay";
+import { parseCountDisplay, formatCountJP } from "@/utils/countDisplay";
 import { parseSituation } from "@/utils/situationDisplay";
 import { hashSeed, shuffleWithSeed, getTodayJST } from "@/utils/seededShuffle";
 
@@ -123,23 +122,15 @@ export default function QuestionView({
           </p>
         )}
 
-        {/* メイン: B/S バッジ（常時表示・迷い防止）+ 補助（nボールnストライク）+ 塁状況 or 問題文 */}
+        {/* メイン: カウントは「XボールYストライク」のみ表示 + 塁状況 or 問題文 */}
         {countParsed ? (
           <div className="text-center mb-8">
-            <p className="text-2xl font-bold text-gray-900 tracking-tight flex flex-wrap items-center justify-center gap-2">
-              <span className="inline-flex items-center rounded-lg bg-green-100 px-3 py-1 text-green-800 font-bold" aria-label={`ボール${countParsed.balls}`}>B{countParsed.balls}</span>
-              <span className="text-gray-400" aria-hidden>|</span>
-              <span className="inline-flex items-center rounded-lg bg-red-100 px-3 py-1 text-red-800 font-bold" aria-label={`ストライク${countParsed.strikes}`}>S{countParsed.strikes}</span>
-              {situationParsed && (
-                <>
-                  <span className="text-gray-400 mx-1" aria-hidden>｜</span>
-                  <span className="text-gray-900">{situationParsed.baseSituation}</span>
-                </>
-              )}
+            <p className="text-2xl font-bold text-gray-900 tracking-tight">
+              {formatCountJP(countParsed.balls, countParsed.strikes)}
             </p>
-            <p className="text-xs text-gray-500 mt-1">
-              {formatCountSub(countParsed.balls, countParsed.strikes)}
-            </p>
+            {situationParsed && (
+              <p className="text-lg text-gray-700 mt-2">{situationParsed.baseSituation}</p>
+            )}
             {!situationParsed && question.situation && (
               <h2 className="text-lg font-bold text-gray-900 mt-3 mb-1">{question.situation}</h2>
             )}
@@ -150,7 +141,6 @@ export default function QuestionView({
               {question.situation}
             </h2>
             <p className="text-sm text-gray-600">{question.count}</p>
-            <p className="text-xs text-gray-500 mt-1">B=ボール S=ストライク</p>
           </div>
         )}
 
@@ -176,10 +166,10 @@ export default function QuestionView({
           </summary>
           <div className="mt-2 pl-0 text-xs text-gray-500 border-l-0">
             <p className="mb-1">
-              <strong className="text-gray-600">B（ボール）</strong>：打者が打たなかったり、ストライクゾーン外の球で審判がボールと判定した数。
+              <strong className="text-gray-600">ボール</strong>：打者が打たなかったり、ストライクゾーン外の球で審判がボールと判定した数。
             </p>
             <p>
-              <strong className="text-gray-600">S（ストライク）</strong>：ストライクゾーンを通過した球、空振り、ファウル（2ストライク未満時）などでカウントされる数。
+              <strong className="text-gray-600">ストライク</strong>：ストライクゾーンを通過した球、空振り、ファウル（2ストライク未満時）などでカウントされる数。
             </p>
           </div>
         </details>

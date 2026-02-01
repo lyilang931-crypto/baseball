@@ -9,6 +9,7 @@
 const LAST_PLAYED_KEY = "baseball_quiz_last_played_date";
 const TODAY_RESULT_KEY = "baseball_quiz_today_result";
 const DAILY_ATTEMPTS_KEY = "baseball_quiz_daily_attempts";
+const DAILY_USED_QUESTIONS_KEY = "daily_used_question_ids_v1";
 
 /** 1日の最大挑戦回数 */
 export const MAX_DAILY_ATTEMPTS = 3;
@@ -108,6 +109,35 @@ export function setTodayResult(result: TodayResult): void {
   if (typeof window === "undefined") return;
   try {
     localStorage.setItem(TODAY_RESULT_KEY, JSON.stringify(result));
+  } catch {
+    // ignore
+  }
+}
+
+/** 今日すでに出題した questionId 一覧（同じ日には再度出題しない）。日付が違えば [] */
+export function getDailyUsedQuestionIds(): string[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const s = localStorage.getItem(DAILY_USED_QUESTIONS_KEY);
+    if (!s) return [];
+    const parsed = JSON.parse(s) as { date?: string; used?: string[] };
+    const today = getTodayDate();
+    if (parsed?.date !== today) return [];
+    const used = Array.isArray(parsed.used) ? parsed.used : [];
+    return used.filter((id): id is string => typeof id === "string");
+  } catch {
+    return [];
+  }
+}
+
+/** 今回出題した questionId を今日の使用済みに追加（セッション確定時に呼ぶ） */
+export function addDailyUsedQuestionIds(ids: string[]): void {
+  if (typeof window === "undefined" || ids.length === 0) return;
+  try {
+    const today = getTodayDate();
+    const current = getDailyUsedQuestionIds();
+    const next = [...new Set([...current, ...ids])];
+    localStorage.setItem(DAILY_USED_QUESTIONS_KEY, JSON.stringify({ date: today, used: next }));
   } catch {
     // ignore
   }
