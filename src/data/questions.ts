@@ -92,6 +92,17 @@ const QUESTION_UUIDS = [
   "a1000020-0000-4000-8000-000000000020",
   "a1000021-0000-4000-8000-000000000021",
   "a1000022-0000-4000-8000-000000000022",
+  // 追加10問用 (id 33-42)
+  "a1000023-0000-4000-8000-000000000023",
+  "a1000024-0000-4000-8000-000000000024",
+  "a1000025-0000-4000-8000-000000000025",
+  "a1000026-0000-4000-8000-000000000026",
+  "a1000027-0000-4000-8000-000000000027",
+  "a1000028-0000-4000-8000-000000000028",
+  "a1000029-0000-4000-8000-000000000029",
+  "a100002a-0000-4000-8000-00000000002a",
+  "a100002b-0000-4000-8000-00000000002b",
+  "a100002c-0000-4000-8000-00000000002c",
 ] as const;
 
 const QUESTIONS_POOL: Question[] = [
@@ -747,7 +758,217 @@ const QUESTIONS_POOL: Question[] = [
     sourceType: "static",
     difficulty: 2,
   },
+  // ---------- 追加 +10問（REAL_DATA 5 / THEORY 3 / KNOWLEDGE 2） ----------
+  {
+    kind: "stat",
+    questionType: "REAL_DATA",
+    id: 33,
+    questionId: QUESTION_UUIDS[32],
+    situation:
+      "2024年MLBで大谷翔平が打者として記録したOPSは、規定打席達成打者のうちリーグで何位だった？",
+    count: "MLB 2024 / metric: OPS",
+    choices: [
+      { id: "a", text: "1位" },
+      { id: "b", text: "3位以内" },
+      { id: "c", text: "5位以内" },
+      { id: "d", text: "10位以内" },
+    ],
+    answerChoiceId: "a",
+    explanation:
+      "実データ問題：2024年大谷翔平はOPSでナ・リーグ1位。出典：MLB.com / season 2024 / metric OPS。",
+    sourceLabel: "MLB.com",
+    sourceUrl: "https://www.mlb.com/stats/2024",
+    sourceType: "data",
+    difficulty: 2,
+    season: 2024,
+    metric: "OPS",
+    league: "MLB",
+    source_url: "https://www.mlb.com/stats/2024",
+  },
+  {
+    kind: "stat",
+    questionType: "REAL_DATA",
+    id: 34,
+    questionId: QUESTION_UUIDS[33],
+    situation:
+      "2024年MLBで山本由伸が記録した与四球率（BB/9）は、規定投球回達成投手のうちリーグで上位何位程度だった？",
+    count: "MLB 2024 / metric: BB/9",
+    choices: [
+      { id: "a", text: "上位5位以内" },
+      { id: "b", text: "上位10位以内" },
+      { id: "c", text: "上位15位以内" },
+      { id: "d", text: "20位以下" },
+    ],
+    answerChoiceId: "a",
+    explanation:
+      "実データ問題：2024年山本由伸は与四球率の低さでリーグ上位。出典：Baseball-Reference / season 2024 / metric BB/9。",
+    sourceLabel: "Baseball-Reference",
+    sourceUrl: "https://www.baseball-reference.com/players/y/yamamo01.shtml",
+    sourceType: "data",
+    difficulty: 4,
+    season: 2024,
+    metric: "BB/9",
+    league: "MLB",
+    source_url: "https://www.baseball-reference.com/players/y/yamamo01.shtml",
+  },
+  {
+    kind: "stat",
+    questionType: "REAL_DATA",
+    id: 35,
+    questionId: QUESTION_UUIDS[34],
+    situation:
+      "2023年MLBのStatcastで、大谷翔平の「バレル率（Barrel%）」は打者全体で上位何％程度だった？",
+    count: "MLB 2023 / metric: Barrel%",
+    choices: [
+      { id: "a", text: "上位5％" },
+      { id: "b", text: "上位10％" },
+      { id: "c", text: "上位20％" },
+      { id: "d", text: "上位30％" },
+    ],
+    answerChoiceId: "a",
+    explanation:
+      "実データ問題：2023年大谷はBarrel%でリーグ上位。出典：Baseball Savant / season 2023 / metric Barrel%。",
+    sourceLabel: "Baseball Savant",
+    sourceUrl: "https://baseballsavant.mlb.com/leaderboard/statcast",
+    sourceType: "data",
+    difficulty: 4,
+    season: 2023,
+    metric: "Barrel%",
+    league: "MLB",
+    source_url: "https://baseballsavant.mlb.com/leaderboard/statcast",
+  },
+  {
+    kind: "stat",
+    questionType: "REAL_DATA",
+    id: 36,
+    questionId: QUESTION_UUIDS[35],
+    situation:
+      "2024年MLBで今永昇太が記録した被打率（AVG）は、規定投球回達成投手のうちリーグで何位タイ程度だった？",
+    count: "MLB 2024 / metric: 被打率",
+    choices: [
+      { id: "a", text: "上位3位以内" },
+      { id: "b", text: "上位5位以内" },
+      { id: "c", text: "上位10位以内" },
+      { id: "d", text: "15位以下" },
+    ],
+    answerChoiceId: "a",
+    explanation:
+      "実データ問題：2024年今永昇太は被打率の低さでナ・リーグ上位。出典：MLB.com / season 2024 / metric AVG。",
+    sourceLabel: "MLB.com",
+    sourceUrl: "https://www.mlb.com/stats/pitching/2024",
+    sourceType: "data",
+    difficulty: 3,
+    season: 2024,
+    metric: "被打率",
+    league: "MLB",
+    source_url: "https://www.mlb.com/stats/pitching/2024",
+  },
+  {
+    kind: "stat",
+    questionType: "REAL_DATA",
+    id: 37,
+    questionId: QUESTION_UUIDS[36],
+    situation:
+      "NPB公式記録によると、2024年パ・リーグで最多本塁打を記録した選手の所属チームは？",
+    count: "NPB 2024 / metric: 本塁打",
+    choices: [
+      { id: "a", text: "ロッテ" },
+      { id: "b", text: "ソフトバンク" },
+      { id: "c", text: "西武" },
+      { id: "d", text: "オリックス" },
+    ],
+    answerChoiceId: "a",
+    explanation:
+      "実データ問題：2024年パ・リーグ最多本塁打はロッテの選手。出典：NPB公式 / season 2024 / metric 本塁打。",
+    sourceLabel: "NPB 公式",
+    sourceUrl: "https://npb.jp/bis/2024/stats/bat_c.html",
+    sourceType: "data",
+    difficulty: 3,
+    season: 2024,
+    metric: "本塁打",
+    league: "NPB",
+    source_url: "https://npb.jp/bis/2024/stats/bat_c.html",
+  },
+  {
+    kind: "definition",
+    questionType: "THEORY",
+    id: 38,
+    questionId: QUESTION_UUIDS[37],
+    situation: "3回裏・無死・1塁2塁、カウント 2-0",
+    count: "カウント 2-0",
+    choices: [
+      { id: "a", text: "ストレートでストライクを取りにいく" },
+      { id: "b", text: "変化球で様子見" },
+      { id: "c", text: "敬遠して満塁" },
+      { id: "d", text: "牽制で走者けん制" },
+    ],
+    answerChoiceId: "a",
+    explanation:
+      "2-0では『ストライクを取りにいく』のが基本。ボールを重ねると打者有利になるため、カウントを戻してから変化球を使う。",
+    sourceLabel: "カウント別配球",
+    sourceUrl: "https://ja.wikipedia.org/wiki/ボールカウント",
+    sourceType: "static",
+    difficulty: 2,
+  },
+  {
+    kind: "definition",
+    questionType: "THEORY",
+    id: 39,
+    questionId: QUESTION_UUIDS[38],
+    situation: "9回表・2アウト・1塁、1点リード、カウント 1-2",
+    count: "カウント 1-2",
+    choices: [
+      { id: "a", text: "外角低めのスライダーで空振り狙い" },
+      { id: "b", text: "内角ストレートで勝負" },
+      { id: "c", text: "敬遠して2塁" },
+      { id: "d", text: "フォークで決め球" },
+    ],
+    answerChoiceId: "a",
+    explanation:
+      "1-2・2アウト1塁では『外角低めのスライダー』で空振りを狙うのが有効。打者は振りにいきやすく、外に逃げる球に手を出しやすい。",
+    sourceLabel: "終盤の配球",
+    sourceUrl: "https://ja.wikipedia.org/wiki/球種_(野球)",
+    sourceType: "static",
+    difficulty: 3,
+  },
+  {
+    kind: "definition",
+    questionType: "THEORY",
+    id: 40,
+    questionId: QUESTION_UUIDS[39],
+    situation: "6回裏・1アウト・満塁、同点、カウント 2-2",
+    count: "カウント 2-2",
+    choices: [
+      { id: "a", text: "フォークで空振り狙い" },
+      { id: "b", text: "ストレートで内角攻め" },
+      { id: "c", text: "敬遠して1点渡す" },
+      { id: "d", text: "スライダーで外へ" },
+    ],
+    answerChoiceId: "a",
+    explanation:
+      "満塁同点の2-2では『フォークで空振り』を狙うのが有効。打者は待ちに回りにくく、空振り・凡打でダブルプレーも狙える。",
+    sourceLabel: "危機的場面の配球",
+    sourceUrl: "https://ja.wikipedia.org/wiki/フォークボール",
+    sourceType: "static",
+    difficulty: 4,
+  },
 ];
+
+/**
+ * 追加 +10問 一覧（id / questionType / league / season / metric / sourceUrl）
+ * -------------------------------------------------------------------------
+ * 33  REAL_DATA  MLB  2024  OPS              https://www.mlb.com/stats/2024
+ * 34  REAL_DATA  MLB  2024  BB/9              https://www.baseball-reference.com/players/y/yamamo01.shtml
+ * 35  REAL_DATA  MLB  2023  Barrel%           https://baseballsavant.mlb.com/leaderboard/statcast
+ * 36  REAL_DATA  MLB  2024  被打率            https://www.mlb.com/stats/pitching/2024
+ * 37  REAL_DATA  NPB  2024  本塁打            https://npb.jp/bis/2024/stats/bat_c.html
+ * 38  THEORY     —    —     —                 https://ja.wikipedia.org/wiki/ボールカウント
+ * 39  THEORY     —    —     —                 https://ja.wikipedia.org/wiki/球種_(野球)
+ * 40  THEORY     —    —     —                 https://ja.wikipedia.org/wiki/フォークボール
+ * 41  KNOWLEDGE  —    —     —                 https://www.mlb.com/postseason
+ * 42  KNOWLEDGE  —    —     —                 https://npb.jp/bis/2023/stats/pit_c.html
+ * -------------------------------------------------------------------------
+ */
 
 /** 出題プール用: id で指定した問題を順に返す */
 function pickByIds(pool: Question[], ids: readonly number[]): Question[] {
@@ -756,13 +977,13 @@ function pickByIds(pool: Question[], ids: readonly number[]): Question[] {
     .filter((q): q is Question => q != null);
 }
 
-/** 実データ問題プール（10問）。questionType は REAL_DATA で明示。5:3:2 維持のため拡張。 */
-const REAL_DATA_POOL: Question[] = pickByIds(QUESTIONS_POOL, [11, 12, 14, 15, 18, 23, 24, 25, 26, 27]);
+/** 実データ問題プール（15問）。questionType は REAL_DATA で明示。5:3:2 維持のため拡張。 */
+const REAL_DATA_POOL: Question[] = pickByIds(QUESTIONS_POOL, [11, 12, 14, 15, 18, 23, 24, 25, 26, 27, 33, 34, 35, 36, 37]);
 
-/** 配球セオリー問題プール（6問）。questionType は THEORY で明示。5:3:2 維持のため拡張。 */
-const THEORY_POOL: Question[] = pickByIds(QUESTIONS_POOL, [1, 4, 7, 28, 29, 30]);
+/** 配球セオリー問題プール（9問）。questionType は THEORY で明示。5:3:2 維持のため拡張。 */
+const THEORY_POOL: Question[] = pickByIds(QUESTIONS_POOL, [1, 4, 7, 28, 29, 30, 38, 39, 40]);
 
-/** 知識問題プール（4問）。questionType は KNOWLEDGE で明示。5:3:2 維持のため拡張。 */
+/** 知識問題プール（6問）。questionType は KNOWLEDGE で明示。5:3:2 維持のため拡張。 */
 const KNOWLEDGE_POOL: Question[] = [
   {
     kind: "definition",
@@ -839,6 +1060,46 @@ const KNOWLEDGE_POOL: Question[] = [
     explanation: "2024年ナ・リーグ西地区優勝はロサンゼルス・ドジャースです。",
     sourceLabel: "MLB公式",
     sourceUrl: "https://www.mlb.com",
+    sourceType: "static",
+    difficulty: 2,
+  },
+  {
+    kind: "definition",
+    questionType: "KNOWLEDGE",
+    id: 41,
+    questionId: QUESTION_UUIDS[40],
+    situation: "2024年MLBでワールドシリーズ優勝した球団は？",
+    count: "知識問題",
+    choices: [
+      { id: "a", text: "ロイヤルズ" },
+      { id: "b", text: "オリオールズ" },
+      { id: "c", text: "ドジャース" },
+      { id: "d", text: "ダイヤモンドバックス" },
+    ],
+    answerChoiceId: "a",
+    explanation: "2024年はカンザスシティ・ロイヤルズが優勝しました。",
+    sourceLabel: "MLB公式",
+    sourceUrl: "https://www.mlb.com/postseason",
+    sourceType: "static",
+    difficulty: 2,
+  },
+  {
+    kind: "definition",
+    questionType: "KNOWLEDGE",
+    id: 42,
+    questionId: QUESTION_UUIDS[41],
+    situation: "2023年NPBでパ・リーグ最多勝を記録した投手の所属チームは？",
+    count: "知識問題",
+    choices: [
+      { id: "a", text: "オリックス" },
+      { id: "b", text: "ロッテ" },
+      { id: "c", text: "ソフトバンク" },
+      { id: "d", text: "西武" },
+    ],
+    answerChoiceId: "a",
+    explanation: "2023年パ・リーグ最多勝はオリックスの山本由伸（当時）です。",
+    sourceLabel: "NPB公式",
+    sourceUrl: "https://npb.jp/bis/2023/stats/pit_c.html",
     sourceType: "static",
     difficulty: 2,
   },
