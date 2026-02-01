@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useResultSound } from "../hooks/useResultSound";
 
 export interface QuestionStatsResult {
   questionId: string;
@@ -23,6 +22,8 @@ interface ResultViewProps {
   sourceLabel: string;
   sourceUrl: string;
   sourceType?: SourceType;
+  /** 実データ時の出典短縮表示（例: "NPB 2022", "MLB 2023"） */
+  sourceDataSourceShort?: string;
   sourceGameId?: string;
   rating: number;
   ratingDelta: number;
@@ -39,12 +40,12 @@ export default function ResultView({
   sourceLabel,
   sourceUrl,
   sourceType,
+  sourceDataSourceShort,
   sourceGameId,
   rating,
   ratingDelta,
   onNext,
 }: ResultViewProps) {
-  useResultSound(isCorrect);
   const [stats, setStats] = useState<QuestionStatsResult | null>(
     initialStats?.questionId === questionId ? initialStats : null
   );
@@ -99,27 +100,49 @@ export default function ResultView({
           <p className="text-gray-700 text-sm">{explanation}</p>
         </section>
 
-        {(sourceUrl || sourceLabel) ? (
+        {(sourceUrl || sourceLabel || sourceType) ? (
           <section className="w-full mb-4 text-left">
             <h3 className="text-sm font-bold text-gray-500 mb-1">出典</h3>
             <p className="text-gray-700 text-sm">
-              {sourceUrl ? (
-                <a
-                  href={sourceUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-600 underline break-all"
-                >
-                  {sourceLabel || sourceUrl}
-                </a>
+              {sourceType === "data" ? (
+                <>
+                  <span className="font-medium text-green-700">実データ</span>
+                  {sourceDataSourceShort && (
+                    <span className="text-gray-600 ml-2">（{sourceDataSourceShort}）</span>
+                  )}
+                  {sourceUrl ? (
+                    <span className="block mt-1">
+                      <a
+                        href={sourceUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 underline break-all"
+                      >
+                        {sourceLabel || sourceUrl}
+                      </a>
+                    </span>
+                  ) : sourceLabel ? (
+                    <span className="block mt-1">{sourceLabel}</span>
+                  ) : null}
+                </>
               ) : (
-                sourceLabel
-              )}
-              {sourceType === "static" && (
-                <span className="text-gray-500 ml-1">（固定）</span>
-              )}
-              {sourceType === "data" && (
-                <span className="text-green-600 ml-1">（実データ）</span>
+                <>
+                  <span className="text-gray-600">仮想シナリオ</span>
+                  {sourceUrl ? (
+                    <span className="block mt-1">
+                      <a
+                        href={sourceUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 underline break-all"
+                      >
+                        {sourceLabel || sourceUrl}
+                      </a>
+                    </span>
+                  ) : sourceLabel ? (
+                    <span className="block mt-1">{sourceLabel}</span>
+                  ) : null}
+                </>
               )}
               {sourceGameId && (
                 <span className="text-gray-400 text-xs ml-1">ID: {sourceGameId}</span>

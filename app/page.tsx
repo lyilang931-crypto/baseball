@@ -16,7 +16,9 @@ import FinalResultView from "./components/FinalResultView";
 import {
   getSessionQuestions,
   QUESTIONS_PER_SESSION,
+  getDataSourceShort,
 } from "@/data/questions";
+import type { StartOptions } from "./components/StartView";
 import type { Question } from "@/data/questions";
 import {
   eloAfterCorrect,
@@ -37,6 +39,7 @@ import {
 } from "@/lib/daily";
 import { updateStreakAndReturn } from "@/utils/streak";
 import { getOrCreateUserId } from "@/lib/userId";
+import { playResultSound } from "@/app/hooks/useResultSound";
 
 type Screen = "start" | "question" | "result" | "final";
 
@@ -121,6 +124,7 @@ export default function Home() {
     if (screen !== "question" || secondsLeft > 0 || sessionQuestions.length === 0) return;
     const q = sessionQuestions[currentIndex];
     if (!q) return;
+    playResultSound(false);
     clearTimer();
     const { newRating, delta } = eloAfterIncorrect(rating, q.difficulty);
     if (answerLogSentForIndex.current !== currentIndex) {
@@ -173,8 +177,10 @@ export default function Home() {
     setScreen("result");
   }, [screen, secondsLeft, currentIndex, sessionQuestions, rating, clearTimer]);
 
-  const handleStart = () => {
-    setSessionQuestions(getSessionQuestions());
+  const handleStart = (options?: StartOptions) => {
+    setSessionQuestions(
+      getSessionQuestions(options?.dataOnly ? { dataOnly: true } : undefined)
+    );
     setCurrentIndex(0);
     setCorrectCount(0);
     setRatingAtSessionStart(rating);
@@ -186,6 +192,7 @@ export default function Home() {
     const q = sessionQuestions[currentIndex];
     if (!q) return;
     const isCorrect = q.answerChoiceId === choiceId;
+    playResultSound(isCorrect);
     const { newRating, delta } = isCorrect
       ? eloAfterCorrect(rating, q.difficulty)
       : eloAfterIncorrect(rating, q.difficulty);
@@ -236,13 +243,13 @@ export default function Home() {
 
   const handleNext = () => {
     if (lastCorrect) setCorrectCount((c) => c + 1);
-    if (currentIndex + 1 >= QUESTIONS_PER_SESSION) {
+    if (currentIndex + 1 >= sessionQuestions.length) {
       const finalCorrect = lastCorrect ? correctCount + 1 : correctCount;
       updateStreakAndReturn(getLastPlayedDate());
       setLastPlayedToday();
       setTodayResult({
         correctCount: finalCorrect,
-        totalQuestions: QUESTIONS_PER_SESSION,
+        totalQuestions: sessionQuestions.length,
         ratingBefore: ratingAtSessionStart,
         ratingAfter: rating,
       });
@@ -308,6 +315,7 @@ export default function Home() {
         sourceLabel={q.sourceLabel}
         sourceUrl={q.sourceUrl}
         sourceType={q.sourceType}
+        sourceDataSourceShort={getDataSourceShort(q) ?? undefined}
         sourceGameId={q.sourceGameId}
         rating={rating}
         ratingDelta={lastRatingDelta}
@@ -319,7 +327,7 @@ export default function Home() {
   return (
     <FinalResultView
       correctCount={correctCount}
-      totalQuestions={QUESTIONS_PER_SESSION}
+      totalQuestions={sessionQuestions.length}
       ratingBefore={ratingAtSessionStart}
       ratingAfter={rating}
       onBackToStart={handleBackToStart}

@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { getStreakCount } from "@/utils/streak";
 
 /**
@@ -8,14 +9,19 @@ import { getStreakCount } from "@/utils/streak";
  * - テキストは極力短く、説明・チュートリアルなし
  *
  * デイリー体験（Duolingo型の抽象化）
- * - 未プレイ時: 「今日の1球に挑戦」
- * - プレイ後: 「今日の結果を見る」「明日の1球を待つ」
+ * - 未プレイ時: 「今日の1球に挑戦」＋オプションで「実データ問題のみ」
+ * - プレイ後: 「今日の結果を見る」のみ
  * - 連続日数 Streak を小さく表示
  */
 
+export interface StartOptions {
+  /** 実データ問題のみ出題（NPB/MLB 等の統計問題のみ） */
+  dataOnly?: boolean;
+}
+
 interface StartViewProps {
   hasPlayedToday: boolean;
-  onStart: () => void;
+  onStart: (options?: StartOptions) => void;
   onViewTodayResult: () => void;
 }
 
@@ -25,6 +31,7 @@ export default function StartView({
   onViewTodayResult,
 }: StartViewProps) {
   const streak = getStreakCount();
+  const [dataOnly, setDataOnly] = useState(false);
 
   if (hasPlayedToday) {
     return (
@@ -38,7 +45,7 @@ export default function StartView({
         <p className="text-gray-600 text-center mb-8">
           今日の挑戦は完了しました
         </p>
-        <div className="w-full max-w-sm space-y-3">
+        <div className="w-full max-w-sm">
           <button
             type="button"
             onClick={onViewTodayResult}
@@ -46,9 +53,6 @@ export default function StartView({
           >
             今日の結果を見る
           </button>
-          <p className="text-sm text-gray-400 text-center">
-            明日の1球を待つ
-          </p>
         </div>
       </div>
     );
@@ -62,10 +66,22 @@ export default function StartView({
       {streak > 0 && (
         <p className="text-sm text-gray-500 mb-2">連続: {streak}日</p>
       )}
-      <p className="text-gray-600 text-center mb-8">あなたなら、どうする？</p>
+      <p className="text-gray-600 text-center mb-6">あなたなら、どうする？</p>
+
+      <label className="flex items-center gap-2 mb-6 text-sm text-gray-600 cursor-pointer select-none">
+        <input
+          type="checkbox"
+          checked={dataOnly}
+          onChange={(e) => setDataOnly(e.target.checked)}
+          className="rounded border-gray-300 text-blue-500 focus:ring-blue-500"
+          aria-describedby="data-only-desc"
+        />
+        <span id="data-only-desc">実データ問題のみ出題する（NPB/MLB 等）</span>
+      </label>
+
       <button
         type="button"
-        onClick={onStart}
+        onClick={() => onStart({ dataOnly: dataOnly || undefined })}
         className="w-full max-w-sm py-4 px-6 rounded-2xl bg-blue-500 text-white font-bold text-lg flex items-center justify-center gap-2 hover:bg-blue-600 active:bg-blue-700 transition-colors"
       >
         <span aria-hidden>▶</span>

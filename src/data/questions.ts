@@ -274,7 +274,7 @@ const QUESTIONS_POOL: Question[] = [
       "MLB 2023 の Whiff%（空振り率）ではフォークが最も高い球種でした。統計ベース問題です。",
     sourceLabel: "Baseball Savant",
     sourceUrl: "https://baseballsavant.mlb.com",
-    sourceType: "static",
+    sourceType: "data",
     difficulty: 4,
     season: 2023,
     metric: "Whiff%",
@@ -299,7 +299,7 @@ const QUESTIONS_POOL: Question[] = [
       "NPB 2022 の得点圏打率ではセンター返しが最も打率が高かった方向でした。統計ベース問題です。",
     sourceLabel: "NPB 公式",
     sourceUrl: "https://npb.jp/bis/",
-    sourceType: "static",
+    sourceType: "data",
     difficulty: 3,
     season: 2022,
     metric: "Batting Average (RISP)",
@@ -324,7 +324,7 @@ const QUESTIONS_POOL: Question[] = [
       "MLB 2023 のシフト制限後、左打者で三遊間方向の打率が最も上昇しました。統計ベース問題です。",
     sourceLabel: "Baseball Savant",
     sourceUrl: "https://baseballsavant.mlb.com/leaderboard/spray-angle",
-    sourceType: "static",
+    sourceType: "data",
     difficulty: 5,
     season: 2023,
     metric: "Batting Average by Spray Angle",
@@ -336,10 +336,34 @@ const QUESTIONS_POOL: Question[] = [
 /** 1セッションで出題する問題数 */
 export const QUESTIONS_PER_SESSION = 5;
 
+/** 実データ問題か（sourceType === "data" または kind === "stat"） */
+export function isDataQuestion(q: Question): boolean {
+  return q.sourceType === "data" || q.kind === "stat";
+}
+
+/** 実データ問題の出典短縮表示（例: "NPB 2022", "MLB 2023"） */
+export function getDataSourceShort(q: Question): string | null {
+  if (q.sourceType !== "data" && q.kind !== "stat") return null;
+  const stat = "season" in q && "league" in q ? q : null;
+  if (stat) return `${stat.league} ${stat.season}`;
+  return null;
+}
+
+export interface SessionOptions {
+  /** 実データ問題のみ出題する（野球判断力トレーニング向け） */
+  dataOnly?: boolean;
+}
+
 /**
- * 1セッション用にランダムで5問を選ぶ（重複なし）
+ * 1セッション用にランダムでN問を選ぶ（重複なし）
+ * @param options.dataOnly true のとき実データ問題のみから出題
  */
-export function getSessionQuestions(): Question[] {
-  const shuffled = [...QUESTIONS_POOL].sort(() => Math.random() - 0.5);
-  return shuffled.slice(0, QUESTIONS_PER_SESSION);
+export function getSessionQuestions(options?: SessionOptions): Question[] {
+  const pool =
+    options?.dataOnly === true
+      ? QUESTIONS_POOL.filter(isDataQuestion)
+      : [...QUESTIONS_POOL];
+  const n = Math.min(QUESTIONS_PER_SESSION, pool.length);
+  const shuffled = [...pool].sort(() => Math.random() - 0.5);
+  return shuffled.slice(0, n);
 }

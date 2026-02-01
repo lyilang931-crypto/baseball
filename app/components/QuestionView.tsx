@@ -10,6 +10,7 @@
 
 import { useState, useEffect } from "react";
 import type { Question } from "@/data/questions";
+import { isDataQuestion, getDataSourceShort } from "@/data/questions";
 import { parseCountDisplay } from "@/utils/countDisplay";
 import { parseSituation } from "@/utils/situationDisplay";
 
@@ -61,6 +62,9 @@ export default function QuestionView({
   const showMainCountAndBase =
     countParsed && situationParsed;
 
+  const isData = isDataQuestion(question);
+  const dataSourceShort = getDataSourceShort(question);
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-between px-6 py-10 max-w-md mx-auto">
       <p className="text-xs text-gray-400 w-full text-center">
@@ -68,6 +72,20 @@ export default function QuestionView({
       </p>
 
       <div className="flex-1 flex flex-col items-center justify-center w-full py-4">
+        {/* 実データ / 仮想シナリオ ＋ 出典（NPB/MLB 年度） */}
+        <p className="text-xs text-gray-500 mb-3 text-center">
+          {isData ? (
+            <>
+              <span className="font-medium text-green-700">実データ</span>
+              {dataSourceShort && (
+                <span className="ml-2 text-gray-500">出典: {dataSourceShort}</span>
+              )}
+            </>
+          ) : (
+            <span className="text-gray-500">仮想シナリオ</span>
+          )}
+        </p>
+
         {/* 補助: 回・アウト（小さく） */}
         {situationParsed && (
           <p className="text-xs text-gray-400 text-center mb-2">
