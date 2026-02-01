@@ -1337,10 +1337,10 @@ const QUESTIONS_POOL: Question[] = [
       "1-2カウントから空振りを取るのに有効な球種は？",
     count: "配球セオリー",
     choices: [
-      { id: "a", text: "上位10％程度" },
-      { id: "b", text: "上位30％程度" },
-      { id: "c", text: "平均付近" },
-      { id: "d", text: "平均以下" },
+      { id: "a", text: "4シーム" },
+      { id: "b", text: "スライダー" },
+      { id: "c", text: "フォーク" },
+      { id: "d", text: "カーブ" },
     ],
     answerChoiceId: "b",
     explanation:
@@ -1356,17 +1356,17 @@ const QUESTIONS_POOL: Question[] = [
     id: 58,
     questionId: QUESTION_UUIDS[57],
     situation:
-      "ランナー1塁の場面で、走者をけん制するために牽制球を入れる配球は？",
+      "ランナー1塁の場面で、牽制球を入れたあと打者に投げる球種としてよく使われるのは？",
     count: "配球セオリー",
     choices: [
-      { id: "a", text: "上位10％程度" },
-      { id: "b", text: "上位30％程度" },
-      { id: "c", text: "平均付近" },
-      { id: "d", text: "平均以下" },
+      { id: "a", text: "4シーム" },
+      { id: "b", text: "スライダー" },
+      { id: "c", text: "カーブ" },
+      { id: "d", text: "フォーク" },
     ],
-    answerChoiceId: "c",
+    answerChoiceId: "a",
     explanation:
-      "1塁走者では牽制を入れる配球が平均的に用いられる。走者をけん制しつつ打者と向き合う。",
+      "牽制後はストレートでストライクを取りにいく配球が一般的。走者をけん制しつつ打者と向き合う。",
     sourceLabel: "配球セオリー",
     sourceUrl: "https://ja.wikipedia.org/wiki/牽制球",
     sourceType: "static",
@@ -1405,17 +1405,17 @@ const QUESTIONS_POOL: Question[] = [
     id: 60,
     questionId: QUESTION_UUIDS[59],
     situation:
-      "2-0カウントからストライクを取りにいった配球の傾向は？",
+      "2-0カウントからストライクを取りにいったとき、ストライクゾーンに来ると打たれやすい球種は？",
     count: "配球セオリー",
     choices: [
-      { id: "a", text: "上位10％程度（被打率低い）" },
-      { id: "b", text: "上位30％程度" },
-      { id: "c", text: "平均付近" },
-      { id: "d", text: "平均以下（被打率高い）" },
+      { id: "a", text: "4シーム" },
+      { id: "b", text: "スライダー" },
+      { id: "c", text: "カーブ" },
+      { id: "d", text: "フォーク" },
     ],
-    answerChoiceId: "d",
+    answerChoiceId: "a",
     explanation:
-      "2-0ではストライクを取りにいく配球が基本だが、ストライクゾーンに来た球は打たれやすい傾向がある。",
+      "2-0ではストライクを取りにいく配球が基本だが、ストライクゾーンに来たストレートは打たれやすい傾向がある。",
     sourceLabel: "配球セオリー",
     sourceUrl: "https://ja.wikipedia.org/wiki/ボールカウント",
     sourceType: "static",
@@ -1511,10 +1511,10 @@ const QUESTIONS_POOL: Question[] = [
       "満塁の場面で与四球が多くなりやすい投手層の傾向は？",
     count: "配球セオリー",
     choices: [
-      { id: "a", text: "上位10％程度（低い）" },
-      { id: "b", text: "上位30％程度" },
-      { id: "c", text: "平均付近" },
-      { id: "d", text: "平均以下（与四球多い）" },
+      { id: "a", text: "ストライクを取りにいく" },
+      { id: "b", text: "変化球で様子見" },
+      { id: "c", text: "敬遠気味" },
+      { id: "d", text: "制球が定まらない" },
     ],
     answerChoiceId: "d",
     explanation:
@@ -1584,15 +1584,15 @@ const QUESTIONS_POOL: Question[] = [
     id: 67,
     questionId: QUESTION_UUIDS[66],
     situation:
-      "2アウト走者なしで決め球として有効な球種の空振り率の傾向は？",
+      "2アウト走者なしで決め球として有効な球種は？",
     count: "配球セオリー",
     choices: [
-      { id: "a", text: "上位10％程度" },
-      { id: "b", text: "上位30％程度" },
-      { id: "c", text: "平均付近" },
-      { id: "d", text: "平均以下" },
+      { id: "a", text: "4シーム" },
+      { id: "b", text: "スライダー" },
+      { id: "c", text: "フォーク" },
+      { id: "d", text: "カーブ" },
     ],
-    answerChoiceId: "a",
+    answerChoiceId: "c",
     explanation:
       "2アウトではフォーク・スライダー系で決め球を投げる配球が空振りを取るうえで有効とされる。",
     sourceLabel: "配球セオリー",
@@ -1660,17 +1660,17 @@ const QUESTIONS_POOL: Question[] = [
     id: 70,
     questionId: QUESTION_UUIDS[69],
     situation:
-      "ランナー2塁の場面で、ピックオフやけん制を意識した配球の傾向は？",
+      "ランナー2塁の場面で、けん制・ピックオフのあと打者に投げる球種としてよく使われるのは？",
     count: "配球セオリー",
     choices: [
-      { id: "a", text: "上位10％程度" },
-      { id: "b", text: "上位30％程度" },
-      { id: "c", text: "平均付近" },
-      { id: "d", text: "平均以下" },
+      { id: "a", text: "4シーム" },
+      { id: "b", text: "スライダー" },
+      { id: "c", text: "チェンジアップ" },
+      { id: "d", text: "フォーク" },
     ],
-    answerChoiceId: "c",
+    answerChoiceId: "a",
     explanation:
-      "配球セオリー：2塁ランナーではけん制・ピックオフと打者への配球のバランスが重要で、試行率は球団・状況により平均付近に分布することが多い。",
+      "2塁ランナーではけん制・ピックオフのあと、ストレートでストライクを取りにいく配球が一般的。",
     sourceLabel: "カウント・走者別配球",
     sourceUrl: "https://ja.wikipedia.org/wiki/ボールカウント",
     sourceType: "static",
@@ -1712,14 +1712,14 @@ const QUESTIONS_POOL: Question[] = [
       "無死満塁の場面で、初球をストライクにできなかった投手層が陥りやすい傾向は？",
     count: "配球セオリー",
     choices: [
-      { id: "a", text: "上位10％程度" },
-      { id: "b", text: "上位30％程度" },
-      { id: "c", text: "平均付近" },
-      { id: "d", text: "平均以下" },
+      { id: "a", text: "ストライクを取りにいく" },
+      { id: "b", text: "敬遠気味" },
+      { id: "c", text: "変化球で様子見" },
+      { id: "d", text: "制球が定まらない" },
     ],
     answerChoiceId: "d",
     explanation:
-      "配球セオリー：満塁ではプレッシャーで初球が甘くなったり、慎重になりすぎてストライクが少なくなる層は平均以下に分布しやすい。",
+      "満塁ではプレッシャーで初球が甘くなったり、慎重になりすぎてストライクが少なくなる層は制球が定まらない傾向がある。",
     sourceLabel: "場面別配球",
     sourceUrl: "https://ja.wikipedia.org/wiki/ボールカウント",
     sourceType: "static",
@@ -1785,17 +1785,17 @@ const QUESTIONS_POOL: Question[] = [
     id: 75,
     questionId: QUESTION_UUIDS[74],
     situation:
-      "1アウト走者1塁でダブルプレーを狙うとき、ゴロを打たせにいく球種の被打率の傾向は？",
+      "1アウト走者1塁でダブルプレーを狙うとき、ゴロを打たせにいく球種として有効なのは？",
     count: "配球セオリー",
     choices: [
-      { id: "a", text: "上位10％程度（低い）" },
-      { id: "b", text: "上位30％程度" },
-      { id: "c", text: "平均付近" },
-      { id: "d", text: "平均以下" },
+      { id: "a", text: "4シーム" },
+      { id: "b", text: "スライダー" },
+      { id: "c", text: "フォーク" },
+      { id: "d", text: "カーブ" },
     ],
-    answerChoiceId: "a",
+    answerChoiceId: "c",
     explanation:
-      "配球セオリー：ゴロ狙いの沈む球は打たせて取る場面で有効で、うまく決まったときの被打率は低い（上位10％帯）傾向がある。",
+      "ゴロ狙いの沈む球（フォーク・シンカー系）は打たせて取る場面で有効で、うまく決まったときの被打率は低い傾向がある。",
     sourceLabel: "場面別配球",
     sourceUrl: "https://ja.wikipedia.org/wiki/ボールカウント",
     sourceType: "static",
@@ -1834,17 +1834,17 @@ const QUESTIONS_POOL: Question[] = [
     id: 77,
     questionId: QUESTION_UUIDS[76],
     situation:
-      "延長戦で決め球として使われる球種の空振りを取る効果の傾向は？",
+      "延長戦で決め球としてよく使われる球種は？",
     count: "配球セオリー",
     choices: [
-      { id: "a", text: "上位10％程度" },
-      { id: "b", text: "上位30％程度" },
-      { id: "c", text: "平均付近" },
-      { id: "d", text: "平均以下" },
+      { id: "a", text: "4シーム" },
+      { id: "b", text: "スライダー" },
+      { id: "c", text: "フォーク" },
+      { id: "d", text: "カーブ" },
     ],
     answerChoiceId: "b",
     explanation:
-      "配球セオリー：延長では決め球に変化球が多用され、空振りを取る効果は比較的高い（上位30％帯）傾向がある。",
+      "延長では決め球にスライダー・フォーク系の変化球が多用され、空振りを取る効果が高い傾向がある。",
     sourceLabel: "場面別配球",
     sourceUrl: "https://ja.wikipedia.org/wiki/ボールカウント",
     sourceType: "static",
@@ -1986,6 +1986,10 @@ const THEORY_POOL: Question[] = pickByIds(QUESTIONS_POOL, [
  * - STATS_REAL 順位帯4択（1〜3位 / 4〜10位 / 11〜20位 / 21位以下）: id 36, 43, 44, 45, 46, 49, 50, 51
  * - PITCHING_REAL 球種4択へ差し替え: id 53, 54, 55, 56, 59, 63, 66, 71, 73
  * - 日本人スター（大谷/山本/ダル/佐々木）を含む STATS_REAL・PITCHING_REAL はレンジ維持: id 14, 15, 23, 24, 25, 33, 34, 35, 47, 48, 52, 61, 65, 69
+ *
+ * 配球セオリー（PITCHING_THEORY）レンジ選択肢→球種・配球意図4択へ変更した問題:
+ * - 球種4択へ: id 57（1-2空振り有効→スライダー）, 58（牽制後→4シーム）, 60（2-0打たれやすい→4シーム）, 67（決め球有効→フォーク）, 70（2塁けん制後→4シーム）, 75（ゴロ狙い→フォーク）, 77（延長決め球→スライダー）
+ * - 配球意図4択へ: id 64（満塁与四球多い傾向→制球が定まらない）, id 72（満塁初球ストライクできなかった傾向→制球が定まらない）
  */
 
 /** 知識問題プール（6問）。questionType は KNOWLEDGE で明示。5:3:2 維持のため拡張。 */
