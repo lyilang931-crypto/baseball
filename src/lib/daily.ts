@@ -1,8 +1,9 @@
 /**
  * デイリー体験（Duolingo型の抽象化）
  * - 今日プレイ済みかどうかを lastPlayedDate で管理
- * - 日付が変わったら再挑戦可能
+ * - 日付が変わったら再挑戦可能（JST 基準）
  * - 今日の結果を保存して「今日の結果を見る」で再表示
+ * - 日付キーは必ず JST の "YYYY-MM-DD"（toISOString 禁止）
  */
 
 const LAST_PLAYED_KEY = "baseball_quiz_last_played_date";
@@ -15,14 +16,26 @@ export interface TodayResult {
   ratingAfter: number;
 }
 
-function todayString(): string {
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+/** JST の "YYYY-MM-DD" を返す（sv-SE でゼロ埋め） */
+function formatDateJST(date: Date): string {
+  return new Intl.DateTimeFormat("sv-SE", {
+    timeZone: "Asia/Tokyo",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(date);
 }
 
-/** 今日の日付（YYYY-MM-DD） */
+/** 今日の日付（JST YYYY-MM-DD） */
 export function getTodayDate(): string {
-  return todayString();
+  return formatDateJST(new Date());
+}
+
+/** 昨日の日付（JST YYYY-MM-DD） */
+export function getYesterdayDate(): string {
+  const d = new Date();
+  d.setDate(d.getDate() - 1);
+  return formatDateJST(d);
 }
 
 /** 最後にプレイした日付。未プレイなら null */
@@ -61,10 +74,16 @@ export function setTodayResult(result: TodayResult): void {
   }
 }
 
-/** 今日の結果を取得（今日プレイしていれば存在） */
+/** 今日の結果を取得（今日プレイしていれば存在）。lastPlayedDate !== todayJST のときは破棄して null */
 export function getTodayResult(): TodayResult | null {
   if (typeof window === "undefined") return null;
   try {
+    const todayJST = getTodayDate();
+    const lastPlayed = getLastPlayedDate();
+    if (lastPlayed !== todayJST) {
+      localStorage.removeItem(TODAY_RESULT_KEY);
+      return null;
+    }
     const s = localStorage.getItem(TODAY_RESULT_KEY);
     if (s == null) return null;
     const parsed = JSON.parse(s) as unknown;

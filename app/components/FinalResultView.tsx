@@ -82,11 +82,11 @@ export default function FinalResultView({
           <p className="text-sm text-gray-500 text-center mb-3">
             結果をシェアする
           </p>
-          <div className="flex gap-3">
+          <div className="flex gap-3 min-w-0">
             <button
               type="button"
               onClick={() => handleShare("twitter")}
-              className="flex-1 py-3 px-4 rounded-xl border-2 border-gray-200 bg-white text-gray-900 font-medium flex items-center justify-center gap-2 hover:border-gray-300 hover:bg-gray-50 active:bg-gray-100 transition-colors"
+              className="flex-1 min-w-0 py-3 px-3 rounded-xl border-2 border-gray-200 bg-white text-gray-900 text-sm font-medium flex items-center justify-center gap-1.5 hover:border-gray-300 hover:bg-gray-50 active:bg-gray-100 transition-colors whitespace-nowrap"
               aria-label="Xでシェア"
             >
               <span aria-hidden>𝕏</span>
@@ -95,7 +95,7 @@ export default function FinalResultView({
             <button
               type="button"
               onClick={() => handleShare("line")}
-              className="flex-1 py-3 px-4 rounded-xl bg-[#06C755] text-white font-medium flex items-center justify-center gap-2 hover:bg-[#05b34a] active:bg-[#049c40] transition-colors"
+              className="flex-1 min-w-0 py-3 px-3 rounded-xl border-2 border-transparent bg-[#06C755] text-white text-sm font-medium flex items-center justify-center gap-1.5 hover:bg-[#05b34a] active:bg-[#049c40] transition-colors whitespace-nowrap"
               aria-label="LINEでシェア"
             >
               <span aria-hidden>LINE</span>
