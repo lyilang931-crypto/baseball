@@ -30,6 +30,8 @@ interface QuestionViewProps {
   maxAttempts?: number;
   secondsLeft: number;
   onSelect: (choiceId: string) => void;
+  /** 回答送信中は true（連打防止で選択肢を無効化） */
+  optionsDisabled?: boolean;
 }
 
 const STATS_OPTIONS: RequestInit = { cache: "no-store" };
@@ -42,6 +44,7 @@ export default function QuestionView({
   maxAttempts,
   secondsLeft,
   onSelect,
+  optionsDisabled = false,
 }: QuestionViewProps) {
   const countParsed = parseCountDisplay(question.count);
   const situationParsed = parseSituation(question.situation);
@@ -167,8 +170,9 @@ export default function QuestionView({
             <button
               key={choice.id}
               type="button"
+              disabled={optionsDisabled}
               onClick={() => onSelect(choice.id)}
-              className="w-full py-4 px-4 rounded-2xl border-2 border-gray-200 bg-white text-gray-900 font-medium text-center hover:border-blue-300 hover:bg-gray-50 active:bg-gray-100 transition-colors"
+              className="w-full py-4 px-4 rounded-2xl border-2 border-gray-200 bg-white text-gray-900 font-medium text-center hover:border-blue-300 hover:bg-gray-50 active:bg-gray-100 transition-colors disabled:opacity-60 disabled:pointer-events-none"
             >
               {choice.text}
             </button>

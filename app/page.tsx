@@ -45,6 +45,8 @@ import { playResultSound } from "@/app/hooks/useResultSound";
 type Screen = "start" | "question" | "result" | "final";
 
 const TIMER_SECONDS = 30;
+/** 正解/不正解UI表示後にSFXを鳴らす遅延（ms）。80〜140の範囲で調整可能。 */
+const SFX_DELAY_MS = 120;
 
 export default function Home() {
   const [screen, setScreen] = useState<Screen>("start");
@@ -63,6 +65,10 @@ export default function Home() {
   );
   const answerLogSentForIndex = useRef<number>(-1);
   const [currentAttemptIndex, setCurrentAttemptIndex] = useState<number | null>(null);
+  /** SFXを1問につき1回だけ鳴らすためのキー（二重再生・rerender防止） */
+  const lastSfxPlayedKeyRef = useRef<string | null>(null);
+  /** 回答送信中は選択肢を無効化（連打防止） */
+  const [isAnswering, setIsAnswering] = useState(false);
 
   /** 回答後に GET で取得した最新 stats（ResultView に渡して即反映） */
   const [latestQuestionStats, setLatestQuestionStats] = useState<{
@@ -122,11 +128,29 @@ export default function Home() {
     return () => clearTimer();
   }, [screen, currentIndex, sessionQuestions.length]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  /** 結果画面表示後にSFXを1回だけ遅延再生（二重再生・rerender防止） */
+  useEffect(() => {
+    if (screen !== "result" || sessionQuestions.length === 0) return;
+    const q = sessionQuestions[currentIndex];
+    if (!q) return;
+    const key = `${q.questionId}:feedback`;
+    if (lastSfxPlayedKeyRef.current === key) return;
+    lastSfxPlayedKeyRef.current = key;
+    const t = setTimeout(() => {
+      playResultSound(lastCorrect);
+    }, SFX_DELAY_MS);
+    return () => clearTimeout(t);
+  }, [screen, currentIndex, sessionQuestions, lastCorrect]);
+
+  /** 問題画面に戻ったら回答中フラグをリセット */
+  useEffect(() => {
+    if (screen === "question") setIsAnswering(false);
+  }, [screen]);
+
   useEffect(() => {
     if (screen !== "question" || secondsLeft > 0 || sessionQuestions.length === 0) return;
     const q = sessionQuestions[currentIndex];
     if (!q) return;
-    playResultSound(false);
     clearTimer();
     const { newRating, delta } = eloAfterIncorrect(rating, q.difficulty);
     if (answerLogSentForIndex.current !== currentIndex) {
@@ -180,6 +204,7 @@ export default function Home() {
   }, [screen, secondsLeft, currentIndex, sessionQuestions, rating, clearTimer]);
 
   const handleStart = (options?: StartOptions) => {
+    lastSfxPlayedKeyRef.current = null;
     setSessionQuestions(
       getSessionQuestions(options?.dataOnly ? { dataOnly: true } : undefined)
     );
@@ -191,57 +216,65 @@ export default function Home() {
   };
 
   const handleSelect = async (choiceId: string) => {
+    if (isAnswering) return;
+    setIsAnswering(true);
     clearTimer();
     const q = sessionQuestions[currentIndex];
-    if (!q) return;
+    if (!q) {
+      setIsAnswering(false);
+      return;
+    }
     const isCorrect = q.answerChoiceId === choiceId;
-    playResultSound(isCorrect);
-    const { newRating, delta } = isCorrect
-      ? eloAfterCorrect(rating, q.difficulty)
-      : eloAfterIncorrect(rating, q.difficulty);
-    if (answerLogSentForIndex.current !== currentIndex) {
-      answerLogSentForIndex.current = currentIndex;
-      const userId = getOrCreateUserId();
-      if (userId) {
-        fetch("/api/answers", {
+    try {
+      const { newRating, delta } = isCorrect
+        ? eloAfterCorrect(rating, q.difficulty)
+        : eloAfterIncorrect(rating, q.difficulty);
+      if (answerLogSentForIndex.current !== currentIndex) {
+        answerLogSentForIndex.current = currentIndex;
+        const userId = getOrCreateUserId();
+        if (userId) {
+          fetch("/api/answers", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              userId,
+              questionId: q.questionId,
+              selectedOption: choiceId,
+              isCorrect,
+              sourceUrl: q.sourceUrl || undefined,
+              ratingBefore: rating,
+              ratingAfter: newRating,
+            }),
+          }).catch((err) => console.error("[answer log]", err));
+        }
+      }
+      try {
+        await fetch("/api/stats/answer", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            userId,
-            questionId: q.questionId,
-            selectedOption: choiceId,
-            isCorrect,
-            sourceUrl: q.sourceUrl || undefined,
-            ratingBefore: rating,
-            ratingAfter: newRating,
-          }),
-        }).catch((err) => console.error("[answer log]", err));
+          body: JSON.stringify({ questionId: q.questionId, isCorrect }),
+        });
+        const stats = await fetchLatestStats(q.questionId);
+        if (stats) setLatestQuestionStats(stats);
+      } catch {
+        // 集計送信失敗時もプレイは継続
       }
-    }
-    try {
-      await fetch("/api/stats/answer", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ questionId: q.questionId, isCorrect }),
+      setRatingState(newRating);
+      persistRating(newRating);
+      appendHistory({
+        questionId: q.id,
+        correct: isCorrect,
+        ratingBefore: rating,
+        ratingAfter: newRating,
+        difficulty: q.difficulty,
+        timestamp: Date.now(),
       });
-      const stats = await fetchLatestStats(q.questionId);
-      if (stats) setLatestQuestionStats(stats);
-    } catch {
-      // 集計送信失敗時もプレイは継続
+      setLastCorrect(isCorrect);
+      setLastRatingDelta(delta);
+      setScreen("result");
+    } finally {
+      setIsAnswering(false);
     }
-    setRatingState(newRating);
-    persistRating(newRating);
-    appendHistory({
-      questionId: q.id,
-      correct: isCorrect,
-      ratingBefore: rating,
-      ratingAfter: newRating,
-      difficulty: q.difficulty,
-      timestamp: Date.now(),
-    });
-    setLastCorrect(isCorrect);
-    setLastRatingDelta(delta);
-    setScreen("result");
   };
 
   const handleNext = () => {
@@ -299,6 +332,7 @@ export default function Home() {
         maxAttempts={MAX_DAILY_ATTEMPTS}
         secondsLeft={secondsLeft}
         onSelect={handleSelect}
+        optionsDisabled={isAnswering}
       />
     );
   }
