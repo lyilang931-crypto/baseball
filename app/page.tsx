@@ -262,6 +262,8 @@ export default function Home() {
         explanation={q.explanation}
         sourceLabel={q.sourceLabel}
         sourceUrl={q.sourceUrl}
+        sourceType={q.sourceType}
+        sourceGameId={q.sourceGameId}
         rating={rating}
         ratingDelta={lastRatingDelta}
         onNext={handleNext}

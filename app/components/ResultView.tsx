@@ -10,12 +10,16 @@ interface QuestionStats {
   accuracy: number;
 }
 
+type SourceType = "static" | "data";
+
 interface ResultViewProps {
   questionId: string;
   isCorrect: boolean;
   explanation: string;
   sourceLabel: string;
   sourceUrl: string;
+  sourceType?: SourceType;
+  sourceGameId?: string;
   rating: number;
   ratingDelta: number;
   onNext: () => void;
@@ -27,6 +31,8 @@ export default function ResultView({
   explanation,
   sourceLabel,
   sourceUrl,
+  sourceType,
+  sourceGameId,
   rating,
   ratingDelta,
   onNext,
@@ -64,17 +70,32 @@ export default function ResultView({
           <p className="text-gray-700 text-sm">{explanation}</p>
         </section>
 
-        {sourceUrl ? (
+        {(sourceUrl || sourceLabel) ? (
           <section className="w-full mb-4 text-left">
             <h3 className="text-sm font-bold text-gray-500 mb-1">出典</h3>
-            <a
-              href={sourceUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-600 underline text-sm break-all"
-            >
-              {sourceLabel || sourceUrl}
-            </a>
+            <p className="text-gray-700 text-sm">
+              {sourceUrl ? (
+                <a
+                  href={sourceUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 underline break-all"
+                >
+                  {sourceLabel || sourceUrl}
+                </a>
+              ) : (
+                sourceLabel
+              )}
+              {sourceType === "static" && (
+                <span className="text-gray-500 ml-1">（固定）</span>
+              )}
+              {sourceType === "data" && (
+                <span className="text-green-600 ml-1">（実データ）</span>
+              )}
+              {sourceGameId && (
+                <span className="text-gray-400 text-xs ml-1">ID: {sourceGameId}</span>
+              )}
+            </p>
           </section>
         ) : null}
 
@@ -82,8 +103,10 @@ export default function ResultView({
           <section className="w-full mb-4 text-left">
             <h3 className="text-sm font-bold text-gray-500 mb-1">みんなの正答率</h3>
             <p className="text-gray-700 text-sm">
-              みんなの正答率: {Math.round(stats.accuracy * 100)}%（
-              {stats.total_attempts}人中{stats.total_correct}人正解）
+              正解者 {stats.total_correct}人 / 回答者 {stats.total_attempts}人
+              <span className="text-gray-500 ml-1">
+                （正答率 {Math.round(stats.accuracy * 100)}%）
+              </span>
             </p>
           </section>
         ) : stats != null && stats.total_attempts === 0 ? null : (

@@ -12,6 +12,9 @@ export interface Choice {
  */
 export type QuestionNo = number;
 
+/** 出典種別（固定問題か実データ由来か判別用） */
+export type SourceType = "static" | "data";
+
 /** 共通フィールド（難易度 1〜5、1が易しい） */
 interface QuestionBase {
   /** 表示用番号（第N問など） */
@@ -25,6 +28,10 @@ interface QuestionBase {
   explanation: string;
   sourceLabel: string;
   sourceUrl: string;
+  /** 固定問題=static / 実データ=data（UIで出典表示に利用） */
+  sourceType?: SourceType;
+  /** 実データ由来の場合の試合/データID（任意） */
+  sourceGameId?: string;
   difficulty: 1 | 2 | 3 | 4 | 5;
 }
 
@@ -79,6 +86,7 @@ const QUESTIONS_POOL: Question[] = [
       "この場面では『ストレート』で勝負するのが正解。2-2のカウントで打者を抑えれば試合終了です。",
     sourceLabel: "野球戦術入門",
     sourceUrl: "https://ja.wikipedia.org/wiki/速球",
+    sourceType: "static",
     difficulty: 3,
   },
   {
@@ -97,6 +105,7 @@ const QUESTIONS_POOL: Question[] = [
       "序盤の無死1塁では『変化球で様子を見る』が定石。打者との駆け引きを重視します。",
     sourceLabel: "プロ野球采配読本",
     sourceUrl: "https://ja.wikipedia.org/wiki/スライダー_(球種)",
+    sourceType: "static",
     difficulty: 1,
   },
   {
@@ -115,6 +124,7 @@ const QUESTIONS_POOL: Question[] = [
       "この場面では『フォーク』が最も空振りを取れる選択でした。1-2で追い込んでいるので決め球です。",
     sourceLabel: "変化球の教科書",
     sourceUrl: "https://ja.wikipedia.org/wiki/フォークボール",
+    sourceType: "static",
     difficulty: 5,
   },
   {
@@ -133,6 +143,7 @@ const QUESTIONS_POOL: Question[] = [
       "フルカウント・2アウトでは『フォークで落とす』が有効。打者が待ちに回りにくい球です。",
     sourceLabel: "投球論",
     sourceUrl: "https://ja.wikipedia.org/wiki/フォークボール",
+    sourceType: "static",
     difficulty: 3,
   },
   {
@@ -151,6 +162,7 @@ const QUESTIONS_POOL: Question[] = [
       "無死満塁では『ゴロでダブルプレー』を狙うのが得点被害を最小にする選択でした。",
     sourceLabel: "守備配球の考え方",
     sourceUrl: "https://ja.wikipedia.org/wiki/併殺",
+    sourceType: "static",
     difficulty: 4,
   },
   {
@@ -168,6 +180,7 @@ const QUESTIONS_POOL: Question[] = [
     explanation: "0-2で追い込んだら内角で打者の手元を詰める選択が有効です。",
     sourceLabel: "カウント別配球",
     sourceUrl: "https://ja.wikipedia.org/wiki/球種_(野球)",
+    sourceType: "static",
     difficulty: 2,
   },
   {
@@ -185,6 +198,7 @@ const QUESTIONS_POOL: Question[] = [
     explanation: "延長の無死2塁では敬遠より打者と勝負し、ダブルプレーを狙うケースが一般的です。",
     sourceLabel: "延長戦の采配",
     sourceUrl: "https://ja.wikipedia.org/wiki/延長戦",
+    sourceType: "static",
     difficulty: 4,
   },
   {
@@ -202,6 +216,7 @@ const QUESTIONS_POOL: Question[] = [
     explanation: "2-0ではストライクを取りにいき、カウントを戻すのが基本です。",
     sourceLabel: "カウント別配球",
     sourceUrl: "https://ja.wikipedia.org/wiki/ボールカウント",
+    sourceType: "static",
     difficulty: 1,
   },
   {
@@ -219,6 +234,7 @@ const QUESTIONS_POOL: Question[] = [
     explanation: "満塁の2-2では空振りが取れるフォークで決める選択がリスクを抑えられます。",
     sourceLabel: "危機的場面の配球",
     sourceUrl: "https://ja.wikipedia.org/wiki/フォークボール",
+    sourceType: "static",
     difficulty: 5,
   },
   {
@@ -236,6 +252,7 @@ const QUESTIONS_POOL: Question[] = [
     explanation: "無死1塁3塁ではゴロで併殺を狙い、失点を抑えるのが定石です。",
     sourceLabel: "守備配球の考え方",
     sourceUrl: "https://ja.wikipedia.org/wiki/併殺",
+    sourceType: "static",
     difficulty: 2,
   },
   // 統計ベース問題
@@ -257,6 +274,7 @@ const QUESTIONS_POOL: Question[] = [
       "MLB 2023 の Whiff%（空振り率）ではフォークが最も高い球種でした。統計ベース問題です。",
     sourceLabel: "Baseball Savant",
     sourceUrl: "https://baseballsavant.mlb.com",
+    sourceType: "static",
     difficulty: 4,
     season: 2023,
     metric: "Whiff%",
@@ -281,6 +299,7 @@ const QUESTIONS_POOL: Question[] = [
       "NPB 2022 の得点圏打率ではセンター返しが最も打率が高かった方向でした。統計ベース問題です。",
     sourceLabel: "NPB 公式",
     sourceUrl: "https://npb.jp/bis/",
+    sourceType: "static",
     difficulty: 3,
     season: 2022,
     metric: "Batting Average (RISP)",
@@ -305,6 +324,7 @@ const QUESTIONS_POOL: Question[] = [
       "MLB 2023 のシフト制限後、左打者で三遊間方向の打率が最も上昇しました。統計ベース問題です。",
     sourceLabel: "Baseball Savant",
     sourceUrl: "https://baseballsavant.mlb.com/leaderboard/spray-angle",
+    sourceType: "static",
     difficulty: 5,
     season: 2023,
     metric: "Batting Average by Spray Angle",

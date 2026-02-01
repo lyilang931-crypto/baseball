@@ -3,10 +3,11 @@
 /**
  * 即体験UX（TikTok型の抽象化）
  * - 起動後すぐに答えるボタンが押せる
- * - 説明画面なし。問題 → 選択肢が最短で表示
+ * - カウントは B/S 表記で統一（ボール/ストライクの混同を防ぐ）
  */
 
 import type { Question } from "@/data/questions";
+import { parseCountDisplay, formatCountLong } from "@/utils/countDisplay";
 
 interface QuestionViewProps {
   question: Question;
@@ -23,6 +24,8 @@ export default function QuestionView({
   secondsLeft,
   onSelect,
 }: QuestionViewProps) {
+  const countParsed = parseCountDisplay(question.count);
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-between px-6 py-10 max-w-md mx-auto">
       <p className="text-xs text-gray-400 w-full text-center">
@@ -33,8 +36,24 @@ export default function QuestionView({
         <h2 className="text-lg font-bold text-gray-900 text-center mb-1">
           {question.situation}
         </h2>
-        <p className="text-sm text-gray-600 text-center mb-6">
-          {question.count}
+        <div className="text-sm text-center mb-2">
+          {countParsed ? (
+            <>
+              <span className="font-semibold">
+                <span className="text-green-600">B{countParsed.balls}</span>
+                <span className="text-gray-400 mx-1">/</span>
+                <span className="text-red-600">S{countParsed.strikes}</span>
+              </span>
+              <p className="text-gray-500 text-xs mt-0.5">
+                {formatCountLong(countParsed.balls, countParsed.strikes)}
+              </p>
+            </>
+          ) : (
+            <p className="text-gray-600">{question.count}</p>
+          )}
+        </div>
+        <p className="text-xs text-gray-400 mb-6">
+          ※カウントはB(ボール) / S(ストライク)
         </p>
 
         <div className="w-full space-y-2">
