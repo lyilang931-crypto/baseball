@@ -13,6 +13,7 @@ interface ShareCardProps {
   correctCount: number;
   totalQuestions: number;
   ratingAfter: number;
+  ratingDelta?: number;
   streak?: number;
 }
 
@@ -20,6 +21,7 @@ export default function ShareCard({
   correctCount,
   totalQuestions,
   ratingAfter,
+  ratingDelta = 0,
   streak = 0,
 }: ShareCardProps) {
   const [loading, setLoading] = useState(false);
@@ -40,6 +42,7 @@ export default function ShareCard({
         totalQuestions,
         accuracy,
         rating: ratingAfter,
+        ratingDelta,
         streak: streak > 0 ? streak : undefined,
         levelLabel,
         url,
@@ -76,6 +79,7 @@ export default function ShareCard({
     totalQuestions,
     accuracy,
     ratingAfter,
+    ratingDelta,
     streak,
     levelLabel,
   ]);
@@ -112,6 +116,7 @@ export default function ShareCard({
     totalQuestions,
     accuracy,
     ratingAfter,
+    ratingDelta,
     streak,
     levelLabel,
   ]);

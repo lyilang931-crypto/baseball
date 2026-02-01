@@ -108,6 +108,7 @@ export default function FinalResultView({
           correctCount={correctCount}
           totalQuestions={totalQuestions}
           ratingAfter={ratingAfter}
+          ratingDelta={delta}
           streak={streak > 0 ? streak : undefined}
         />
       </div>
