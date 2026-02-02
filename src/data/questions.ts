@@ -434,9 +434,9 @@ const QUESTIONS_POOL: Question[] = [
     count: "MLB 2023 / metric: 本塁打",
     choices: [
       { id: "a", text: "長打力で引っ張り方向に飛ばす打撃" },
-      { id: "b", text: "センター返し重視の打撃" },
-      { id: "c", text: "初球から積極的に打つだけ" },
-      { id: "d", text: "守備力で得点を防ぐ" },
+      { id: "b", text: "センター返し重視で打率型の打撃" },
+      { id: "c", text: "初球から積極的に打つが芯を外しやすい" },
+      { id: "d", text: "流し打ち重視で長打は少なめ" },
     ],
     answerChoiceId: "a",
     explanation:
@@ -461,9 +461,9 @@ const QUESTIONS_POOL: Question[] = [
     count: "MLB 2024 / metric: OPS",
     choices: [
       { id: "a", text: "出塁と長打の両立（選球眼＋飛ばす力）" },
-      { id: "b", text: "出塁のみ重視" },
+      { id: "b", text: "出塁のみ重視で長打は少なめ" },
       { id: "c", text: "長打のみ狙う一振り勝負" },
-      { id: "d", text: "守備で失点を防ぐ" },
+      { id: "d", text: "選球眼で四球を選び長打は狙わない" },
     ],
     answerChoiceId: "a",
     explanation:
@@ -626,7 +626,7 @@ const QUESTIONS_POOL: Question[] = [
       { id: "a", text: "制球力とストレートの質で打者を抑える" },
       { id: "b", text: "球速のみに頼る" },
       { id: "c", text: "変化球のみで勝負" },
-      { id: "d", text: "守備に頼る投球" },
+      { id: "d", text: "カウントを戻すためストレート多めだが打たれやすい" },
     ],
     answerChoiceId: "a",
     explanation:
@@ -653,7 +653,7 @@ const QUESTIONS_POOL: Question[] = [
       { id: "a", text: "球速のみで押す" },
       { id: "b", text: "スライダーなどで空振りを取る配球" },
       { id: "c", text: "ストレートのみで勝負" },
-      { id: "d", text: "守備に頼る" },
+      { id: "d", text: "カーブで打者を惑わすが空振りは少なめ" },
     ],
     answerChoiceId: "b",
     explanation:
@@ -677,10 +677,10 @@ const QUESTIONS_POOL: Question[] = [
       "2024年MLBで大谷翔平の打球速度が打者全体で上位だった主な要因として適切なのは？",
     count: "MLB 2024 / metric: 平均打球速度",
     choices: [
-      { id: "a", text: "守備で得点を防ぐ" },
+      { id: "a", text: "当てにいく contact 重視で飛距離は出さない" },
       { id: "b", text: "バットスピードと芯で飛ばす打撃" },
-      { id: "c", text: "選球眼だけで出塁" },
-      { id: "d", text: "走力で塁に出る" },
+      { id: "c", text: "流し打ちで方向優先し飛ばさない" },
+      { id: "d", text: "引っ張るが芯を外しやすく打球速度は出ない" },
     ],
     answerChoiceId: "b",
     explanation:
@@ -824,9 +824,9 @@ const QUESTIONS_POOL: Question[] = [
     count: "MLB 2024 / metric: OPS",
     choices: [
       { id: "a", text: "出塁と長打の両立" },
-      { id: "b", text: "出塁のみ" },
+      { id: "b", text: "出塁のみで長打は少なめ" },
       { id: "c", text: "長打のみの一振り勝負" },
-      { id: "d", text: "守備貢献" },
+      { id: "d", text: "選球眼で四球を選び長打は狙わない" },
     ],
     answerChoiceId: "a",
     explanation:
@@ -853,7 +853,7 @@ const QUESTIONS_POOL: Question[] = [
       { id: "a", text: "球速のみで押す" },
       { id: "b", text: "ストライクを取る配球と制球力" },
       { id: "c", text: "変化球のみで逃げる" },
-      { id: "d", text: "守備に頼る" },
+      { id: "d", text: "ストレートをゾーンに多めに投げるが制球は平均的" },
     ],
     answerChoiceId: "b",
     explanation:
@@ -877,10 +877,10 @@ const QUESTIONS_POOL: Question[] = [
       "2023年MLBで大谷翔平のバレル率が打者全体で上位だった主な要因として適切なのは？",
     count: "MLB 2023 / metric: Barrel%",
     choices: [
-      { id: "a", text: "選球眼だけで出塁" },
+      { id: "a", text: "当てにいく contact 重視で飛ばさない" },
       { id: "b", text: "芯で飛ばす打撃（バレル＝理想的な打球）" },
-      { id: "c", text: "走力で塁に出る" },
-      { id: "d", text: "守備貢献" },
+      { id: "c", text: "流し打ちで方向優先しバレルは少なめ" },
+      { id: "d", text: "引っ張るが当たりが弱くバレルに届かない" },
     ],
     answerChoiceId: "b",
     explanation:
@@ -907,7 +907,7 @@ const QUESTIONS_POOL: Question[] = [
       { id: "a", text: "制球と変化球で打者を惑わす" },
       { id: "b", text: "球速のみで押す" },
       { id: "c", text: "ストレートのみで勝負" },
-      { id: "d", text: "守備に頼る" },
+      { id: "d", text: "カウントを戻すストレート多めだが打たれやすい" },
     ],
     answerChoiceId: "a",
     explanation:
@@ -960,9 +960,9 @@ const QUESTIONS_POOL: Question[] = [
     count: "MLB 2024 / metric: 打率",
     choices: [
       { id: "a", text: "しっかり当てにいく contact 力" },
-      { id: "b", text: "選球眼だけで出塁" },
-      { id: "c", text: "走力で塁に出る" },
-      { id: "d", text: "守備で得点を防ぐ" },
+      { id: "b", text: "選球眼で四球を選び打率は低め" },
+      { id: "c", text: "流し打ち重視で当たりは弱め" },
+      { id: "d", text: "長打狙いで当たりが少ない" },
     ],
     answerChoiceId: "a",
     explanation:
@@ -988,8 +988,8 @@ const QUESTIONS_POOL: Question[] = [
     choices: [
       { id: "a", text: "ストレートのみ" },
       { id: "b", text: "スライダー・フォーク系で空振りを取る" },
-      { id: "c", text: "カーブのみ" },
-      { id: "d", text: "守備に頼る" },
+      { id: "c", text: "カーブのみで打者を惑わす" },
+      { id: "d", text: "チェンジアップでタイミングを外すが空振りは少なめ" },
     ],
     answerChoiceId: "b",
     explanation:
@@ -1016,7 +1016,7 @@ const QUESTIONS_POOL: Question[] = [
       { id: "a", text: "一振り勝負のみ" },
       { id: "b", text: "長打のみ狙う" },
       { id: "c", text: "選球眼と contact のバランス" },
-      { id: "d", text: "守備貢献のみ" },
+      { id: "d", text: "選球眼で四球多めだが contact は弱い" },
     ],
     answerChoiceId: "c",
     explanation:
@@ -1070,7 +1070,7 @@ const QUESTIONS_POOL: Question[] = [
       { id: "a", text: "球速のみで押す" },
       { id: "b", text: "制球と変化球の質で打者を抑える" },
       { id: "c", text: "ストレートのみで勝負" },
-      { id: "d", text: "守備に頼る" },
+      { id: "d", text: "ストレート多めだが打たれやすい" },
     ],
     answerChoiceId: "b",
     explanation:
@@ -1095,9 +1095,9 @@ const QUESTIONS_POOL: Question[] = [
     count: "MLB 2023 / metric: 盗塁",
     choices: [
       { id: "a", text: "走力が不足している" },
-      { id: "b", text: "守備で塁に出られない" },
+      { id: "b", text: "クリーンアップで盗塁機会が少ない" },
       { id: "c", text: "長打で出塁して盗塁より得点を優先する打順" },
-      { id: "d", text: "監督が盗塁を禁止している" },
+      { id: "d", text: "出塁は多いが慎重に盗塁を控えている" },
     ],
     answerChoiceId: "c",
     explanation:
@@ -1123,8 +1123,8 @@ const QUESTIONS_POOL: Question[] = [
     choices: [
       { id: "a", text: "打線の厚みと contact 力" },
       { id: "b", text: "長打のみの一振り勝負" },
-      { id: "c", text: "走力のみ" },
-      { id: "d", text: "守備のみで得点を防ぐ" },
+      { id: "c", text: "流し打ち重視で長打は少なめ" },
+      { id: "d", text: "選球眼で四球多めだが contact は弱い" },
     ],
     answerChoiceId: "a",
     explanation:
@@ -1150,8 +1150,8 @@ const QUESTIONS_POOL: Question[] = [
     choices: [
       { id: "a", text: "一振り勝負のみ" },
       { id: "b", text: "長打と contact のバランス" },
-      { id: "c", text: "走力のみ" },
-      { id: "d", text: "守備のみ" },
+      { id: "c", text: "長打重視で contact は弱い" },
+      { id: "d", text: "contact 重視で長打は少なめ" },
     ],
     answerChoiceId: "b",
     explanation:
@@ -1175,9 +1175,9 @@ const QUESTIONS_POOL: Question[] = [
       "2024年セ・リーグで失点が多かった球団の主な要因として適切なのは？",
     count: "NPB 2024 / metric: チーム失点",
     choices: [
-      { id: "a", text: "打線が強く得点が多い" },
-      { id: "b", text: "守備が堅い" },
-      { id: "c", text: "走力で得点している" },
+      { id: "a", text: "先発は安定しているがリリーフの崩れが多い" },
+      { id: "b", text: "守備のミスで追加点を許しやすい" },
+      { id: "c", text: "打線は得点力があるが投手が打たれやすい" },
       { id: "d", text: "投手陣の不安定さ（与四球・被長打など）" },
     ],
     answerChoiceId: "d",
@@ -1205,7 +1205,7 @@ const QUESTIONS_POOL: Question[] = [
       { id: "a", text: "球速のみで押す" },
       { id: "b", text: "フォークでストライクを取る配球と制球力" },
       { id: "c", text: "変化球のみで逃げる" },
-      { id: "d", text: "守備に頼る" },
+      { id: "d", text: "ストレートをゾーンに多めに投げるが制球は平均的" },
     ],
     answerChoiceId: "b",
     explanation:
@@ -2054,6 +2054,29 @@ const THEORY_POOL: Question[] = pickByIds(QUESTIONS_POOL, [
  *   出典信頼性精査で WEAK→THEORY にした問題（セオリー出典に統一）: 12, 57, 58, 60, 64, 67, 70, 72, 75, 77
  *   指標差し替えで一次ソースに統一: 62（Baseball Savant first-pitch 等）, 69（NPB公式 pit_c 奪三振）
  *   既に一次ソース・確認可能ページを指定済み（変更なし）: 14,18,26,27,43,49,50,51等 NPB/Baseball-Reference/Baseball Savant の該当ページ
+ *
+ * === 要因問題 品質レビュー（同一系統・条件付き外れ） ===
+ * 【削除した問題ID一覧】 なし（全問修正で対応）
+ * 【修正した問題IDと変更理由（各1行）】
+ *   14: 守備を外し打撃の仕方で統一（センター返し/初球積極/流し打ちを条件付き外れに）
+ *   15: 守備を外し出塁・長打のバリエーションに（選球眼で四球を選び長打は狙わないを追加）
+ *   23: 守備に頼る→カウントを戻すストレート多めだが打たれやすい（投球スタイル同一系統）
+ *   24: 守備に頼る→カーブで打者を惑わすが空振りは少なめ（決め球・配球で統一）
+ *   25: 守備・選球眼・走力を外し打球・打撃の質で統一（当てにいく/流し打ち/引っ張り芯外しを追加）
+ *   33: 守備貢献を外し出塁・長打のバリエーションに（id15と同様）
+ *   34: 守備に頼る→ストレートゾーン多めだが制球は平均的（投球内容で統一）
+ *   35: 選球眼・走力・守備を外し打撃の質で統一（当てにいく/流し打ち/引っ張り弱いを追加）
+ *   36: 守備に頼る→カウントを戻すストレート多めだが打たれやすい（投球スタイルで統一）
+ *   43: 守備・走力を外し打撃・出塁の傾向で統一（選球眼四球/流し打ち/長打狙いを条件付き外れに）
+ *   44: 守備に頼る→チェンジアップでタイミングを外すが空振りは少なめ（決め球で統一）
+ *   45: 守備貢献を外し出塁・打撃の傾向に（選球眼四球多めだがcontact弱いを追加）
+ *   47: 守備に頼る→ストレート多めだが打たれやすい（投球内容で統一）
+ *   48: 守備・監督禁止を外し盗塁数が平均付近の理由で統一（クリーンアップ/慎重に控えるを条件付き外れに）
+ *   49: 守備のみを外し打撃の傾向で統一（流し打ち/選球眼contact弱いを追加）
+ *   50: 走力・守備を外し長打・contactのバリエーションに（長打重視contact弱い/contact重視長打少なめを追加）
+ *   51: 打線強く・守備堅い・走力で得点を外し失点の要因で統一（リリーフ崩れ/守備ミス/投手打たれやすいを条件付き外れに）
+ *   52: 守備に頼る→ストレートゾーン多めだが制球は平均的（投球内容で統一）
+ * 変更なし: id 46（与四球が多い投手の傾向）はもともと制球・投球の同一系統のためそのまま）
  */
 
 /** 知識問題プール（6問）。questionType は KNOWLEDGE で明示。5:3:2 維持のため拡張。 */
