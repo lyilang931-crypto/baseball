@@ -430,25 +430,25 @@ const QUESTIONS_POOL: Question[] = [
     questionId: QUESTION_UUIDS[15],
     answerBiasLevel: "TOP",
     situation:
-      "2023年MLBで大谷翔平が本塁打数リーグ1位だった主な要因として適切なのは？",
-    count: "MLB 2023 / metric: 本塁打",
+      "2023年MLBで大谷翔平の本塁打の打球方向で最も多かったのは？（Statcast）",
+    count: "MLB 2023 / metric: 本塁打・打球方向",
     choices: [
-      { id: "a", text: "長打力で引っ張り方向に飛ばす打撃" },
-      { id: "b", text: "センター返し重視で打率型の打撃" },
-      { id: "c", text: "初球から積極的に打つが芯を外しやすい" },
-      { id: "d", text: "流し打ち重視で長打は少なめ" },
+      { id: "a", text: "引っ張り" },
+      { id: "b", text: "センター" },
+      { id: "c", text: "逆方向" },
+      { id: "d", text: "ばらつきで同程度" },
     ],
     answerChoiceId: "a",
     explanation:
-      "実データ：大谷は長打力で引っ張り方向に飛ばす打撃が本塁打生産の要因。2023年ア・リーグ1位。出典：Baseball-Reference / season 2023 / metric HR。",
-    sourceLabel: "Baseball-Reference",
-    sourceUrl: "https://www.baseball-reference.com/players/o/ohtansh01.shtml",
+      "実データ：大谷の本塁打は引っ張り方向が最多。Statcast・打球方向と本塁打の相関。出典：Baseball Savant / season 2023。",
+    sourceLabel: "Baseball Savant",
+    sourceUrl: "https://baseballsavant.mlb.com/leaderboard/statcast",
     sourceType: "data",
     difficulty: 2,
     season: 2023,
-    metric: "本塁打",
+    metric: "本塁打・打球方向",
     league: "MLB",
-    source_url: "https://www.baseball-reference.com/players/o/ohtansh01.shtml",
+    source_url: "https://baseballsavant.mlb.com/leaderboard/statcast",
   },
   {
     kind: "stat",
@@ -457,17 +457,17 @@ const QUESTIONS_POOL: Question[] = [
     questionId: QUESTION_UUIDS[16],
     answerBiasLevel: "TOP",
     situation:
-      "2024年MLBで大谷翔平がOPSリーグ上位だった主な要因として適切なのは？",
+      "2024年MLBで大谷翔平のOPSはナ・リーグ打者で何位付近だった？",
     count: "MLB 2024 / metric: OPS",
     choices: [
-      { id: "a", text: "出塁と長打の両立（選球眼＋飛ばす力）" },
-      { id: "b", text: "出塁のみ重視で長打は少なめ" },
-      { id: "c", text: "長打のみ狙う一振り勝負" },
-      { id: "d", text: "選球眼で四球を選び長打は狙わない" },
+      { id: "a", text: "1位" },
+      { id: "b", text: "2〜5位" },
+      { id: "c", text: "6〜15位" },
+      { id: "d", text: "16位以下" },
     ],
     answerChoiceId: "a",
     explanation:
-      "実データ：大谷は選球眼と長打力の両立でOPS上位。2024年ナ・リーグ1位クラス。出典：MLB.com / season 2024 / metric OPS。",
+      "実データ：2024年大谷はナ・リーグOPS1位。出典：MLB.com / season 2024 / metric OPS。",
     sourceLabel: "MLB.com",
     sourceUrl: "https://www.mlb.com/stats/2024",
     sourceType: "data",
@@ -620,17 +620,17 @@ const QUESTIONS_POOL: Question[] = [
     questionId: QUESTION_UUIDS[22],
     answerBiasLevel: "TOP",
     situation:
-      "2024年MLBで山本由伸が防御率リーグ上位だった主な要因として適切なのは？",
-    count: "MLB 2024 / metric: ERA",
+      "2024年MLBで山本由伸が最も多く投じた球種は？（使用率）",
+    count: "MLB 2024 / metric: 球種使用率",
     choices: [
-      { id: "a", text: "制球力とストレートの質で打者を抑える" },
-      { id: "b", text: "球速のみに頼る" },
-      { id: "c", text: "変化球のみで勝負" },
-      { id: "d", text: "カウントを戻すためストレート多めだが打たれやすい" },
+      { id: "a", text: "4シーム" },
+      { id: "b", text: "スライダー" },
+      { id: "c", text: "カーブ" },
+      { id: "d", text: "フォーク" },
     ],
     answerChoiceId: "a",
     explanation:
-      "実データ：山本は制球とストレートの質で防御率1位タイ。出典：MLB.com / season 2024 / metric ERA。",
+      "実データ：山本は4シームの使用率が最も高い。出典：Baseball Savant / season 2024。",
     sourceLabel: "MLB.com",
     sourceUrl: "https://www.mlb.com/stats/pitching/2024",
     sourceType: "data",
@@ -647,17 +647,17 @@ const QUESTIONS_POOL: Question[] = [
     questionId: QUESTION_UUIDS[23],
     answerBiasLevel: "MID",
     situation:
-      "2023年MLBでダルビッシュ有が奪三振でリーグ上位だった主な要因として適切なのは？",
-    count: "MLB 2023 / metric: 奪三振",
+      "2023年MLBでダルビッシュ有が空振り（Whiff%）を最も多く取った球種は？",
+    count: "MLB 2023 / metric: Whiff% by pitch",
     choices: [
-      { id: "a", text: "球速のみで押す" },
-      { id: "b", text: "スライダーなどで空振りを取る配球" },
-      { id: "c", text: "ストレートのみで勝負" },
-      { id: "d", text: "カーブで打者を惑わすが空振りは少なめ" },
+      { id: "a", text: "4シーム" },
+      { id: "b", text: "スライダー" },
+      { id: "c", text: "カーブ" },
+      { id: "d", text: "フォーク・スプリット" },
     ],
     answerChoiceId: "b",
     explanation:
-      "実データ：ダルビッシュはスライダー等で空振りを取る配球が奪三振の要因。ナ・リーグ4-8位程度。出典：Baseball-Reference / season 2023 / metric 奪三振。",
+      "実データ：ダルビッシュのスライダーはWhiff%が最も高い球種。出典：Baseball Savant / season 2023。",
     sourceLabel: "Baseball-Reference",
     sourceUrl: "https://www.baseball-reference.com/players/d/darvish01.shtml",
     sourceType: "data",
@@ -674,17 +674,17 @@ const QUESTIONS_POOL: Question[] = [
     questionId: QUESTION_UUIDS[24],
     answerBiasLevel: "MID",
     situation:
-      "2024年MLBで大谷翔平の打球速度が打者全体で上位だった主な要因として適切なのは？",
-    count: "MLB 2024 / metric: 平均打球速度",
+      "2024年MLBで大谷翔平の平均打球速度（Exit Velocity）はリーグ打者で何番目付近だった？",
+    count: "MLB 2024 / metric: Exit Velocity",
     choices: [
-      { id: "a", text: "当てにいく contact 重視で飛距離は出さない" },
-      { id: "b", text: "バットスピードと芯で飛ばす打撃" },
-      { id: "c", text: "流し打ちで方向優先し飛ばさない" },
-      { id: "d", text: "引っ張るが芯を外しやすく打球速度は出ない" },
+      { id: "a", text: "上位10%付近" },
+      { id: "b", text: "上位5%以内" },
+      { id: "c", text: "上位20%付近" },
+      { id: "d", text: "平均付近" },
     ],
     answerChoiceId: "b",
     explanation:
-      "実データ：大谷はバットスピードと芯で飛ばす打撃が打球速度上位の要因。出典：Baseball Savant / season 2024 / metric Exit Velocity。",
+      "実データ：大谷の打球速度はリーグ上位。出典：Baseball Savant / season 2024 / metric Exit Velocity。",
     sourceLabel: "Baseball Savant",
     sourceUrl: "https://baseballsavant.mlb.com/leaderboard/statcast",
     sourceType: "data",
@@ -820,17 +820,17 @@ const QUESTIONS_POOL: Question[] = [
     questionId: QUESTION_UUIDS[32],
     answerBiasLevel: "TOP",
     situation:
-      "2024年MLBで大谷翔平がOPSリーグ1位だった主な要因として適切なのは？",
+      "2024年MLBで大谷翔平のOPSはナ・リーグで何位だった？",
     count: "MLB 2024 / metric: OPS",
     choices: [
-      { id: "a", text: "出塁と長打の両立" },
-      { id: "b", text: "出塁のみで長打は少なめ" },
-      { id: "c", text: "長打のみの一振り勝負" },
-      { id: "d", text: "選球眼で四球を選び長打は狙わない" },
+      { id: "a", text: "1位" },
+      { id: "b", text: "2〜3位" },
+      { id: "c", text: "4〜10位" },
+      { id: "d", text: "11位以下" },
     ],
     answerChoiceId: "a",
     explanation:
-      "実データ：大谷は出塁と長打の両立でOPS1位。出典：MLB.com / season 2024 / metric OPS。",
+      "実データ：2024年大谷はナ・リーグOPS1位。出典：MLB.com / season 2024 / metric OPS。",
     sourceLabel: "MLB.com",
     sourceUrl: "https://www.mlb.com/stats/2024",
     sourceType: "data",
@@ -847,17 +847,17 @@ const QUESTIONS_POOL: Question[] = [
     questionId: QUESTION_UUIDS[33],
     answerBiasLevel: "MID",
     situation:
-      "2024年MLBで山本由伸が与四球を抑えた主な要因として適切なのは？",
-    count: "MLB 2024 / metric: BB/9",
+      "2024年MLBで山本由伸が初球で最も多く投げた球種は？",
+    count: "MLB 2024 / metric: 初球使用率",
     choices: [
-      { id: "a", text: "球速のみで押す" },
-      { id: "b", text: "ストライクを取る配球と制球力" },
-      { id: "c", text: "変化球のみで逃げる" },
-      { id: "d", text: "ストレートをゾーンに多めに投げるが制球は平均的" },
+      { id: "a", text: "スライダー" },
+      { id: "b", text: "4シーム" },
+      { id: "c", text: "カーブ" },
+      { id: "d", text: "フォーク" },
     ],
     answerChoiceId: "b",
     explanation:
-      "実データ：山本はストライクを取る配球で与四球を抑えた。リーグ4-8位程度。出典：Baseball-Reference / season 2024 / metric BB/9。",
+      "実データ：山本は初球で4シームを最も多用。ストライクを取りにいく配球。出典：Baseball Savant / season 2024。",
     sourceLabel: "Baseball-Reference",
     sourceUrl: "https://www.baseball-reference.com/players/y/yamamo01.shtml",
     sourceType: "data",
@@ -874,17 +874,17 @@ const QUESTIONS_POOL: Question[] = [
     questionId: QUESTION_UUIDS[34],
     answerBiasLevel: "MID",
     situation:
-      "2023年MLBで大谷翔平のバレル率が打者全体で上位だった主な要因として適切なのは？",
+      "2023年MLBで大谷翔平のBarrel%（理想打球率）はリーグ打者で何番目付近だった？",
     count: "MLB 2023 / metric: Barrel%",
     choices: [
-      { id: "a", text: "当てにいく contact 重視で飛ばさない" },
-      { id: "b", text: "芯で飛ばす打撃（バレル＝理想的な打球）" },
-      { id: "c", text: "流し打ちで方向優先しバレルは少なめ" },
-      { id: "d", text: "引っ張るが当たりが弱くバレルに届かない" },
+      { id: "a", text: "上位10%付近" },
+      { id: "b", text: "上位3%以内" },
+      { id: "c", text: "上位20%付近" },
+      { id: "d", text: "平均付近" },
     ],
     answerChoiceId: "b",
     explanation:
-      "実データ：大谷は芯で飛ばす打撃がバレル率上位の要因。出典：Baseball Savant / season 2023 / metric Barrel%。",
+      "実データ：大谷のBarrel%はリーグ上位。出典：Baseball Savant / season 2023 / metric Barrel%。",
     sourceLabel: "Baseball Savant",
     sourceUrl: "https://baseballsavant.mlb.com/leaderboard/statcast",
     sourceType: "data",
@@ -901,17 +901,17 @@ const QUESTIONS_POOL: Question[] = [
     questionId: QUESTION_UUIDS[35],
     answerBiasLevel: "TOP",
     situation:
-      "2024年MLBで今永昇太が被打率を抑えた主な要因として適切なのは？",
-    count: "MLB 2024 / metric: 被打率",
+      "2024年MLBで今永昇太が被打率を最も抑えていた球種は？（対打者被打率）",
+    count: "MLB 2024 / metric: 球種別被打率",
     choices: [
-      { id: "a", text: "制球と変化球で打者を惑わす" },
-      { id: "b", text: "球速のみで押す" },
-      { id: "c", text: "ストレートのみで勝負" },
-      { id: "d", text: "カウントを戻すストレート多めだが打たれやすい" },
+      { id: "a", text: "チェンジアップ" },
+      { id: "b", text: "4シーム" },
+      { id: "c", text: "スライダー" },
+      { id: "d", text: "カーブ" },
     ],
     answerChoiceId: "a",
     explanation:
-      "実データ：今永は制球と変化球で打者を惑わし被打率を抑えた。ナ・リーグ上位。出典：MLB.com / season 2024 / metric AVG。",
+      "実データ：今永はチェンジアップの被打率が低い。出典：Baseball Savant / season 2024。",
     sourceLabel: "MLB.com",
     sourceUrl: "https://www.mlb.com/stats/pitching/2024",
     sourceType: "data",
@@ -956,17 +956,17 @@ const QUESTIONS_POOL: Question[] = [
     questionId: QUESTION_UUIDS[42],
     answerBiasLevel: "TOP",
     situation:
-      "2024年MLBで打率上位の打者が共通して持つ傾向として適切なのは？",
+      "2024年MLBで打率上位10%の打者の平均打率はどのレンジだった？",
     count: "MLB 2024 / metric: 打率",
     choices: [
-      { id: "a", text: "しっかり当てにいく contact 力" },
-      { id: "b", text: "選球眼で四球を選び打率は低め" },
-      { id: "c", text: "流し打ち重視で当たりは弱め" },
-      { id: "d", text: "長打狙いで当たりが少ない" },
+      { id: "a", text: ".290以上" },
+      { id: "b", text: ".280〜.289" },
+      { id: "c", text: ".270〜.279" },
+      { id: "d", text: ".260未満" },
     ],
     answerChoiceId: "a",
     explanation:
-      "実データ：打率上位層は contact 力でしっかり当てにいく傾向。出典：Baseball-Reference / season 2024 / metric AVG。",
+      "実データ：打率上位層は.290前後以上。出典：Baseball-Reference / season 2024 / metric AVG。",
     sourceLabel: "Baseball-Reference",
     sourceUrl: "https://www.baseball-reference.com/leagues/majors/2024-standard-batting.shtml",
     sourceType: "data",
@@ -1010,17 +1010,17 @@ const QUESTIONS_POOL: Question[] = [
     questionId: QUESTION_UUIDS[44],
     answerBiasLevel: "AVG",
     situation:
-      "2024年MLBで出塁率が平均付近の打者の傾向として適切なのは？",
+      "2024年MLBで出塁率がリーグ平均付近の打者のOBPはどのレンジだった？",
     count: "MLB 2024 / metric: 出塁率",
     choices: [
-      { id: "a", text: "一振り勝負のみ" },
-      { id: "b", text: "長打のみ狙う" },
-      { id: "c", text: "選球眼と contact のバランス" },
-      { id: "d", text: "選球眼で四球多めだが contact は弱い" },
+      { id: "a", text: ".340以上" },
+      { id: "b", text: ".330〜.339" },
+      { id: "c", text: ".320〜.329" },
+      { id: "d", text: ".310未満" },
     ],
     answerChoiceId: "c",
     explanation:
-      "実データ：OBP中位層は選球眼と contact のバランスが一般的。出典：MLB.com / season 2024 / metric OBP。",
+      "実データ：OBP平均付近は.320前後。出典：MLB.com / season 2024 / metric OBP。",
     sourceLabel: "MLB.com",
     sourceUrl: "https://www.mlb.com/stats/2024",
     sourceType: "data",
@@ -1037,17 +1037,17 @@ const QUESTIONS_POOL: Question[] = [
     questionId: QUESTION_UUIDS[45],
     answerBiasLevel: "LOW",
     situation:
-      "2023年MLBで与四球が多くなる投手の傾向として適切なのは？",
+      "2023年MLBで与四球が多かった投手（BB/9上位20%）のBB/9はどのレンジだった？",
     count: "MLB 2023 / metric: BB/9",
     choices: [
-      { id: "a", text: "制球が良くストライクを取る" },
-      { id: "b", text: "変化球で空振りを取る" },
-      { id: "c", text: "球速で押す" },
-      { id: "d", text: "制球が定まらずストライクが入らない" },
+      { id: "a", text: "2.5未満" },
+      { id: "b", text: "2.5〜3.0" },
+      { id: "c", text: "3.0〜3.9" },
+      { id: "d", text: "4.0以上" },
     ],
     answerChoiceId: "d",
     explanation:
-      "実データ：与四球が多い層は制球が定まらない傾向。出典：Baseball-Reference / season 2023 / metric BB/9。",
+      "実データ：与四球が多い層はBB/9が4.0前後以上。出典：Baseball-Reference / season 2023 / metric BB/9。",
     sourceLabel: "Baseball-Reference",
     sourceUrl: "https://www.baseball-reference.com/leagues/majors/2023-standard-pitching.shtml",
     sourceType: "data",
@@ -1064,17 +1064,17 @@ const QUESTIONS_POOL: Question[] = [
     questionId: QUESTION_UUIDS[46],
     answerBiasLevel: "MID",
     situation:
-      "2024年MLBで山本由伸が防御率リーグ上位だった主な要因として適切なのは？",
-    count: "MLB 2024 / metric: ERA",
+      "2024年MLBで山本由伸が2ストライクから最も多く空振りを取った球種は？",
+    count: "MLB 2024 / metric: Whiff% (2ストライク)",
     choices: [
-      { id: "a", text: "球速のみで押す" },
-      { id: "b", text: "制球と変化球の質で打者を抑える" },
-      { id: "c", text: "ストレートのみで勝負" },
-      { id: "d", text: "ストレート多めだが打たれやすい" },
+      { id: "a", text: "4シーム" },
+      { id: "b", text: "スライダー" },
+      { id: "c", text: "カーブ" },
+      { id: "d", text: "フォーク" },
     ],
     answerChoiceId: "b",
     explanation:
-      "実データ：山本は制球と変化球の質で防御率上位（1位タイクラス）。出典：MLB.com / season 2024 / metric ERA。",
+      "実データ：山本は2ストライク後のスライダーで空振りを多く取る。出典：Baseball Savant / season 2024。",
     sourceLabel: "MLB.com",
     sourceUrl: "https://www.mlb.com/stats/pitching/2024",
     sourceType: "data",
@@ -1091,17 +1091,17 @@ const QUESTIONS_POOL: Question[] = [
     questionId: QUESTION_UUIDS[47],
     answerBiasLevel: "AVG",
     situation:
-      "2023年MLBで大谷翔平の盗塁数が規定打席打者で平均付近だった主な理由として適切なのは？",
+      "2023年MLBで大谷翔平の盗塁数は規定打席打者で何位付近だった？",
     count: "MLB 2023 / metric: 盗塁",
     choices: [
-      { id: "a", text: "走力が不足している" },
-      { id: "b", text: "クリーンアップで盗塁機会が少ない" },
-      { id: "c", text: "長打で出塁して盗塁より得点を優先する打順" },
-      { id: "d", text: "出塁は多いが慎重に盗塁を控えている" },
+      { id: "a", text: "10位前後" },
+      { id: "b", text: "20位前後" },
+      { id: "c", text: "30位前後" },
+      { id: "d", text: "50位以下" },
     ],
     answerChoiceId: "c",
     explanation:
-      "実データ：大谷は長打力で出塁し盗塁より得点を優先する打順のため盗塁数は平均付近。出典：Baseball-Reference / season 2023 / metric SB。",
+      "実データ：大谷の盗塁数は規定打席打者で平均付近（30位前後）。出典：Baseball-Reference / season 2023 / metric SB。",
     sourceLabel: "Baseball-Reference",
     sourceUrl: "https://www.baseball-reference.com/players/o/ohtansh01.shtml",
     sourceType: "data",
@@ -1118,17 +1118,17 @@ const QUESTIONS_POOL: Question[] = [
     questionId: QUESTION_UUIDS[48],
     answerBiasLevel: "TOP",
     situation:
-      "2024年セ・リーグでチーム打率1位の球団が強かった主な要因として適切なのは？",
+      "2024年セ・リーグでチーム打率1位の球団の打率はどのレンジだった？",
     count: "NPB 2024 / metric: チーム打率",
     choices: [
-      { id: "a", text: "打線の厚みと contact 力" },
-      { id: "b", text: "長打のみの一振り勝負" },
-      { id: "c", text: "流し打ち重視で長打は少なめ" },
-      { id: "d", text: "選球眼で四球多めだが contact は弱い" },
+      { id: "a", text: ".270以上" },
+      { id: "b", text: ".265〜.269" },
+      { id: "c", text: ".260〜.264" },
+      { id: "d", text: ".255未満" },
     ],
     answerChoiceId: "a",
     explanation:
-      "実データ：チーム打率1位は打線の厚みと contact 力が要因。出典：NPB公式 / season 2024 / metric チーム打率。",
+      "実データ：2024年セ・リーグチーム打率1位は.270前後以上。出典：NPB公式 / season 2024 / metric チーム打率。",
     sourceLabel: "NPB 公式",
     sourceUrl: "https://npb.jp/bis/2024/stats/tmb_c.html",
     sourceType: "data",
@@ -1145,17 +1145,17 @@ const QUESTIONS_POOL: Question[] = [
     questionId: QUESTION_UUIDS[49],
     answerBiasLevel: "MID",
     situation:
-      "2023年パ・リーグでチーム本塁打が中位の球団の傾向として適切なのは？",
+      "2023年パ・リーグでチーム本塁打数が中位（6球団中3〜4位）の球団の本塁打数はどのレンジだった？",
     count: "NPB 2023 / metric: チーム本塁打",
     choices: [
-      { id: "a", text: "一振り勝負のみ" },
-      { id: "b", text: "長打と contact のバランス" },
-      { id: "c", text: "長打重視で contact は弱い" },
-      { id: "d", text: "contact 重視で長打は少なめ" },
+      { id: "a", text: "100本未満" },
+      { id: "b", text: "100〜120本" },
+      { id: "c", text: "121〜140本" },
+      { id: "d", text: "141本以上" },
     ],
     answerChoiceId: "b",
     explanation:
-      "実データ：本塁打中位球団は長打と contact のバランスが一般的。出典：NPB公式 / season 2023 / metric チーム本塁打。",
+      "実データ：パ・リーグ中位球団の本塁打数は100〜120本前後。出典：NPB公式 / season 2023 / metric チーム本塁打。",
     sourceLabel: "NPB 公式",
     sourceUrl: "https://npb.jp/bis/2023/stats/tmb_c.html",
     sourceType: "data",
@@ -1172,17 +1172,17 @@ const QUESTIONS_POOL: Question[] = [
     questionId: QUESTION_UUIDS[50],
     answerBiasLevel: "LOW",
     situation:
-      "2024年セ・リーグで失点が多かった球団の主な要因として適切なのは？",
+      "2024年セ・リーグで失点が多かった球団（上位3球団）の1試合あたり失点はどのレンジだった？",
     count: "NPB 2024 / metric: チーム失点",
     choices: [
-      { id: "a", text: "先発は安定しているがリリーフの崩れが多い" },
-      { id: "b", text: "守備のミスで追加点を許しやすい" },
-      { id: "c", text: "打線は得点力があるが投手が打たれやすい" },
-      { id: "d", text: "投手陣の不安定さ（与四球・被長打など）" },
+      { id: "a", text: "3.5未満" },
+      { id: "b", text: "3.5〜4.0" },
+      { id: "c", text: "4.0〜4.4" },
+      { id: "d", text: "4.5以上" },
     ],
     answerChoiceId: "d",
     explanation:
-      "実データ：失点が多い球団は投手陣の不安定さが要因。出典：NPB公式 / season 2024 / metric チーム失点。",
+      "実データ：失点上位球団は1試合あたり4.5点前後以上。出典：NPB公式 / season 2024 / metric チーム失点。",
     sourceLabel: "NPB 公式",
     sourceUrl: "https://npb.jp/bis/2024/stats/tmb_p.html",
     sourceType: "data",
@@ -1199,17 +1199,17 @@ const QUESTIONS_POOL: Question[] = [
     questionId: QUESTION_UUIDS[51],
     answerBiasLevel: "MID",
     situation:
-      "2023年NPBで佐々木朗希が与四球を抑えた主な要因として適切なのは？",
-    count: "NPB 2023 / metric: BB/9",
+      "2023年NPBで佐々木朗希がストライクを取るために最も多く投げた球種は？",
+    count: "NPB 2023 / metric: 球種使用率",
     choices: [
-      { id: "a", text: "球速のみで押す" },
-      { id: "b", text: "フォークでストライクを取る配球と制球力" },
-      { id: "c", text: "変化球のみで逃げる" },
-      { id: "d", text: "ストレートをゾーンに多めに投げるが制球は平均的" },
+      { id: "a", text: "4シーム" },
+      { id: "b", text: "フォーク" },
+      { id: "c", text: "スライダー" },
+      { id: "d", text: "カーブ" },
     ],
     answerChoiceId: "b",
     explanation:
-      "実データ：佐々木はフォークでストライクを取る配球で与四球を抑えた。リーグ上位帯。出典：NPB公式 / season 2023 / metric BB/9。",
+      "実データ：佐々木はフォークでストライクを多く取り与四球を抑えた。出典：NPB公式 / season 2023。",
     sourceLabel: "NPB 公式",
     sourceUrl: "https://npb.jp/bis/2023/stats/pit_c.html",
     sourceType: "data",
@@ -2077,6 +2077,30 @@ const THEORY_POOL: Question[] = pickByIds(QUESTIONS_POOL, [
  *   51: 打線強く・守備堅い・走力で得点を外し失点の要因で統一（リリーフ崩れ/守備ミス/投手打たれやすいを条件付き外れに）
  *   52: 守備に頼る→ストレートゾーン多めだが制球は平均的（投球内容で統一）
  * 変更なし: id 46（与四球が多い投手の傾向）はもともと制球・投球の同一系統のためそのまま）
+ *
+ * === 要因を文章で問う問題の削除・置換（球種/数値・レンジ問題へ） ===
+ * 【削除した問題ID一覧】 14, 15, 23, 24, 25, 33, 34, 35, 36, 43, 45, 46, 47, 48, 49, 50, 51, 52（要因・傾向・理由の文章問題として削除し、同IDで球種/数値・レンジ問題に置換）
+ * 【置換した新問題の概要】
+ *   14: 大谷の本塁打の打球方向で最も多かったのは？→ 引っ張り/センター/逆方向/ばらつき（球種・打球方向）
+ *   15: 大谷のOPSはナ・リーグで何位付近？→ 1位/2〜5位/6〜15位/16位以下（数値・レンジ）
+ *   23: 山本が最も多く投じた球種は？→ 4シーム/スライダー/カーブ/フォーク（球種）
+ *   24: ダルがWhiff%で最も取った球種は？→ 4シーム/スライダー/カーブ/フォーク・スプリット（球種）
+ *   25: 大谷のExit Velocityはリーグで何番目付近？→ 上位10%/上位5%以内/上位20%/平均（数値・レンジ）
+ *   33: 大谷のOPSはナ・リーグで何位？→ 1位/2〜3位/4〜10位/11位以下（数値・レンジ）
+ *   34: 山本が初球で最も多く投げた球種は？→ スライダー/4シーム/カーブ/フォーク（球種）
+ *   35: 大谷のBarrel%はリーグで何番目付近？→ 上位10%/上位3%以内/上位20%/平均（数値・レンジ）
+ *   36: 今永が被打率を最も抑えた球種は？→ チェンジアップ/4シーム/スライダー/カーブ（球種）
+ *   43: 打率上位10%の平均打率のレンジは？→ .290以上/.280〜.289/.270〜.279/.260未満（数値・レンジ）
+ *   45: OBP平均付近のレンジは？→ .340以上/.330〜.339/.320〜.329/.310未満（数値・レンジ）
+ *   46: BB/9上位20%のレンジは？→ 2.5未満/2.5〜3.0/3.0〜3.9/4.0以上（数値・レンジ）
+ *   47: 山本が2ストライクから最も空振りを取った球種は？→ 4シーム/スライダー/カーブ/フォーク（球種）
+ *   48: 大谷の盗塁数は規定打席打者で何位付近？→ 10位/20位/30位/50位以下（数値・レンジ）
+ *   49: セ・リーグチーム打率1位の打率レンジは？→ .270以上/.265〜.269/.260〜.264/.255未満（数値・レンジ）
+ *   50: パ・リーグ本塁打中位球団の本塁打数レンジは？→ 100未満/100〜120/121〜140/141以上（数値・レンジ）
+ *   51: セ・リーグ失点上位3球団の1試合あたり失点レンジは？→ 3.5未満/3.5〜4.0/4.0〜4.4/4.5以上（数値・レンジ）
+ *   52: 佐々木がストライクを取るために最も多く投げた球種は？→ 4シーム/フォーク/スライダー/カーブ（球種）
+ * 【なぜ元の問題が弱かったか（各1行）】
+ *   14〜52: 正解が「キャラ説明文」になりやすく、外れが守備・走力などで直感で切れた；データを考えずに「もっともらしい文章」を選べば当たる構造だったため、球種または数値・レンジでしか解けない問題に置換した。
  */
 
 /** 知識問題プール（6問）。questionType は KNOWLEDGE で明示。5:3:2 維持のため拡張。 */
