@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx tsc:*)",
+      "Bash(npm run build:*)",
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nfix: TypeScript compilation errors in monitoring system\n\n- Fix MapIterator iteration using Array.from\\(\\)\n- Fix ClientError type casting in errors API\n- Fix optional parameter handling in getLogs\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")"
+    ]
+  }
+}

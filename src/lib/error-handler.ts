@@ -73,7 +73,8 @@ function isDuplicate(error: ClientError): boolean {
 
   // 古いエントリをクリーンアップ
   const threshold = Date.now() - config.deduplicationWindow;
-  for (const [k, t] of recentErrors.entries()) {
+  const entries = Array.from(recentErrors.entries());
+  for (const [k, t] of entries) {
     if (t < threshold) {
       recentErrors.delete(k);
     }

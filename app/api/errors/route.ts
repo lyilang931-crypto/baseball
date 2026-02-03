@@ -59,7 +59,8 @@ function checkRateLimit(key: string): boolean {
 // 定期的にレート制限マップをクリーンアップ
 setInterval(() => {
   const now = Date.now();
-  for (const [key, entry] of rateLimitMap.entries()) {
+  const entries = Array.from(rateLimitMap.entries());
+  for (const [key, entry] of entries) {
     if (now > entry.resetAt) {
       rateLimitMap.delete(key);
     }
@@ -73,8 +74,20 @@ function parseBody(raw: unknown): ErrorReportBody | null {
 
   // 単一エラーの場合は配列に変換
   if (obj.message && typeof obj.message === 'string') {
+    const singleError: ClientError = {
+      message: obj.message,
+      stack: typeof obj.stack === 'string' ? obj.stack : undefined,
+      filename: typeof obj.filename === 'string' ? obj.filename : undefined,
+      lineno: typeof obj.lineno === 'number' ? obj.lineno : undefined,
+      colno: typeof obj.colno === 'number' ? obj.colno : undefined,
+      type: obj.type === 'error' || obj.type === 'unhandledrejection' || obj.type === 'custom' ? obj.type : undefined,
+      url: typeof obj.url === 'string' ? obj.url : undefined,
+      userAgent: typeof obj.userAgent === 'string' ? obj.userAgent : undefined,
+      timestamp: typeof obj.timestamp === 'number' ? obj.timestamp : undefined,
+      context: obj.context && typeof obj.context === 'object' ? obj.context as Record<string, unknown> : undefined,
+    };
     return {
-      errors: [obj as ClientError],
+      errors: [singleError],
       sessionId: typeof obj.sessionId === 'string' ? obj.sessionId : undefined,
       userId: typeof obj.userId === 'string' ? obj.userId : undefined,
     };

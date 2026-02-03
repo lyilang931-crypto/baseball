@@ -280,8 +280,9 @@ export function getLogs(options?: {
     result = result.filter((log) => log.category === options.category);
   }
 
-  if (options?.since) {
-    result = result.filter((log) => log.timestampMs >= options.since);
+  if (options?.since !== undefined) {
+    const sinceTime = options.since;
+    result = result.filter((log) => log.timestampMs >= sinceTime);
   }
 
   if (options?.limit) {
