@@ -1,5 +1,19 @@
+/**
+ * 回答記録 API
+ * POST /api/answers - ユーザーの回答をSupabaseに記録
+ */
+
 import { NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
+import {
+  withApiHandler,
+  apiOk,
+  apiError,
+  parseJsonBody,
+  isUuid,
+  type ApiContext,
+} from "@/lib/api-utils";
+import { logger, errorToContext } from "@/lib/monitoring";
 
 export const dynamic = "force-dynamic";
 
@@ -13,19 +27,15 @@ export interface PostAnswerBody {
   ratingAfter?: number;
 }
 
-const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-
-function isUuid(s: string): boolean {
-  return UUID_REGEX.test(s);
-}
-
 function parseBody(body: unknown): PostAnswerBody | null {
   if (!body || typeof body !== "object") return null;
   const o = body as Record<string, unknown>;
+
   if (typeof o.userId !== "string" || !o.userId.trim()) return null;
   if (typeof o.questionId !== "string" || !o.questionId.trim()) return null;
   if (typeof o.selectedOption !== "string") return null;
   if (typeof o.isCorrect !== "boolean") return null;
+
   return {
     userId: o.userId.trim(),
     questionId: o.questionId.trim(),
@@ -46,57 +56,72 @@ function parseBody(body: unknown): PostAnswerBody | null {
   };
 }
 
-export async function POST(request: Request) {
-  try {
-    const raw = await request.json().catch(() => null);
-    const body = parseBody(raw);
-    if (!body) {
-      return NextResponse.json(
-        { error: "Invalid body: userId, questionId, selectedOption, isCorrect required" },
-        { status: 400 }
-      );
-    }
-    if (!isUuid(body.questionId)) {
-      console.error("[POST /api/answers] questionId is not uuid. payload:", {
-        questionId: body.questionId,
-        userId: body.userId,
-        isCorrect: body.isCorrect,
-      });
-      return NextResponse.json(
-        { error: "questionId must be a valid uuid" },
-        { status: 400 }
-      );
-    }
+async function handlePost(
+  request: Request,
+  ctx: ApiContext
+): Promise<Response> {
+  const raw = await parseJsonBody(request);
+  const body = parseBody(raw);
 
-    // question_id は Supabase 側で uuid 型。フロントは questionId (uuid) を送る。
-    const payload = {
-      user_id: body.userId,
-      question_id: body.questionId,
-      selected_option: body.selectedOption,
-      is_correct: body.isCorrect,
-      source_url: body.sourceUrl ?? null,
-      rating_before: body.ratingBefore ?? null,
-      rating_after: body.ratingAfter ?? null,
-      meta: null,
-    };
-    console.log("[payload]", payload);
+  if (!body) {
+    logger.warn("Invalid request body", { raw }, "api");
+    return apiError(
+      "Invalid body: userId, questionId, selectedOption, isCorrect required",
+      ctx.requestId,
+      400
+    );
+  }
 
-    const { error } = await supabase.from("answer_logs").insert(payload);
+  if (!isUuid(body.questionId)) {
+    logger.warn("Invalid questionId format", {
+      questionId: body.questionId,
+      userId: body.userId,
+    }, "api");
+    return apiError("questionId must be a valid uuid", ctx.requestId, 400);
+  }
 
-    if (error) {
-      console.error("[POST /api/answers]", error);
-      return NextResponse.json(
-        { error: error.message },
-        { status: 500 }
-      );
-    }
+  // Supabaseに保存
+  const payload = {
+    user_id: body.userId,
+    question_id: body.questionId,
+    selected_option: body.selectedOption,
+    is_correct: body.isCorrect,
+    source_url: body.sourceUrl ?? null,
+    rating_before: body.ratingBefore ?? null,
+    rating_after: body.ratingAfter ?? null,
+    meta: null,
+  };
 
-    return NextResponse.json({ ok: true });
-  } catch (e) {
-    console.error("[POST /api/answers]", e);
+  logger.debug("Inserting answer log", {
+    questionId: body.questionId,
+    isCorrect: body.isCorrect,
+  }, "api");
+
+  const { error } = await supabase.from("answer_logs").insert(payload);
+
+  if (error) {
+    logger.error("Supabase insert failed", {
+      ...errorToContext(error),
+      questionId: body.questionId,
+    }, "api");
     return NextResponse.json(
-      { error: e instanceof Error ? e.message : "Internal server error" },
+      { error: error.message, requestId: ctx.requestId },
       { status: 500 }
     );
   }
+
+  logger.info("Answer logged successfully", {
+    questionId: body.questionId,
+    isCorrect: body.isCorrect,
+    ratingDelta: body.ratingAfter && body.ratingBefore
+      ? body.ratingAfter - body.ratingBefore
+      : null,
+  }, "api");
+
+  return apiOk(ctx.requestId);
 }
+
+export const POST = withApiHandler(handlePost, {
+  name: "/api/answers",
+  logLevel: "info",
+});

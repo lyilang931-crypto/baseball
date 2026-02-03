@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { ErrorBoundary } from "./components/ErrorBoundary";
+import ClientInitializer from "./components/ClientInitializer";
 
 export const metadata: Metadata = {
   title: "今日の1球 - 野球IQクイズ",
@@ -25,7 +27,10 @@ export default function RootLayout({
   return (
     <html lang="ja">
       <body className="antialiased min-h-screen bg-white text-gray-900">
-        {children}
+        <ClientInitializer />
+        <ErrorBoundary>
+          {children}
+        </ErrorBoundary>
       </body>
     </html>
   );

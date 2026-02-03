@@ -1,46 +1,68 @@
+/**
+ * 統計記録 API
+ * POST /api/stats/answer - 回答統計を記録
+ */
+
 import { NextResponse } from "next/server";
 import { recordAnswer } from "@/lib/stats-db";
+import {
+  withApiHandler,
+  apiError,
+  parseJsonBody,
+  isUuid,
+  type ApiContext,
+} from "@/lib/api-utils";
+import { logger, errorToContext } from "@/lib/monitoring";
 
 export const dynamic = "force-dynamic";
 
-const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+async function handlePost(
+  request: Request,
+  ctx: ApiContext
+): Promise<Response> {
+  const body = await parseJsonBody(request);
+  const questionId =
+    typeof body?.questionId === "string" ? body.questionId.trim() : "";
+  const isCorrect = Boolean(body?.isCorrect);
 
-function isUuid(s: string): boolean {
-  return UUID_REGEX.test(s);
-}
+  if (!questionId) {
+    logger.warn("Missing questionId", { body }, "api");
+    return apiError("questionId is required (string)", ctx.requestId, 400);
+  }
 
-export async function POST(request: Request) {
+  if (!isUuid(questionId)) {
+    logger.warn("Invalid questionId format", { questionId }, "api");
+    return apiError("questionId must be a valid uuid", ctx.requestId, 400);
+  }
+
   try {
-    const body = await request.json().catch(() => null);
-    const questionId =
-      typeof body?.questionId === "string" ? body.questionId.trim() : "";
-    const isCorrect = Boolean(body?.isCorrect);
-    if (!questionId) {
-      return NextResponse.json(
-        { error: "questionId is required (string)" },
-        { status: 400 }
-      );
-    }
-    if (!isUuid(questionId)) {
-      console.error("[POST /api/stats/answer] questionId is not uuid. payload:", {
-        questionId,
-        isCorrect,
-      });
-      return NextResponse.json(
-        { error: "questionId must be a valid uuid" },
-        { status: 400 }
-      );
-    }
-    const payload = { questionId, isCorrect };
-    console.log("[payload]", payload);
-
     const stats = await recordAnswer(questionId, isCorrect);
-    return NextResponse.json(stats);
+
+    logger.info("Answer stats recorded", {
+      questionId,
+      isCorrect,
+      totalAttempts: stats.total_attempts,
+      accuracy: stats.accuracy,
+    }, "api");
+
+    return NextResponse.json({
+      ...stats,
+      requestId: ctx.requestId,
+    });
   } catch (e) {
-    console.error("[POST /api/stats/answer]", e);
+    logger.error("Failed to record answer stats", {
+      ...errorToContext(e),
+      questionId,
+    }, "api");
+
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: "Internal server error", requestId: ctx.requestId },
       { status: 500 }
     );
   }
 }
+
+export const POST = withApiHandler(handlePost, {
+  name: "/api/stats/answer",
+  logLevel: "debug",
+});

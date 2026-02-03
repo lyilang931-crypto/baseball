@@ -4,6 +4,7 @@
  */
 
 import { supabase } from "@/lib/supabase";
+import { logger, errorToContext } from "@/lib/monitoring";
 
 export interface QuestionStatsRow {
   question_id: string;
@@ -25,7 +26,10 @@ export async function getQuestionStatsFromSupabase(
     .maybeSingle();
 
   if (error) {
-    console.error("[getQuestionStatsFromSupabase]", error);
+    logger.error("Failed to fetch question stats from Supabase", {
+      ...errorToContext(error),
+      questionId,
+    }, "supabase");
     return { answered_count: 0, correct_count: 0 };
   }
 
