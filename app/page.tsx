@@ -43,6 +43,8 @@ import {
 import { updateStreakAndReturn } from "@/utils/streak";
 import { getOrCreateUserId } from "@/lib/userId";
 import { playResultSound } from "@/app/hooks/useResultSound";
+import { tracker, logger } from "@/lib/monitoring";
+import { reportError } from "@/lib/error-handler";
 
 type Screen = "start" | "question" | "result" | "final";
 
@@ -154,6 +156,13 @@ export default function Home() {
     const q = sessionQuestions[currentIndex];
     if (!q) return;
     clearTimer();
+
+    // タイムアウトをトラッキング
+    tracker.event("answer_timeout", {
+      questionId: q.questionId,
+      questionIndex: currentIndex,
+    });
+
     const { newRating, delta } = eloAfterIncorrect(rating, q.difficulty);
     if (answerLogSentForIndex.current !== currentIndex) {
       answerLogSentForIndex.current = currentIndex;
@@ -171,7 +180,7 @@ export default function Home() {
             ratingBefore: rating,
             ratingAfter: newRating,
           }),
-        }).catch((err) => console.error("[answer log]", err));
+        }).catch((err) => reportError(err, { context: "answer_log", questionId: q.questionId }));
       }
     }
     fetch("/api/stats/answer", {
@@ -213,6 +222,7 @@ export default function Home() {
       excludeQuestionIds: used,
     });
     if (questions.length === 0) {
+      logger.warn("No questions available for session", { dataOnly: options?.dataOnly });
       if (typeof window !== "undefined") {
         window.alert("今日の出題が不足しています（問題追加中）。明日またお試しください。");
       }
@@ -225,6 +235,14 @@ export default function Home() {
     setRatingAtSessionStart(rating);
     setCurrentAttemptIndex(options?.attemptIndex ?? null);
     setScreen("question");
+
+    // セッション開始をトラッキング
+    tracker.event("session_started", {
+      questionCount: questions.length,
+      dataOnly: options?.dataOnly ?? false,
+      attemptIndex: options?.attemptIndex,
+      initialRating: rating,
+    });
   };
 
   const handleSelect = async (choiceId: string) => {
@@ -257,7 +275,7 @@ export default function Home() {
               ratingBefore: rating,
               ratingAfter: newRating,
             }),
-          }).catch((err) => console.error("[answer log]", err));
+          }).catch((err) => reportError(err, { context: "answer_log", questionId: q.questionId }));
         }
       }
       try {
@@ -301,6 +319,16 @@ export default function Home() {
         ratingBefore: ratingAtSessionStart,
         ratingAfter: rating,
       });
+
+      // セッション完了をトラッキング
+      tracker.event("session_completed", {
+        correctCount: finalCorrect,
+        totalQuestions: sessionQuestions.length,
+        ratingBefore: ratingAtSessionStart,
+        ratingAfter: rating,
+        ratingDelta: rating - ratingAtSessionStart,
+      });
+
       setScreen("final");
     } else {
       setCurrentIndex((i) => i + 1);
