@@ -89,13 +89,21 @@ export default function QuestionView({
   const qType = getQuestionType(question);
   const dataSourceShort = getDataSourceShort(question);
 
+  /** 残り秒数に応じた色（視認性・焦り抑制）: 20+ 落ち着いた灰 / 10-19 濃い灰 / 9以下 赤 */
+  const timerColorClass =
+    secondsLeft >= 20
+      ? "text-gray-500"
+      : secondsLeft >= 10
+        ? "text-gray-800"
+        : "text-red-600";
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-between px-6 py-10 max-w-md mx-auto">
       <p className="text-xs text-gray-400 w-full text-center">
         {attemptIndex != null && maxAttempts != null && (
           <span>今日 {attemptIndex}/{maxAttempts} 回目 · </span>
         )}
-        {questionNumber}/{totalQuestions} · 残り{secondsLeft}秒
+        {questionNumber}/{totalQuestions}
       </p>
 
       <div className="flex-1 flex flex-col items-center justify-center w-full py-4">
@@ -180,6 +188,14 @@ export default function QuestionView({
             </p>
           </div>
         </details>
+
+        {/* 残り秒数: 選択肢直上・数字を主役に・色で余裕を伝える（ロジックは変更しない） */}
+        <div className="w-full flex justify-center items-baseline gap-1 mb-4">
+          <span className={`text-2xl font-bold tabular-nums ${timerColorClass}`}>
+            {secondsLeft}
+          </span>
+          <span className="text-sm text-gray-500">秒</span>
+        </div>
 
         <div className="w-full space-y-2">
           {shuffledChoices.map((choice) => (
