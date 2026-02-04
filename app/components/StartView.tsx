@@ -7,10 +7,20 @@ import {
   getTodayAttemptsRemaining,
   MAX_DAILY_ATTEMPTS,
 } from "@/lib/daily";
+import {
+  isPremiumUser,
+  shouldShowAd,
+  addAdBonusSession,
+  getMonetizationState,
+} from "@/lib/monetization";
 
 /**
  * 1日3回まで挑戦可能。残り回数 / ○/3 回目 を表示。
- * 3回使い切ったら「今日の結果を見る」のみ。
+ * 3回使い切ったら「今日の結果を見る」or「広告で追加プレイ」。
+ *
+ * 【広告ポイント（将来実装）】
+ * - 制限到達時: リワード広告で追加セッション獲得
+ * - バナー広告: 画面下部に控えめに表示（プレミアム時は非表示）
  */
 
 export interface StartOptions {
@@ -35,7 +45,23 @@ export default function StartView({
   const remaining = getTodayAttemptsRemaining();
   const allUsed = remaining === 0;
 
+  // 広告視聴で追加プレイを獲得する処理（将来SDK導入時に実装）
+  const handleWatchAdForBonus = () => {
+    // TODO: 実際の広告SDKを呼び出し、視聴完了後にaddAdBonusSession()を呼ぶ
+    // 現在はプレースホルダー（開発時のみ動作）
+    if (process.env.NODE_ENV === "development") {
+      addAdBonusSession();
+      // 状態を更新するためにリロード（本番ではstateで管理）
+      window.location.reload();
+    } else {
+      // 本番ではまだ機能しない旨を表示
+      alert("広告機能は準備中です。もうしばらくお待ちください。");
+    }
+  };
+
   if (allUsed) {
+    const showAdOption = shouldShowAd("extra_play_rewarded");
+
     return (
       <div className="min-h-screen flex flex-col items-center justify-center px-6 py-12 max-w-md mx-auto">
         <h1 className="text-2xl font-bold text-center text-gray-900 mb-2">
@@ -47,7 +73,7 @@ export default function StartView({
         <p className="text-gray-600 text-center mb-6">
           今日の挑戦は完了しました（{MAX_DAILY_ATTEMPTS}/{MAX_DAILY_ATTEMPTS}回）
         </p>
-        <div className="w-full max-w-sm">
+        <div className="w-full max-w-sm space-y-3">
           <button
             type="button"
             onClick={onViewTodayResult}
@@ -55,9 +81,28 @@ export default function StartView({
           >
             今日の結果を見る
           </button>
+
+          {/* 広告視聴で追加プレイ（将来実装） */}
+          {showAdOption && (
+            <button
+              type="button"
+              onClick={handleWatchAdForBonus}
+              className="w-full py-3 px-6 rounded-2xl border-2 border-gray-300 bg-white text-gray-700 font-medium text-base flex items-center justify-center gap-2 hover:border-gray-400 hover:bg-gray-50 active:bg-gray-100 transition-colors"
+            >
+              <span aria-hidden>🎬</span>
+              広告を見て追加プレイ
+            </button>
+          )}
         </div>
         <p className="text-xs text-gray-400 text-center mt-6">
           明日の0:00（JST）に次の1球が解放されます
+        </p>
+
+        {/* プレミアムへの誘導（将来実装） */}
+        <p className="text-xs text-gray-400 text-center mt-4">
+          <span className="text-blue-500 cursor-pointer hover:underline">
+            プレミアムで無制限プレイ
+          </span>
         </p>
       </div>
     );

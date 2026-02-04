@@ -152,7 +152,12 @@ export default function Home() {
   }, [screen]);
 
   useEffect(() => {
+    // タイムアウト判定: タイマーが動作中で0秒になった場合のみ（遷移中の誤発火を防止）
     if (screen !== "question" || secondsLeft > 0 || sessionQuestions.length === 0) return;
+    // タイマーがセットされていない場合は遷移中と判断してスキップ
+    if (timerId === null) return;
+    // 既にこのインデックスで回答ログを送信済みなら処理済み
+    if (answerLogSentForIndex.current === currentIndex) return;
     const q = sessionQuestions[currentIndex];
     if (!q) return;
     clearTimer();
@@ -164,24 +169,22 @@ export default function Home() {
     });
 
     const { newRating, delta } = eloAfterIncorrect(rating, q.difficulty);
-    if (answerLogSentForIndex.current !== currentIndex) {
-      answerLogSentForIndex.current = currentIndex;
-      const userId = getOrCreateUserId();
-      if (userId) {
-        fetch("/api/answers", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            userId,
-            questionId: q.questionId,
-            selectedOption: "",
-            isCorrect: false,
-            sourceUrl: q.sourceUrl || undefined,
-            ratingBefore: rating,
-            ratingAfter: newRating,
-          }),
-        }).catch((err) => reportError(err, { context: "answer_log", questionId: q.questionId }));
-      }
+    answerLogSentForIndex.current = currentIndex;
+    const userId = getOrCreateUserId();
+    if (userId) {
+      fetch("/api/answers", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId,
+          questionId: q.questionId,
+          selectedOption: "",
+          isCorrect: false,
+          sourceUrl: q.sourceUrl || undefined,
+          ratingBefore: rating,
+          ratingAfter: newRating,
+        }),
+      }).catch((err) => reportError(err, { context: "answer_log", questionId: q.questionId }));
     }
     fetch("/api/stats/answer", {
       method: "POST",
@@ -212,7 +215,7 @@ export default function Home() {
     setLastCorrect(false);
     setLastRatingDelta(delta);
     setScreen("result");
-  }, [screen, secondsLeft, currentIndex, sessionQuestions, rating, clearTimer]);
+  }, [screen, secondsLeft, currentIndex, sessionQuestions, rating, clearTimer, timerId]);
 
   const handleStart = (options?: StartOptions) => {
     lastSfxPlayedKeyRef.current = null;
@@ -331,12 +334,16 @@ export default function Home() {
 
       setScreen("final");
     } else {
+      // タイマーを先にクリアしてから状態をリセット（二重タイムアウト防止）
+      clearTimer();
+      // 回答ログ送信済みフラグをリセット
+      answerLogSentForIndex.current = -1;
+      // 秒数を先にリセット（useEffectのタイムアウト判定より前に）
+      setSecondsLeft(TIMER_SECONDS);
       setCurrentIndex((i) => i + 1);
       setScreen("question");
-      setSecondsLeft(TIMER_SECONDS);
       setLastCorrect(false);
       setLastRatingDelta(0);
-      clearTimer();
     }
   };
 

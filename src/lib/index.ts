@@ -81,3 +81,23 @@ export {
   getDailyUsedQuestionIds,
   addDailyUsedQuestionIds,
 } from './daily';
+
+// 収益化（Google Play）
+export {
+  FREE_DAILY_SESSIONS,
+  QUESTIONS_PER_SESSION,
+  FREE_DAILY_QUESTIONS,
+  AD_PLACEMENTS,
+  PREMIUM_PLANS,
+  getMonetizationState,
+  setMonetizationState,
+  isPremiumUser,
+  hasFeature,
+  getRemainingPlays,
+  addAdBonusSession,
+  shouldShowAd,
+  type AdPlacement,
+  type PremiumFeature,
+  type PremiumPlan,
+  type MonetizationState,
+} from './monetization';

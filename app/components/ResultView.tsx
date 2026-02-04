@@ -183,25 +183,21 @@ export default function ResultView({
         ) : null}
 
         {stats != null ? (
-          (stats.answered_count ?? stats.total_attempts) >= 5 ? (
+          (stats.answered_count ?? stats.total_attempts) >= 10 ? (
             <section className="w-full mb-4 text-left">
               <h3 className="text-sm font-bold text-gray-500 mb-1">みんなの正答率</h3>
               <p className="text-gray-700 text-sm">
-                {stats.correct_count ?? stats.total_correct}人中
-                {stats.answered_count ?? stats.total_attempts}人正解（正答率
+                {stats.answered_count ?? stats.total_attempts}人中
+                {stats.correct_count ?? stats.total_correct}人正解（正答率
                 {Math.round(stats.accuracy * 100)}%）
               </p>
             </section>
           ) : (stats.answered_count ?? stats.total_attempts) > 0 ? (
             <section className="w-full mb-4 text-left">
-              <p className="text-gray-500 text-sm">統計集計中</p>
+              <p className="text-gray-500 text-sm">統計集計中（{stats.answered_count ?? stats.total_attempts}人回答）</p>
             </section>
           ) : null
-        ) : (
-          <section className="w-full mb-4 text-left">
-            <p className="text-gray-400 text-sm">集計中</p>
-          </section>
-        )}
+        ) : null}
 
         <p className="text-center mt-4">
           <span className="text-gray-600">レート: </span>

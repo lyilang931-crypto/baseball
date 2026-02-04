@@ -4,6 +4,11 @@
  * シェア前提の結果画面（Trivia系上位アプリ型の抽象化）
  * - 結果 = シェア画面。X / LINE を自然に配置
  * - 判断力レベルは名称のみ（数値断定禁止）
+ *
+ * 【広告ポイント（将来実装）】
+ * - インタースティシャル広告: セッション完了時に表示（2セッションに1回）
+ * - リワード広告: 「詳細分析を見る」で追加機能解放
+ * - バナー広告: 画面下部に表示（プレミアム時は非表示）
  */
 
 import {
@@ -14,6 +19,7 @@ import {
 import { getLevelLabel } from "@/utils/levelLabel";
 import { getStreakCount } from "@/utils/streak";
 import ShareCard from "./ShareCard";
+import { shouldShowAd, isPremiumUser, hasFeature } from "@/lib/monetization";
 
 interface FinalResultViewProps {
   correctCount: number;

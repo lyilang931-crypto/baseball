@@ -1,5 +1,5 @@
 /**
- * カウント表記の統一（「XボールYストライク」のみ表示）
+ * カウント表記の統一（「XボールYストライクカウント」のみ表示）
  * "カウント 1-2" または "1-2" をパースして balls/strikes を復元し、formatCountJP で表示する。
  */
 
@@ -18,12 +18,12 @@ export function parseCountDisplay(countStr: string): { balls: number; strikes: n
   return { balls, strikes };
 }
 
-/** 画面上のカウント表示はこの形式のみ。「XボールYストライク」 */
+/** 画面上のカウント表示はこの形式のみ。「XボールYストライクカウント」（省略しない） */
 export function formatCountJP(balls: number, strikes: number): string {
-  return `${balls}ボール${strikes}ストライク`;
+  return `${balls}ボール${strikes}ストライクカウント`;
 }
 
-/** 文字列内の「カウント X-Y」および単体の「X-Y」を「XボールYストライク」に置換（状況・解説文で統一）。語尾の「カウント」は表示しない。 */
+/** 文字列内の「カウント X-Y」および単体の「X-Y」を「XボールYストライクカウント」に置換（状況・解説文で統一） */
 export function replaceCountInText(str: string): string {
   let s = str.replace(/カウント\s*(\d)-(\d)/g, (_, b, s2) =>
     formatCountJP(Number(b), Number(s2))
@@ -32,7 +32,7 @@ export function replaceCountInText(str: string): string {
   s = s.replace(/(^|[\s　、。「」])([0-3])-([0-2])(?=[^\d]|$)/g, (_, g1, b, s2) =>
     g1 + formatCountJP(Number(b), Number(s2))
   );
-  // 「XボールYストライク」の直後の「カウント」を除去（表記統一：カウントは出さない）
-  s = s.replace(/(\dボール\dストライク)カウント/g, "$1");
+  // 「カウントカウント」の重複を防止
+  s = s.replace(/カウントカウント/g, "カウント");
   return s;
 }

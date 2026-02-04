@@ -1,4 +1,40 @@
 /**
+ * =====================================================================
+ * 問題品質ルール（Google Play 収益化を見据えた品質基準）
+ * =====================================================================
+ *
+ * 【出典ルール】
+ * - 使用可能な出典:
+ *   - Baseball Savant / Statcast (https://baseballsavant.mlb.com)
+ *   - MLB公式 (https://www.mlb.com)
+ *   - NPB公式 (https://npb.jp)
+ *   - Baseball-Reference (https://www.baseball-reference.com)
+ * - 出典URLは必ず有効なリンクを設定すること
+ *
+ * 【問題設計ルール】
+ * - 「誰でも分かる正解」は禁止（例: 「大谷翔平はどこの所属？」のような自明な問題）
+ * - 日本人スター問題でも answerBiasLevel: "TOP" は避ける（MID/AVG/LOW 推奨）
+ * - 外れ選択肢も「一理ある」ものにする（全選択肢が一見正しそうに見えること）
+ *
+ * 【出題形式ルール】
+ * - 球種を問う問題 → 球種を直接選ばせる（レンジ選択肢は禁止）
+ * - 成績・順位系問題 → 順位レンジ当てはOK（例: "1〜5位", "6〜15位"）
+ * - 要因問題 → もっともらしさだけで当たらないよう設計
+ *
+ * 【カウント表記ルール】
+ * - カウントは「XボールYストライクカウント」形式で統一
+ * - 省略形（"2-2"など）は内部データでは許容、表示時に変換される
+ *
+ * 【UUID管理ルール】
+ * - questionId は一度割り当てたら変更禁止（DB統計が壊れる）
+ * - 新規問題追加時は QUESTION_UUIDS 配列の末尾に追加
+ * - id と QUESTION_UUIDS のインデックスは一致させる必要なし（歴史的経緯により不一致あり）
+ * - 重複チェックは validateQuestionIds() で実行可能
+ *
+ * =====================================================================
+ */
+
+/**
  * 1問の選択肢
  */
 export interface Choice {
@@ -2603,3 +2639,88 @@ export function warnRealDataAnswerBias(): void {
     /* eslint-enable no-console */
   }
 }
+
+/**
+ * 開発者向け: questionId の重複と出典URLの検証を行う。
+ * 問題追加時に呼んで整合性を確認する。
+ * @returns { valid: boolean, errors: string[] }
+ */
+export function validateQuestionIds(): { valid: boolean; errors: string[] } {
+  const errors: string[] = [];
+  const seenIds = new Map<string, number>();
+  const seenQuestionIds = new Map<string, number>();
+
+  /** 許可された出典ドメイン */
+  const ALLOWED_DOMAINS = [
+    "baseballsavant.mlb.com",
+    "www.mlb.com",
+    "mlb.com",
+    "npb.jp",
+    "www.baseball-reference.com",
+    "baseball-reference.com",
+    "ja.wikipedia.org", // 配球セオリー用に許可
+  ];
+
+  for (const q of QUESTIONS_POOL) {
+    // id 重複チェック
+    if (seenIds.has(String(q.id))) {
+      errors.push(`重複 id: ${q.id} (既出: question index ${seenIds.get(String(q.id))})`);
+    }
+    seenIds.set(String(q.id), q.id);
+
+    // questionId 重複チェック
+    if (seenQuestionIds.has(q.questionId)) {
+      errors.push(
+        `重複 questionId: ${q.questionId} (id=${q.id}, 既出: id=${seenQuestionIds.get(q.questionId)})`
+      );
+    }
+    seenQuestionIds.set(q.questionId, q.id);
+
+    // 出典URL検証（REAL_DATA / KNOWLEDGE のみ）
+    if (q.questionType === "REAL_DATA" || q.questionType === "KNOWLEDGE") {
+      if (q.sourceUrl) {
+        try {
+          const url = new URL(q.sourceUrl);
+          const host = url.hostname.replace(/^www\./, "");
+          const isAllowed = ALLOWED_DOMAINS.some(
+            (d) => host === d || host === d.replace(/^www\./, "")
+          );
+          if (!isAllowed) {
+            errors.push(
+              `非許可出典: id=${q.id} の sourceUrl "${q.sourceUrl}" は許可ドメインに含まれません`
+            );
+          }
+        } catch {
+          errors.push(`無効URL: id=${q.id} の sourceUrl "${q.sourceUrl}" はURLとして無効です`);
+        }
+      } else {
+        errors.push(`出典なし: id=${q.id} (${q.questionType}) に sourceUrl がありません`);
+      }
+    }
+
+    // answerChoiceId が choices に存在するかチェック
+    const hasCorrectChoice = q.choices.some((c) => c.id === q.answerChoiceId);
+    if (!hasCorrectChoice) {
+      errors.push(
+        `正解不在: id=${q.id} の answerChoiceId "${q.answerChoiceId}" が choices に存在しません`
+      );
+    }
+  }
+
+  if (errors.length > 0) {
+    /* eslint-disable no-console */
+    console.error("[validateQuestionIds] 検証エラー:");
+    for (const err of errors) {
+      console.error("  -", err);
+    }
+    /* eslint-enable no-console */
+  } else {
+    /* eslint-disable-next-line no-console */
+    console.log(`[validateQuestionIds] 全 ${QUESTIONS_POOL.length} 問の検証OK`);
+  }
+
+  return { valid: errors.length === 0, errors };
+}
+
+/** 問題総数 */
+export const TOTAL_QUESTIONS = QUESTIONS_POOL.length;
