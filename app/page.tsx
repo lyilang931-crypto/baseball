@@ -73,6 +73,8 @@ export default function Home() {
   const lastSfxPlayedKeyRef = useRef<string | null>(null);
   /** 回答送信中は選択肢を無効化（連打防止） */
   const [isAnswering, setIsAnswering] = useState(false);
+  /** 現在のセッション内での連続正解数 */
+  const [consecutiveCorrect, setConsecutiveCorrect] = useState(0);
 
   /** 回答後に GET で取得した最新 stats（ResultView に渡して即反映） */
   const [latestQuestionStats, setLatestQuestionStats] = useState<{
@@ -214,6 +216,7 @@ export default function Home() {
     });
     setLastCorrect(false);
     setLastRatingDelta(delta);
+    setConsecutiveCorrect(0); // タイムアウトで連続正解リセット
     setScreen("result");
   }, [screen, secondsLeft, currentIndex, sessionQuestions, rating, clearTimer, timerId]);
 
@@ -235,6 +238,7 @@ export default function Home() {
     setSessionQuestions(questions);
     setCurrentIndex(0);
     setCorrectCount(0);
+    setConsecutiveCorrect(0);
     setRatingAtSessionStart(rating);
     setCurrentAttemptIndex(options?.attemptIndex ?? null);
     setScreen("question");
@@ -304,6 +308,12 @@ export default function Home() {
       });
       setLastCorrect(isCorrect);
       setLastRatingDelta(delta);
+      // 連続正解数を更新
+      if (isCorrect) {
+        setConsecutiveCorrect((c) => c + 1);
+      } else {
+        setConsecutiveCorrect(0);
+      }
       setScreen("result");
     } finally {
       setIsAnswering(false);
@@ -382,6 +392,7 @@ export default function Home() {
         attemptIndex={currentAttemptIndex ?? undefined}
         maxAttempts={MAX_DAILY_ATTEMPTS}
         secondsLeft={secondsLeft}
+        consecutiveCorrect={consecutiveCorrect}
         onSelect={handleSelect}
         optionsDisabled={isAnswering}
       />

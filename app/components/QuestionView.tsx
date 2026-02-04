@@ -28,6 +28,8 @@ interface QuestionViewProps {
   attemptIndex?: number;
   maxAttempts?: number;
   secondsLeft: number;
+  /** 現在のセッション内での連続正解数 */
+  consecutiveCorrect?: number;
   onSelect: (choiceId: string) => void;
   /** 回答送信中は true（連打防止で選択肢を無効化） */
   optionsDisabled?: boolean;
@@ -42,6 +44,7 @@ export default function QuestionView({
   attemptIndex,
   maxAttempts,
   secondsLeft,
+  consecutiveCorrect = 0,
   onSelect,
   optionsDisabled = false,
 }: QuestionViewProps) {
@@ -89,22 +92,32 @@ export default function QuestionView({
   const qType = getQuestionType(question);
   const dataSourceShort = getDataSourceShort(question);
 
-  /** 残り秒数に応じた色（視認性・焦り抑制）: 20+ 落ち着いた灰 / 10-19 濃い灰 / 9以下 赤 */
-  const timerColorClass =
-    secondsLeft >= 20
-      ? "text-gray-500"
-      : secondsLeft >= 10
-        ? "text-gray-800"
-        : "text-red-600";
+  /** 残り時間のプログレス幅（0-100%） */
+  const TIMER_MAX = 30;
+  const timerProgress = Math.max(0, Math.min(100, (secondsLeft / TIMER_MAX) * 100));
+  /** プログレスバーの色: 余裕あり→青、残り少ない→オレンジ→赤 */
+  const progressBarColor =
+    secondsLeft >= 15
+      ? "bg-blue-500"
+      : secondsLeft >= 7
+        ? "bg-orange-400"
+        : "bg-red-500";
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-between px-6 py-10 max-w-md mx-auto">
-      <p className="text-xs text-gray-400 w-full text-center">
-        {attemptIndex != null && maxAttempts != null && (
-          <span>今日 {attemptIndex}/{maxAttempts} 回目 · </span>
+      <div className="w-full text-center">
+        <p className="text-xs text-gray-400">
+          {attemptIndex != null && maxAttempts != null && (
+            <span>今日 {attemptIndex}/{maxAttempts} 回目 · </span>
+          )}
+          {questionNumber} / {totalQuestions}
+        </p>
+        {consecutiveCorrect > 0 && (
+          <p className="text-xs font-medium text-green-600 mt-1">
+            {consecutiveCorrect}問連続正解中！
+          </p>
         )}
-        {questionNumber}/{totalQuestions}
-      </p>
+      </div>
 
       <div className="flex-1 flex flex-col items-center justify-center w-full py-4">
         {/* 実データ / 配球セオリー / 知識問題 */}
@@ -159,42 +172,19 @@ export default function QuestionView({
           </div>
         )}
 
-        {/* みんなの成績（正解率・correct/answered） */}
-        {stats != null && (
-          <p className="text-xs text-gray-500 text-center mb-4">
-            正解率: {stats.answered_count === 0 ? "—" : `${Math.round(stats.accuracy * 100)}%`}
-            {stats.answered_count > 0 && (
-              <span className="ml-2">
-                みんなの成績: {stats.correct_count} / {stats.answered_count}
-              </span>
-            )}
+        {/* みんなの正解率（シンプル1行） */}
+        {stats != null && stats.answered_count > 0 && (
+          <p className="text-xs text-gray-400 text-center mb-4">
+            正解率 {Math.round(stats.accuracy * 100)}%
           </p>
         )}
 
-        {/* カウント説明は折りたたみ（初期非表示） */}
-        <details className="w-full mb-6 text-left group">
-          <summary className="text-xs text-gray-400 cursor-pointer list-none py-1 select-none">
-            <span className="inline-flex items-center gap-1">
-              <span className="group-open:hidden">カウントの説明を表示</span>
-              <span className="hidden group-open:inline">カウントの説明を閉じる</span>
-            </span>
-          </summary>
-          <div className="mt-2 pl-0 text-xs text-gray-500 border-l-0">
-            <p className="mb-1">
-              <strong className="text-gray-600">ボール</strong>：打者が打たなかったり、ストライクゾーン外の球で審判がボールと判定した数。
-            </p>
-            <p>
-              <strong className="text-gray-600">ストライク</strong>：ストライクゾーンを通過した球、空振り、ファウル（2ストライク未満時）などでカウントされる数。
-            </p>
-          </div>
-        </details>
-
-        {/* 残り秒数: 選択肢直上・数字を主役に・色で余裕を伝える（ロジックは変更しない） */}
-        <div className="w-full flex justify-center items-baseline gap-1 mb-4">
-          <span className={`text-2xl font-bold tabular-nums ${timerColorClass}`}>
-            {secondsLeft}
-          </span>
-          <span className="text-sm text-gray-500">秒</span>
+        {/* 残り時間プログレスバー（数字非表示） */}
+        <div className="w-full h-1.5 bg-gray-200 rounded-full mb-4 overflow-hidden">
+          <div
+            className={`h-full rounded-full transition-all duration-300 ${progressBarColor}`}
+            style={{ width: `${timerProgress}%` }}
+          />
         </div>
 
         <div className="w-full space-y-2">
