@@ -23,6 +23,27 @@ export function formatCountJP(balls: number, strikes: number): string {
   return `${balls}ボール${strikes}ストライクカウント`;
 }
 
+/** 短縮表記（サブ行用）: "(0B-2S)" 形式 */
+export function formatCountShort(balls: number, strikes: number): string {
+  return `(${balls}B-${strikes}S)`;
+}
+
+/** 文字列内のカウント表記を短縮表記に置き換える（サブ行用） */
+export function replaceCountToShort(str: string): string {
+  let s = str.replace(/カウント\s*(\d)-(\d)/g, (_, b, s2) =>
+    formatCountShort(Number(b), Number(s2))
+  );
+  // 単体の X-Y を短縮表記に
+  s = s.replace(/(^|[\s　、。「」])([0-3])-([0-2])(?=[^\d]|$)/g, (_, g1, b, s2) =>
+    g1 + formatCountShort(Number(b), Number(s2))
+  );
+  // 「XボールYストライクカウント」形式も短縮表記に置き換え
+  s = s.replace(/(\d)ボール(\d)ストライクカウント/g, (_, b, s2) =>
+    formatCountShort(Number(b), Number(s2))
+  );
+  return s;
+}
+
 /** 文字列内の「カウント X-Y」および単体の「X-Y」を「XボールYストライクカウント」に置換（状況・解説文で統一） */
 export function replaceCountInText(str: string): string {
   let s = str.replace(/カウント\s*(\d)-(\d)/g, (_, b, s2) =>

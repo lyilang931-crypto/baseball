@@ -9,7 +9,7 @@
 import { useState, useEffect, useMemo } from "react";
 import type { Question } from "@/data/questions";
 import { getQuestionType, getDataSourceShort } from "@/data/questions";
-import { parseCountDisplay, formatCountJP, replaceCountInText } from "@/utils/countDisplay";
+import { parseCountDisplay, formatCountJP, replaceCountInText, replaceCountToShort } from "@/utils/countDisplay";
 import { parseSituation } from "@/utils/situationDisplay";
 import { hashSeed, shuffleWithSeed, getTodayJST } from "@/utils/seededShuffle";
 
@@ -136,10 +136,10 @@ export default function QuestionView({
           )}
         </p>
 
-        {/* 補助: 回・アウト（小さく）。カウント表記は「XボールYストライク」に統一 */}
+        {/* 補助: 回・アウト（小さく）。カウント表記は短縮表記(0B-2S)に統一（メインで大きく表示されるため重複排除） */}
         {situationParsed && (
           <p className="text-xs text-gray-400 text-center mb-2">
-            {replaceCountInText(situationParsed.inningOuts)}
+            {replaceCountToShort(situationParsed.inningOuts)}
           </p>
         )}
 
@@ -151,7 +151,9 @@ export default function QuestionView({
             </p>
             {situationParsed && (() => {
               const countStr = formatCountJP(countParsed.balls, countParsed.strikes);
-              let baseStr = replaceCountInText(situationParsed.baseSituation);
+              // baseSituation内のカウント表記を短縮表記に置き換え（メインで大きく表示されるため重複排除）
+              let baseStr = replaceCountToShort(situationParsed.baseSituation);
+              // 「、」で終わるカウント文字列も削除（既存ロジック維持）
               if (baseStr.endsWith("、" + countStr)) baseStr = baseStr.slice(0, baseStr.length - (countStr.length + 1));
               return (
                 <p className="text-lg text-gray-700 mt-2">{baseStr}</p>
