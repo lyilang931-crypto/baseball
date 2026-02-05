@@ -1740,7 +1740,7 @@ const QUESTIONS_POOL: Question[] = [
     questionId: QUESTION_UUIDS[70],
     answerBiasLevel: "TOP",
     situation:
-      "2023年MLBで、1-2カウントから「球速が遅い球種」の空振り率（Whiff%）が最も高かった球種は？",
+      "2023年MLBで、1-2カウントから最もWhiff%（空振り率）が高かった球種は？",
     count: "MLB 2023 / metric: Whiff% (低速球)",
     choices: [
       { id: "a", text: "4シーム" },
