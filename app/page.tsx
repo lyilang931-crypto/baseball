@@ -50,8 +50,13 @@ import { reportError } from "@/lib/error-handler";
 type Screen = "start" | "question" | "result" | "final";
 
 const TIMER_SECONDS = 30;
-/** 正解/不正解UI表示後にSFXを鳴らす遅延（ms）。80〜140の範囲で調整可能。 */
-const SFX_DELAY_MS = 120;
+/** 元のSFX遅延（ms）。Result画面のUI表示後に鳴らしていたタイミング。 */
+const ORIGINAL_SFX_DELAY_MS = 120;
+/**
+ * 正解/不正解UI表示後にSFXを鳴らす遅延（ms）。
+ * newDelayMs = max(100, oldDelayMs - 500) のルールで調整（120ms → clamp後 100ms）。
+ */
+const SFX_DELAY_MS = Math.max(100, ORIGINAL_SFX_DELAY_MS - 500);
 
 export default function Home() {
   const [screen, setScreen] = useState<Screen>("start");
