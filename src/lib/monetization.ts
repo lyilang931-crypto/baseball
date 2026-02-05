@@ -188,21 +188,35 @@ export function hasFeature(feature: PremiumFeature): boolean {
   return plan?.features.includes(feature) ?? false;
 }
 
+/** JST の YYYY-MM-DD を返す（daily.ts と同じロジック） */
+function getTodayJST(): string {
+  return new Intl.DateTimeFormat("sv-SE", {
+    timeZone: "Asia/Tokyo",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(new Date());
+}
+
+/** 今日のボーナスセッション数を取得 */
+export function getTodayBonusSessions(): number {
+  const state = getMonetizationState();
+  const today = getTodayJST();
+  return state.lastAdBonusDate === today ? state.adBonusSessions : 0;
+}
+
 /** 今日の残りプレイ回数を取得（広告ボーナス含む） */
 export function getRemainingPlays(usedAttempts: number): number {
   if (isPremiumUser()) return Infinity;
 
-  const state = getMonetizationState();
-  const today = new Date().toISOString().slice(0, 10);
-  const bonusSessions = state.lastAdBonusDate === today ? state.adBonusSessions : 0;
-
+  const bonusSessions = getTodayBonusSessions();
   return Math.max(0, FREE_DAILY_SESSIONS + bonusSessions - usedAttempts);
 }
 
 /** 広告視聴でボーナスセッションを追加（将来実装用） */
 export function addAdBonusSession(): void {
   const state = getMonetizationState();
-  const today = new Date().toISOString().slice(0, 10);
+  const today = getTodayJST();
 
   setMonetizationState({
     ...state,
@@ -220,6 +234,42 @@ export function shouldShowAd(placement: AdPlacement): boolean {
   // TODO: 実際の広告SDK導入時にロジックを実装
   // 現在はフラグのみ
   return true;
+}
+
+// =====================================================================
+// 抽象 API（UIはこれを呼ぶだけ）
+// =====================================================================
+
+/**
+ * リワード広告が利用可能か（SDK導入前はfalse固定）。
+ * 将来: AdMob の isReady() をラップする想定。
+ */
+export function adsRewardedAvailable(): boolean {
+  // TODO: AdMob SDK 導入後に isLoaded / isReady を確認
+  // 開発環境ではシミュレーション用に true
+  if (typeof process !== "undefined" && process.env?.NODE_ENV === "development") {
+    return true;
+  }
+  return false;
+}
+
+/**
+ * 追加プレイ付与（広告視聴完了コールバックから呼ぶ）。
+ * addAdBonusSession の semantic alias。
+ */
+export function grantExtraAttempt(): void {
+  addAdBonusSession();
+}
+
+/**
+ * インタースティシャル広告を表示すべきセッション完了か判定。
+ * frequency 設定に基づくカウンタ管理。
+ */
+export function shouldShowInterstitial(completedSessionCount: number): boolean {
+  if (isPremiumUser() || hasFeature("ad_free")) return false;
+  const config = AD_PLACEMENTS.result_interstitial;
+  const freq = config.frequency ?? 2;
+  return completedSessionCount > 0 && completedSessionCount % freq === 0;
 }
 
 // =====================================================================

@@ -18,6 +18,7 @@ import {
   QUESTIONS_PER_SESSION,
   getDataSourceShort,
   getQuestionType,
+  runDevValidation,
 } from "@/data/questions";
 import type { StartOptions } from "./components/StartView";
 import type { Question } from "@/data/questions";
@@ -105,6 +106,8 @@ export default function Home() {
 
   useEffect(() => {
     setRatingState(getStoredRating(getInitialRating()));
+    // 開発時のみ問題品質バリデーションを実行
+    runDevValidation();
   }, []);
 
   const clearTimer = useCallback(() => {

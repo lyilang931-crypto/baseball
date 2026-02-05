@@ -11,7 +11,8 @@ import {
   isPremiumUser,
   shouldShowAd,
   addAdBonusSession,
-  getMonetizationState,
+  getTodayBonusSessions,
+  getRemainingPlays,
 } from "@/lib/monetization";
 
 /**
@@ -43,7 +44,9 @@ export default function StartView({
   const [dataOnly, setDataOnly] = useState(false);
   const attemptsUsed = getTodayAttemptsUsed();
   const remaining = getTodayAttemptsRemaining();
-  const allUsed = remaining === 0;
+  const bonusSessions = getTodayBonusSessions();
+  const effectiveRemaining = getRemainingPlays(attemptsUsed);
+  const allUsed = effectiveRemaining === 0;
 
   // 広告視聴で追加プレイを獲得する処理（将来SDK導入時に実装）
   const handleWatchAdForBonus = () => {
@@ -109,6 +112,7 @@ export default function StartView({
   }
 
   const nextAttempt = attemptsUsed + 1;
+  const totalSlots = MAX_DAILY_ATTEMPTS + bonusSessions;
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-6 py-12 max-w-md mx-auto">
@@ -119,7 +123,7 @@ export default function StartView({
         <p className="text-sm text-gray-500 mb-2">連続: {streak}日</p>
       )}
       <p className="text-sm text-gray-500 mb-1">
-        今日 {nextAttempt}/{MAX_DAILY_ATTEMPTS} 回目 · 残り {remaining} 回
+        今日 {nextAttempt}/{totalSlots} 回目 · 残り {effectiveRemaining} 回
       </p>
       <p className="text-gray-600 text-center mb-6">あなたなら、どうする？</p>
 

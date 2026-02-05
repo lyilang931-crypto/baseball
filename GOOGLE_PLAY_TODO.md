@@ -1,51 +1,103 @@
 # Google Play 公開・収益化 TODOリスト
 
+## 現在の状態（2026-02-05 時点）
+
+### 完了済み
+- [x] **Capacitor 導入**
+  - `@capacitor/core`, `@capacitor/cli`, `@capacitor/android` インストール済み
+  - `capacitor.config.ts` 作成済み（appId: `com.baseball.quiz`）
+  - `android/` プロジェクト生成済み
+- [x] **収益化の土台**
+  - `src/lib/monetization.ts`: 広告・課金フラグ・抽象API完備
+  - `isPremiumUser()`, `shouldShowAd()`, `adsRewardedAvailable()`, `grantExtraAttempt()`, `shouldShowInterstitial()`
+  - 広告ボーナスセッション管理（JST日付で一貫性あり）
+- [x] **デイリー機能**
+  - 1日3回制限 + 広告ボーナス追加枠
+  - 連続ログイン streak
+  - 連続正解バッジ
+
+---
+
 ## 技術タスク
 
-### Phase 1: アプリ基盤（必須）
-- [ ] **React Native / Capacitor / TWA への移行**
-  - 現在: Next.js Webアプリ
-  - 選択肢:
-    - TWA (Trusted Web Activity) - 最も簡単、WebViewベース
-    - Capacitor - Web技術をそのまま利用可能
-    - React Native - 完全ネイティブ、書き換え必要
-  - 推奨: **Capacitor** (既存コード活用可能)
+### Step 1: Capacitor ビルド手順
 
-- [ ] **オフライン対応**
-  - Service Worker によるキャッシュ
-  - 問題データのローカル保存
-  - オフライン時の graceful degradation
+このアプリはAPIルート（`/api/*`）を使用するため、完全な静的エクスポートは不可。
+2つのアプローチがある：
 
-- [ ] **プッシュ通知**
-  - Firebase Cloud Messaging (FCM) 導入
-  - デイリーリマインダー（毎日の1球解放通知）
-  - 新問題追加通知
+#### A) Server URL 方式（推奨・最短）
+Vercelにデプロイ済みのURLをCapacitorのWebViewで読み込む。
 
-### Phase 2: 収益化（SDK導入）
-- [ ] **広告SDK導入**
-  - Google AdMob
-  - インタースティシャル広告（リザルト画面）
-  - リワード広告（追加プレイ）
-  - バナー広告（スタート画面）
+```bash
+# 1. capacitor.config.ts の server.url を有効化
+#    url: 'https://your-app.vercel.app'
 
-- [ ] **課金SDK導入**
-  - Google Play Billing Library
-  - サブスクリプション実装
-  - 購入復元機能
+# 2. Android Studio でビルド
+npx cap sync android
+npx cap open android
+# Android Studio → Build → Generate Signed Bundle / APK
+```
 
-- [ ] **サーバーサイド検証**
-  - 購入レシート検証API
-  - 不正購入防止
+**メリット**: Web版と同一コード、更新が即座に反映
+**デメリット**: オフライン不可、ネットワーク必須
 
-### Phase 3: 分析・改善
-- [ ] **Firebase Analytics**
-  - ユーザー行動トラッキング
-  - コンバージョン計測
-  - A/Bテスト基盤
+#### B) ハイブリッド方式（将来）
+問題データをローカルバンドル + API呼び出しはネットワーク経由。
+Service Worker導入が前提。
 
-- [ ] **クラッシュレポート**
-  - Firebase Crashlytics
-  - 本番エラー監視
+### Step 2: Android Studio セットアップ
+
+```bash
+# 必要なもの
+# - Android Studio（最新版）
+# - JDK 17+
+# - Android SDK 33+
+
+# プロジェクトを開く
+npx cap open android
+
+# ビルド前にwebアセットを同期
+npx cap sync android
+```
+
+### Step 3: AdMob 導入
+
+```bash
+# Capacitor用AdMobプラグイン
+npm install @capacitor-community/admob
+
+# capacitor.config.ts に追加:
+# plugins: {
+#   AdMob: {
+#     androidAppId: 'ca-app-pub-XXXX~YYYY',  // AdMobコンソールで取得
+#     isTesting: true,  // 開発中はtrue
+#   }
+# }
+```
+
+**テスト広告ID（開発用）**:
+- バナー: `ca-app-pub-3940256099942544/6300978111`
+- インタースティシャル: `ca-app-pub-3940256099942544/1033173712`
+- リワード: `ca-app-pub-3940256099942544/5224354917`
+
+実装箇所（既存コードとの接続点）:
+- `src/lib/monetization.ts` の `adsRewardedAvailable()` → AdMob SDK の `isLoaded()` をラップ
+- `shouldShowAd()` → 実際の表示判定
+- `grantExtraAttempt()` → リワード広告完了コールバックから呼ぶ
+- `shouldShowInterstitial(completedSessionCount)` → セッション完了時の判定
+
+### Step 4: Google Play Billing
+
+```bash
+# サブスクリプション用
+npm install @nicekiwi/capacitor-billing
+# または Play Billing Library を直接使用
+```
+
+`src/lib/monetization.ts` の接続点:
+- `isPremiumUser()` → Billing ライブラリの購読状態チェック
+- `hasFeature(feature)` → プラン別機能判定
+- `PREMIUM_PLANS` → Play Console の定期購入に対応
 
 ---
 
@@ -57,19 +109,27 @@
   - 本人確認書類
 
 - [ ] **アプリ署名**
-  - keystore 生成
+  ```bash
+  # keystore 生成
+  keytool -genkey -v -keystore baseball-quiz.keystore \
+    -alias baseball-quiz -keyalg RSA -keysize 2048 -validity 10000
+
+  # android/app/build.gradle の signingConfigs に設定
+  ```
   - Google Play App Signing 有効化
 
 - [ ] **プライバシーポリシー作成**
-  - ユーザーデータ収集・利用の明記
-  - 広告ID使用の説明
-  - ホスティング先URL準備
+  - ユーザーデータ収集・利用の明記（匿名ID、プレイ履歴）
+  - 広告ID使用の説明（AdMob導入時）
+  - Supabaseのデータ保存について記載
+  - ホスティング先URL準備（Vercel Pages等）
 
 - [ ] **ストア掲載情報**
-  - アプリ名: 今日の1球 - 野球配球クイズ
-  - 短い説明（80文字以内）
+  - アプリ名: `今日の1球 - 野球配球クイズ`
+  - 短い説明（80文字以内）:
+    `プロ野球の実データを使った配球判断クイズ。1日3セッション、あなたの野球脳を鍛えよう。`
   - 詳しい説明（4000文字以内）
-  - スクリーンショット（2枚以上）
+  - スクリーンショット（2枚以上、1080x1920推奨）
   - フィーチャーグラフィック（1024x500）
   - アイコン（512x512）
 
@@ -80,14 +140,35 @@
   - 言葉遣い: なし
   - 予想レーティング: 全年齢
 
+### データ安全性（Data Safety）
+- [ ] **データ収集の申告**
+  - 匿名ID（デバイス識別用）: ローカル生成、サーバー送信あり
+  - プレイ履歴（回答ログ）: Supabase保存
+  - レーティング（ELO値）: ローカル + サーバー
+  - 広告ID: AdMob導入時に申告（Google広告ポリシー準拠）
+  - 暗号化: HTTPS通信
+
 ### 広告・課金申告
 - [ ] **広告を含む**をチェック
-- [ ] **アプリ内購入**を設定
+- [ ] **アプリ内購入**を設定（サブスクリプション3プラン）
 - [ ] 広告SDKのデータ収集を Data Safety で申告
 
 ---
 
-## 現実的なDL数・収益モデル（控えめ予測）
+## 素材チェックリスト
+
+| 素材 | サイズ | 状態 | 備考 |
+|------|--------|------|------|
+| アプリアイコン | 512x512 PNG | [ ] 未作成 | 野球ボール + クエスチョンマーク |
+| フィーチャーグラフィック | 1024x500 PNG | [ ] 未作成 | ストア掲載ヘッダー |
+| スクリーンショット 1 | 1080x1920 | [ ] 未作成 | クイズ画面 |
+| スクリーンショット 2 | 1080x1920 | [ ] 未作成 | 結果画面 |
+| スクリーンショット 3 | 1080x1920 | [ ] 未作成 | スタート画面（任意） |
+| プライバシーポリシー | URL | [ ] 未作成 | Vercel Pages推奨 |
+
+---
+
+## 収益モデル（控えめ予測）
 
 ### 前提条件
 - カテゴリ: スポーツ/クイズ（ニッチ）
@@ -103,26 +184,7 @@
 | 7-12ヶ月 | 500-1,500 | 5,000-15,000 | シーズン連動、口コミ |
 | 2年目以降 | 1,000-3,000 | 15,000-50,000 | 安定期 |
 
-### 収益モデル
-
-#### 広告収益（AdMob）
-| 指標 | 値 | 備考 |
-|------|-----|------|
-| DAU | 500-2,000 | 月間DL数の10-20% |
-| インプレッション/DAU | 3-5 | 1セッション1-2回 |
-| eCPM | ¥100-300 | 日本、スポーツカテゴリ |
-| 月間収益 | ¥5,000-30,000 | 初期 |
-| 成長後月間収益 | ¥30,000-100,000 | DAU 3,000-5,000時 |
-
-#### サブスクリプション収益
-| 指標 | 値 | 備考 |
-|------|-----|------|
-| 課金率 | 1-3% | DAU比 |
-| ARPU | ¥480-980/月 | プラン混合 |
-| 月間収益 | ¥5,000-30,000 | 初期 |
-| 成長後月間収益 | ¥50,000-200,000 | 課金者100-200人時 |
-
-#### 総収益予測（控えめ）
+### 総収益予測
 
 | 時期 | 月間収益 | 年間収益 |
 |------|---------|---------|
@@ -130,42 +192,11 @@
 | 2年目 | ¥50,000-150,000 | ¥600,000-1,800,000 |
 | 3年目以降 | ¥100,000-300,000 | ¥1,200,000-3,600,000 |
 
-### 成功のための施策
-
-1. **ASO（App Store Optimization）**
-   - キーワード: 野球, クイズ, 配球, プロ野球, MLB
-   - レビュー獲得施策
-
-2. **コンテンツ更新**
-   - シーズン中の新問題追加
-   - 時事ネタ（WBC, 日本シリーズ等）
-
-3. **SNSマーケティング**
-   - X (Twitter) での結果シェア促進
-   - 野球系インフルエンサー連携
-
-4. **継続率向上**
-   - プッシュ通知によるリテンション
-   - ストリーク機能の強化
-   - ランキング・対戦機能（将来）
-
----
-
-## リスクと対策
-
-| リスク | 影響 | 対策 |
-|--------|------|------|
-| 低いDL数 | 収益未達 | ASO、SNS、口コミ施策 |
-| 低い課金率 | 広告依存 | 価値ある有料機能の追加 |
-| 競合参入 | シェア低下 | 問題品質、UX差別化 |
-| 規約違反 | アプリ削除 | ポリシー遵守、出典明記 |
-| データ不整合 | ユーザー離脱 | 監視・テスト強化 |
-
 ---
 
 ## 優先順位
 
-1. **最優先**: Capacitor移行 + 広告SDK
-2. **高**: ストア申請準備（画像、説明文）
-3. **中**: プッシュ通知
-4. **低**: 課金機能（広告で最初は十分）
+1. **最短公開**: Server URL方式でCapacitorビルド → Play Store申請
+2. **収益化**: AdMob導入（テストID→本番ID切替）
+3. **改善**: プッシュ通知、オフライン対応
+4. **成長**: 課金機能、A/Bテスト

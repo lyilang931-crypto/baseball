@@ -3289,3 +3289,44 @@ export function validateQuestionIds(): { valid: boolean; errors: string[] } {
 
 /** 問題総数 */
 export const TOTAL_QUESTIONS = QUESTIONS_POOL.length;
+
+/**
+ * 開発時に品質バリデーションを一括実行する（dev only）。
+ * validateQuestionIds() + validateAllQuestions() をまとめて呼ぶ。
+ */
+export function runDevValidation(): void {
+  if (typeof process !== "undefined" && process.env?.NODE_ENV !== "development") return;
+
+  // 既存バリデーション
+  validateQuestionIds();
+  warnRealDataAnswerBias();
+
+  // Phase 2: 品質チェック
+  try {
+    // dynamic import を避けるため、インラインで軽量チェック
+    const warnings: Array<{ id: number; type: string; msg: string }> = [];
+    for (const q of QUESTIONS_POOL) {
+      // 問題文長さ
+      if (q.situation.length > 60) {
+        warnings.push({ id: q.id, type: "LENGTH", msg: `問題文${q.situation.length}字（推奨60以下）` });
+      }
+      // 選択肢の長さばらつき
+      const lens = q.choices.map((c) => c.text.length);
+      const mx = Math.max(...lens);
+      const mn = Math.min(...lens);
+      if (mn > 0 && mx / mn > 3) {
+        warnings.push({ id: q.id, type: "CHOICE_LEN", msg: `選択肢長 ${mn}〜${mx}字（比率${(mx / mn).toFixed(1)}）` });
+      }
+    }
+    if (warnings.length > 0) {
+      /* eslint-disable no-console */
+      console.warn(`[品質チェック] ${warnings.length}件の警告:`);
+      for (const w of warnings) {
+        console.warn(`  id=${w.id} [${w.type}] ${w.msg}`);
+      }
+      /* eslint-enable no-console */
+    }
+  } catch {
+    // 品質チェック失敗はビルドに影響させない
+  }
+}

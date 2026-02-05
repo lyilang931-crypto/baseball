@@ -2,7 +2,11 @@
   "permissions": {
     "allow": [
       "Bash(npx tsc:*)",
-      "Bash(npm run build:*)"
+      "Bash(npm run build:*)",
+      "Bash(npm ls:*)",
+      "Bash(npm install:*)",
+      "Bash(npx cap init \"今日の1球\" \"com.baseball.quiz\" --web-dir=out)",
+      "Bash(npx cap:*)"
     ]
   }
 }
