@@ -52,18 +52,30 @@ export default function QuestionView({
   const situationParsed = parseSituation(question.situation);
   const [stats, setStats] = useState<QuestionStatsDisplay | null>(null);
 
+  // SSRとクライアント初期描画時の一致を保証するため、mountedフラグを使用
+  const [mounted, setMounted] = useState(false);
+  const [todayJST, setTodayJST] = useState("");
+
+  // クライアント側でのみDateから値を読み込む
+  useEffect(() => {
+    setMounted(true);
+    setTodayJST(getTodayJST());
+  }, []);
+
   /** 選択肢の表示順を seeded shuffle（同じ日・同じ挑戦回・同じ設問なら安定） */
   const shuffledChoices = useMemo(() => {
-    const todayJST = getTodayJST();
+    // SSR時とクライアント初期描画時は固定seedを使用（hydration error防止）
+    // mounted後に実際の日付で再シャッフル（useEffectで再計算される）
+    const seedDate = mounted && todayJST ? todayJST : "1970-01-01"; // 固定seed用の日付
     const seedStr = [
       question.questionId,
       attemptIndex ?? 0,
       questionNumber,
-      todayJST,
+      seedDate,
     ].join("-");
     const seed = hashSeed(seedStr);
     const shuffled = shuffleWithSeed(question.choices, seed);
-    if (process.env.NODE_ENV === "development") {
+    if (process.env.NODE_ENV === "development" && mounted) {
       const pos = shuffled.findIndex((c) => c.id === question.answerChoiceId);
       if (pos >= 0) {
         // eslint-disable-next-line no-console
@@ -71,7 +83,7 @@ export default function QuestionView({
       }
     }
     return shuffled;
-  }, [question.questionId, question.choices, question.answerChoiceId, attemptIndex, questionNumber]);
+  }, [question.questionId, question.choices, question.answerChoiceId, attemptIndex, questionNumber, mounted, todayJST]);
 
   useEffect(() => {
     let cancelled = false;

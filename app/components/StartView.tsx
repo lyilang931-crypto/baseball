@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { getStreakCount } from "@/utils/streak";
 import {
   getTodayAttemptsUsed,
@@ -40,13 +40,32 @@ export default function StartView({
   onStart,
   onViewTodayResult,
 }: StartViewProps) {
-  const streak = getStreakCount();
+  // SSRとクライアント初期描画時の一致を保証するため、mountedフラグを使用
+  const [mounted, setMounted] = useState(false);
+  const [streak, setStreak] = useState(0);
   const [dataOnly, setDataOnly] = useState(false);
-  const attemptsUsed = getTodayAttemptsUsed();
-  const remaining = getTodayAttemptsRemaining();
-  const bonusSessions = getTodayBonusSessions();
-  const effectiveRemaining = getRemainingPlays(attemptsUsed);
-  const allUsed = effectiveRemaining === 0;
+  const [attemptsUsed, setAttemptsUsed] = useState(0);
+  const [remaining, setRemaining] = useState(0);
+  const [bonusSessions, setBonusSessions] = useState(0);
+  const [effectiveRemaining, setEffectiveRemaining] = useState(0);
+  const [allUsed, setAllUsed] = useState(false);
+  const [showAdOption, setShowAdOption] = useState(false);
+
+  // クライアント側でのみlocalStorageから値を読み込む
+  useEffect(() => {
+    setMounted(true);
+    setStreak(getStreakCount());
+    const used = getTodayAttemptsUsed();
+    const rem = getTodayAttemptsRemaining();
+    const bonus = getTodayBonusSessions();
+    const effective = getRemainingPlays(used);
+    setAttemptsUsed(used);
+    setRemaining(rem);
+    setBonusSessions(bonus);
+    setEffectiveRemaining(effective);
+    setAllUsed(effective === 0);
+    setShowAdOption(shouldShowAd("extra_play_rewarded"));
+  }, []);
 
   // 広告視聴で追加プレイを獲得する処理（将来SDK導入時に実装）
   const handleWatchAdForBonus = () => {
@@ -62,8 +81,39 @@ export default function StartView({
     }
   };
 
+  // SSR時とクライアント初期描画時は同じデフォルト値を表示（hydration error防止）
+  if (!mounted) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center px-6 py-12 max-w-md mx-auto">
+        <h1 className="text-2xl font-bold text-center text-gray-900 mb-2">
+          ⚾ 今日の1球
+        </h1>
+        <p className="text-gray-600 text-center mb-6">あなたなら、どうする？</p>
+        <label className="flex items-center gap-2 mb-6 text-sm text-gray-600 cursor-pointer select-none">
+          <input
+            type="checkbox"
+            checked={dataOnly}
+            onChange={(e) => setDataOnly(e.target.checked)}
+            className="rounded border-gray-300 text-blue-500 focus:ring-blue-500"
+            aria-describedby="data-only-desc"
+          />
+          <span id="data-only-desc">実データ問題のみ出題する（NPB/MLB 等）</span>
+        </label>
+        <button
+          type="button"
+          onClick={() =>
+            onStart({ dataOnly: dataOnly || undefined, attemptIndex: 1 })
+          }
+          className="w-full max-w-sm py-4 px-6 rounded-2xl bg-blue-500 text-white font-bold text-lg flex items-center justify-center gap-2 hover:bg-blue-600 active:bg-blue-700 transition-colors"
+        >
+          <span aria-hidden>▶</span>
+          今日の1球に挑戦
+        </button>
+      </div>
+    );
+  }
+
   if (allUsed) {
-    const showAdOption = shouldShowAd("extra_play_rewarded");
 
     return (
       <div className="min-h-screen flex flex-col items-center justify-center px-6 py-12 max-w-md mx-auto">

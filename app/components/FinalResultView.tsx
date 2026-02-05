@@ -11,6 +11,7 @@
  * - バナー広告: 画面下部に表示（プレミアム時は非表示）
  */
 
+import { useState, useEffect } from "react";
 import {
   buildShareText,
   getTwitterShareUrl,
@@ -36,11 +37,20 @@ export default function FinalResultView({
   ratingAfter,
   onBackToStart,
 }: FinalResultViewProps) {
+  // SSRとクライアント初期描画時の一致を保証するため、mountedフラグを使用
+  const [mounted, setMounted] = useState(false);
+  const [streak, setStreak] = useState(0);
+
+  // クライアント側でのみlocalStorageから値を読み込む
+  useEffect(() => {
+    setMounted(true);
+    setStreak(getStreakCount());
+  }, []);
+
   const delta = ratingAfter - ratingBefore;
   const accuracy =
     totalQuestions > 0 ? (correctCount / totalQuestions) * 100 : 0;
   const levelLabel = getLevelLabel(ratingAfter);
-  const streak = getStreakCount();
 
   const handleShare = (type: "twitter" | "line") => {
     if (typeof window === "undefined") return;
@@ -76,12 +86,12 @@ export default function FinalResultView({
         <p className="text-center text-gray-700 font-medium mb-2">
           あなたの判断力レベル: {levelLabel}
         </p>
-        {streak > 0 && (
+        {mounted && streak > 0 && (
           <p className="text-center text-gray-500 text-sm mb-6">
             連続: {streak}日
           </p>
         )}
-        {streak === 0 && <div className="mb-6" />}
+        {(!mounted || streak === 0) && <div className="mb-6" />}
 
         {/* 結果画面 = シェア画面（X / LINE を自然に配置） */}
         <section className="w-full max-w-sm mt-4 mb-6" aria-label="結果をシェア">
@@ -115,7 +125,7 @@ export default function FinalResultView({
           totalQuestions={totalQuestions}
           ratingAfter={ratingAfter}
           ratingDelta={delta}
-          streak={streak > 0 ? streak : undefined}
+          streak={mounted && streak > 0 ? streak : undefined}
         />
       </div>
 
