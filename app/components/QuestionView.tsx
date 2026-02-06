@@ -9,7 +9,7 @@
 import { useState, useEffect, useMemo } from "react";
 import type { Question } from "@/data/questions";
 import { getQuestionType, getDataSourceShort } from "@/data/questions";
-import { parseCountDisplay, formatCountJP, replaceCountInText, replaceCountToShort } from "@/utils/countDisplay";
+import { parseCountDisplay, formatCountJP, formatCountBS, replaceCountInText, replaceCountToShort, removeCountFromText } from "@/utils/countDisplay";
 import { parseSituation } from "@/utils/situationDisplay";
 import { hashSeed, shuffleWithSeed, getTodayJST } from "@/utils/seededShuffle";
 
@@ -155,27 +155,35 @@ export default function QuestionView({
           </p>
         )}
 
-        {/* メイン: カウントは「XボールYストライク」のみ表示 + 塁状況 or 問題文（重複なし） */}
+        {/* メイン: カウントは見出しに明示的に表示（"B0–S2"形式）、本文には補足情報（回・アウト・走者）のみ */}
         {countParsed ? (
           <div className="text-center mb-8">
-            <p className="text-2xl font-bold text-gray-900 tracking-tight">
-              {formatCountJP(countParsed.balls, countParsed.strikes)}
+            {/* 見出し: カウントを明示的に表示（"B0–S2"形式、B=ボール、S=ストライク） */}
+            <p className="text-3xl font-bold text-gray-900 tracking-tight mb-3">
+              {formatCountBS(countParsed.balls, countParsed.strikes)}
             </p>
-            {situationParsed && (() => {
-              const countStr = formatCountJP(countParsed.balls, countParsed.strikes);
-              // baseSituation内のカウント表記を短縮表記に置き換え（メインで大きく表示されるため重複排除）
-              let baseStr = replaceCountToShort(situationParsed.baseSituation);
-              // 「、」で終わるカウント文字列も削除（既存ロジック維持）
-              if (baseStr.endsWith("、" + countStr)) baseStr = baseStr.slice(0, baseStr.length - (countStr.length + 1));
-              return (
-                <p className="text-lg text-gray-700 mt-2">{baseStr}</p>
-              );
-            })()}
-            {!situationParsed && question.situation && (
-              <h2 className="text-lg font-bold text-gray-900 mt-3 mb-1">
-                {replaceCountInText(question.situation)}
-              </h2>
-            )}
+            {/* 本文: 補足情報（回・アウト・走者）のみ表示（カウント情報は削除） */}
+            {situationParsed ? (
+              <div className="space-y-1">
+                {/* 回・アウト情報（カウント情報を削除） */}
+                {situationParsed.inningOuts && (
+                  <p className="text-sm text-gray-600">
+                    {removeCountFromText(situationParsed.inningOuts)}
+                  </p>
+                )}
+                {/* 塁状況（カウント情報を削除） */}
+                {situationParsed.baseSituation && (
+                  <p className="text-lg text-gray-700">
+                    {removeCountFromText(situationParsed.baseSituation)}
+                  </p>
+                )}
+              </div>
+            ) : question.situation ? (
+              <p className="text-lg text-gray-700 mt-2">
+                {/* situationからカウント情報を完全に削除して表示 */}
+                {removeCountFromText(question.situation)}
+              </p>
+            ) : null}
           </div>
         ) : (
           <div className="text-center mb-6">
