@@ -5,10 +5,8 @@ const config: CapacitorConfig = {
   appName: '今日の1球',
   webDir: 'out',
   // Android実機開発用: PCのローカルIPアドレスを指定
-  // 注意: PCのIPアドレスを確認してから設定してください（例: ipconfig / ifconfig）
-  // Next.js開発サーバーを起動: npm run dev
   server: {
-    url: 'http://192.168.1.100:3000', // TODO: 実際のPCのローカルIPアドレスに変更
+    url: 'https://baseball-ecru.vercel.app',
     cleartext: true, // HTTP接続を許可（Android 9以降で必要）
   },
   android: {

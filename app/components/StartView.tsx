@@ -14,6 +14,10 @@ import {
   getTodayBonusSessions,
   getRemainingPlays,
 } from "@/lib/monetization";
+import {
+  isDailyChallengeCompleted,
+  getDailyChallengeState,
+} from "@/lib/dailyChallenge";
 
 /**
  * 1日3回まで挑戦可能。残り回数 / ○/3 回目 を表示。
@@ -29,6 +33,8 @@ export interface StartOptions {
   dataOnly?: boolean;
   /** 今回の挑戦が何回目か（1〜3） */
   attemptIndex?: number;
+  /** デイリーチャレンジモード */
+  dailyChallenge?: boolean;
 }
 
 interface StartViewProps {
@@ -50,6 +56,8 @@ export default function StartView({
   const [effectiveRemaining, setEffectiveRemaining] = useState(0);
   const [allUsed, setAllUsed] = useState(false);
   const [showAdOption, setShowAdOption] = useState(false);
+  const [dailyDone, setDailyDone] = useState(false);
+  const [dailyResult, setDailyResult] = useState<{ correctCount: number; ratingDelta: number } | null>(null);
 
   // クライアント側でのみlocalStorageから値を読み込む
   useEffect(() => {
@@ -65,6 +73,11 @@ export default function StartView({
     setEffectiveRemaining(effective);
     setAllUsed(effective === 0);
     setShowAdOption(shouldShowAd("extra_play_rewarded"));
+    setDailyDone(isDailyChallengeCompleted());
+    const dcState = getDailyChallengeState();
+    if (dcState?.completed) {
+      setDailyResult({ correctCount: dcState.correctCount, ratingDelta: dcState.ratingDelta });
+    }
   }, []);
 
   // 広告視聴で追加プレイを獲得する処理（将来SDK導入時に実装）
@@ -198,6 +211,29 @@ export default function StartView({
         <span aria-hidden>▶</span>
         今日の1球に挑戦
       </button>
+
+      {/* デイリーチャレンジ */}
+      <div className="w-full max-w-sm mt-6">
+        {!dailyDone ? (
+          <button
+            type="button"
+            onClick={() => onStart({ dailyChallenge: true })}
+            className="w-full py-3 px-6 rounded-2xl border-2 border-amber-400 bg-amber-50 text-amber-800 font-bold text-base flex items-center justify-center gap-2 hover:border-amber-500 hover:bg-amber-100 active:bg-amber-200 transition-colors"
+          >
+            <span aria-hidden>&#x1F31F;</span>
+            今日の配球チャレンジ
+          </button>
+        ) : (
+          <div className="w-full py-3 px-6 rounded-2xl border-2 border-gray-200 bg-gray-50 text-gray-500 text-sm text-center">
+            今日のチャレンジ済み
+            {dailyResult && (
+              <span className="ml-2 font-medium">
+                {dailyResult.correctCount}/5問正解
+              </span>
+            )}
+          </div>
+        )}
+      </div>
 
       {attemptsUsed >= 1 && (
         <button

@@ -5,10 +5,10 @@
  * - 結果 = シェア画面。X / LINE を自然に配置
  * - 判断力レベルは名称のみ（数値断定禁止）
  *
- * 【広告ポイント（将来実装）】
- * - インタースティシャル広告: セッション完了時に表示（2セッションに1回）
- * - リワード広告: 「詳細分析を見る」で追加機能解放
- * - バナー広告: 画面下部に表示（プレミアム時は非表示）
+ * 【広告】
+ * - バナー広告: 結果画面のみ、3回に1回だけ表示（プレミアム時は非表示）
+ * - リワード広告: 「配球ヒントを見る」任意押下（1日1回）
+ * - インタースティシャルは入れない（"うざい"防止）
  */
 
 import { useState, useEffect } from "react";
@@ -20,7 +20,9 @@ import {
 import { getLevelLabel } from "@/utils/levelLabel";
 import { getStreakCount } from "@/utils/streak";
 import ShareCard from "./ShareCard";
-import { shouldShowAd, isPremiumUser, hasFeature } from "@/lib/monetization";
+import AdSlot from "./AdSlot";
+import RewardedAdButton from "./RewardedAdButton";
+import { isPremiumUser } from "@/lib/monetization";
 
 interface FinalResultViewProps {
   correctCount: number;
@@ -40,11 +42,13 @@ export default function FinalResultView({
   // SSRとクライアント初期描画時の一致を保証するため、mountedフラグを使用
   const [mounted, setMounted] = useState(false);
   const [streak, setStreak] = useState(0);
+  const [premium, setPremium] = useState(false);
 
   // クライアント側でのみlocalStorageから値を読み込む
   useEffect(() => {
     setMounted(true);
     setStreak(getStreakCount());
+    setPremium(isPremiumUser());
   }, []);
 
   const delta = ratingAfter - ratingBefore;
@@ -127,6 +131,12 @@ export default function FinalResultView({
           ratingDelta={delta}
           streak={mounted && streak > 0 ? streak : undefined}
         />
+
+        {/* 広告枠（結果画面のみ・頻度制限あり・プレミアム非表示） */}
+        {mounted && <AdSlot placement="final_result_banner" />}
+
+        {/* 任意の報酬型広告（1日1回・ユーザー押下時のみ） */}
+        {mounted && <RewardedAdButton />}
       </div>
 
       <button
@@ -134,9 +144,27 @@ export default function FinalResultView({
         onClick={onBackToStart}
         className="w-full max-w-sm py-4 px-6 rounded-2xl bg-blue-500 text-white font-bold text-lg flex items-center justify-center gap-2 hover:bg-blue-600 active:bg-blue-700 transition-colors mt-8"
       >
-        <span aria-hidden>▶</span>
+        <span aria-hidden>&#x25B6;</span>
         スタートに戻る
       </button>
+
+      {/* 広告なし（Pro）導線 */}
+      {mounted && !premium && (
+        <div className="w-full max-w-sm mt-4 text-center">
+          <button
+            type="button"
+            onClick={() => {
+              if (typeof window !== "undefined") {
+                window.alert("プレミアムプランは準備中です。もうしばらくお待ちください。");
+              }
+            }}
+            className="inline-flex items-center gap-1.5 text-xs text-gray-400 hover:text-blue-500 transition-colors"
+          >
+            <span className="inline-block w-4 h-4 rounded-full bg-gradient-to-r from-amber-400 to-amber-500 text-white text-[10px] font-bold leading-4 text-center">P</span>
+            広告なしで快適に（Pro）
+          </button>
+        </div>
+      )}
     </div>
   );
 }

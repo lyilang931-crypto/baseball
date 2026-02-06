@@ -15,6 +15,7 @@ import ResultView from "./components/ResultView";
 import FinalResultView from "./components/FinalResultView";
 import {
   getSessionQuestions,
+  getAllQuestions,
   QUESTIONS_PER_SESSION,
   getDataSourceShort,
   getQuestionType,
@@ -46,6 +47,11 @@ import { getOrCreateUserId } from "@/lib/userId";
 import { playResultSound } from "@/app/hooks/useResultSound";
 import { tracker, logger } from "@/lib/monitoring";
 import { reportError } from "@/lib/error-handler";
+import {
+  getDailyChallengeQuestions,
+  saveDailyChallengeResult,
+  isDailyChallengeCompleted,
+} from "@/lib/dailyChallenge";
 
 type Screen = "start" | "question" | "result" | "final";
 
@@ -83,6 +89,8 @@ export default function Home() {
   const [isAnswering, setIsAnswering] = useState(false);
   /** 現在のセッション内での連続正解数 */
   const [consecutiveCorrect, setConsecutiveCorrect] = useState(0);
+  /** デイリーチャレンジモードか */
+  const [isDailyChallenge, setIsDailyChallenge] = useState(false);
 
   /** 回答後に GET で取得した最新 stats（ResultView に渡して即反映） */
   const [latestQuestionStats, setLatestQuestionStats] = useState<{
@@ -232,6 +240,38 @@ export default function Home() {
 
   const handleStart = (options?: StartOptions) => {
     lastSfxPlayedKeyRef.current = null;
+
+    // デイリーチャレンジモード
+    if (options?.dailyChallenge) {
+      if (isDailyChallengeCompleted()) {
+        if (typeof window !== "undefined") {
+          window.alert("今日のデイリーチャレンジは完了済みです。");
+        }
+        return;
+      }
+      const allQ = getAllQuestions();
+      const dailyQuestions = getDailyChallengeQuestions(allQ, 5);
+      if (dailyQuestions.length === 0) {
+        logger.warn("No questions available for daily challenge");
+        return;
+      }
+      setIsDailyChallenge(true);
+      setSessionQuestions(dailyQuestions);
+      setCurrentIndex(0);
+      setCorrectCount(0);
+      setConsecutiveCorrect(0);
+      setRatingAtSessionStart(rating);
+      setCurrentAttemptIndex(null);
+      setScreen("question");
+      tracker.event("session_started", {
+        questionCount: dailyQuestions.length,
+        dailyChallenge: true,
+        initialRating: rating,
+      });
+      return;
+    }
+
+    setIsDailyChallenge(false);
     const used = getDailyUsedQuestionIds();
     const questions = getSessionQuestions({
       dataOnly: options?.dataOnly ?? false,
@@ -334,8 +374,16 @@ export default function Home() {
     if (lastCorrect) setCorrectCount((c) => c + 1);
     if (currentIndex + 1 >= sessionQuestions.length) {
       const finalCorrect = lastCorrect ? correctCount + 1 : correctCount;
-      consumeOneAttempt();
-      updateStreakAndReturn(getLastPlayedDate());
+
+      if (isDailyChallenge) {
+        // デイリーチャレンジ完了 → 回数消費せず結果保存
+        saveDailyChallengeResult(finalCorrect, rating - ratingAtSessionStart);
+        updateStreakAndReturn(getLastPlayedDate());
+      } else {
+        consumeOneAttempt();
+        updateStreakAndReturn(getLastPlayedDate());
+      }
+
       setTodayResult({
         correctCount: finalCorrect,
         totalQuestions: sessionQuestions.length,
@@ -350,6 +398,7 @@ export default function Home() {
         ratingBefore: ratingAtSessionStart,
         ratingAfter: rating,
         ratingDelta: rating - ratingAtSessionStart,
+        dailyChallenge: isDailyChallenge,
       });
 
       setScreen("final");
