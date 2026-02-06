@@ -17,11 +17,27 @@ export default function RootLayout({
   return (
     <html lang="ja">
       <head>
-        <script
+        {/* ✅ AdSense */}
+        <Script
           async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2909101989368969"
           crossOrigin="anonymous"
+          strategy="afterInteractive"
         />
+
+        {/* ✅ GA4 */}
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-4M4F01VC3F"
+          strategy="afterInteractive"
+        />
+        <Script id="ga4-init" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-4M4F01VC3F');
+          `}
+        </Script>
       </head>
 
       <body className="antialiased min-h-screen bg-white text-black">
