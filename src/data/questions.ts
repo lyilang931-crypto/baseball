@@ -57,6 +57,9 @@ export type QuestionType = "REAL_DATA" | "THEORY" | "KNOWLEDGE";
 /** 正解のバイアスレベル（4択なら TOP/MID/AVG/LOW で均等出題可能） */
 export type AnswerBiasLevel = "TOP" | "MID" | "AVG" | "LOW";
 
+/** 問題モード（配球チャレンジ用） */
+export type QuestionMode = "pitching" | "analysis" | "general";
+
 /** 共通フィールド（難易度 1〜5、1が易しい） */
 interface QuestionBase {
   /** 表示用番号（第N問など） */
@@ -67,6 +70,10 @@ interface QuestionBase {
   questionType?: QuestionType;
   /** 正解が「最上位レンジ」かどうか（REAL_DATA の日本人スター系は MID/AVG 推奨） */
   answerBiasLevel?: AnswerBiasLevel;
+  /** 問題モード（配球チャレンジ用: "pitching" / 分析編: "analysis" / 一般: "general"） */
+  mode?: QuestionMode;
+  /** Pro課金向け問題かどうか（将来拡張用） */
+  proOnly?: boolean;
   situation: string;
   count: string;
   choices: Choice[];
@@ -1158,6 +1165,7 @@ const QUESTIONS_POOL: Question[] = [
     id: 48,
     questionId: QUESTION_UUIDS[47],
     answerBiasLevel: "AVG",
+    mode: "analysis", // 配球チャレンジから除外（分析編へ移動）
     situation:
       "2023年MLBで大谷翔平の盗塁数は規定打席打者で何位付近だった？",
     count: "MLB 2023 / metric: 盗塁",
@@ -1294,9 +1302,10 @@ const QUESTIONS_POOL: Question[] = [
     id: 53,
     questionId: QUESTION_UUIDS[52],
     answerBiasLevel: "MID",
+    mode: "pitching", // 配球チャレンジ対象
     situation:
-      "2023年MLBのStatcastで、0-2カウントから「空振り率（Whiff%）が最も高かった球種」は？",
-    count: "MLB 2023 / metric: Whiff% (0-2)",
+      "0-2カウントから空振りを取るのに最も有効な球種は？",
+    count: "0ボール2ストライク",
     choices: [
       { id: "a", text: "4シーム" },
       { id: "b", text: "スライダー" },
@@ -1305,7 +1314,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "c",
     explanation:
-      "実データ：0-2ではフォーク・スプリット系がWhiff%上位帯。出典：Baseball Savant / season 2023 / Whiff% by count。",
+      "実データ：0-2ではフォーク・スプリット系がWhiff%上位帯（40%以上）。打者はストライクゾーンを意識するため、ボールゾーンに落ちる縦の変化球に手を出しやすい。出典：Baseball Savant / season 2023 / Whiff% by count。",
     sourceLabel: "Baseball Savant",
     sourceUrl: "https://baseballsavant.mlb.com/leaderboard/statcast",
     sourceType: "data",
@@ -1401,9 +1410,10 @@ const QUESTIONS_POOL: Question[] = [
     questionType: "THEORY",
     id: 57,
     questionId: QUESTION_UUIDS[56],
+    mode: "pitching", // 配球チャレンジ対象
     situation:
       "1-2カウントから空振りを取るのに有効な球種は？",
-    count: "配球セオリー",
+    count: "1ボール2ストライク",
     choices: [
       { id: "a", text: "4シーム" },
       { id: "b", text: "スライダー" },
@@ -1412,7 +1422,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "b",
     explanation:
-      "1-2ではスライダー・フォーク系で空振りを狙う配球が有効とされる。",
+      "1-2ではスライダー・フォーク系で空振りを狙う配球が有効とされる。打者はストライクゾーンを意識するため、ボールゾーンに落ちる変化球に手を出しやすい。",
     sourceLabel: "配球セオリー",
     sourceUrl: "https://ja.wikipedia.org/wiki/球種_(野球)",
     sourceType: "static",
@@ -1423,9 +1433,10 @@ const QUESTIONS_POOL: Question[] = [
     questionType: "THEORY",
     id: 58,
     questionId: QUESTION_UUIDS[57],
+    mode: "pitching", // 配球チャレンジ対象
     situation:
       "ランナー1塁の場面で、牽制球を入れたあと打者に投げる球種としてよく使われるのは？",
-    count: "配球セオリー",
+    count: "ランナー1塁",
     choices: [
       { id: "a", text: "4シーム" },
       { id: "b", text: "スライダー" },
@@ -1434,7 +1445,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "a",
     explanation:
-      "牽制後はストレートでストライクを取りにいく配球が一般的。走者をけん制しつつ打者と向き合う。",
+      "牽制後はストレートでストライクを取りにいく配球が一般的。走者をけん制しつつ打者と向き合う。牽制で走者の注意を引いた後、ストレートでストライクを取ることで配球の主導権を握る。",
     sourceLabel: "配球セオリー",
     sourceUrl: "https://ja.wikipedia.org/wiki/牽制球",
     sourceType: "static",
@@ -1446,9 +1457,10 @@ const QUESTIONS_POOL: Question[] = [
     id: 59,
     questionId: QUESTION_UUIDS[58],
     answerBiasLevel: "TOP",
+    mode: "pitching", // 配球チャレンジ対象
     situation:
-      "2023年MLBで、得点圏（RISP）の場面で「被打率が低い球種」は？",
-    count: "MLB 2023 / metric: AVG against (RISP)",
+      "得点圏（RISP）の場面で、被打率が低い球種は？",
+    count: "得点圏",
     choices: [
       { id: "a", text: "4シーム" },
       { id: "b", text: "スライダー" },
@@ -1457,7 +1469,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "b",
     explanation:
-      "実データ：得点圏ではスライダー・チェンジアップ系が被打率の低い帯。出典：Baseball Savant / 2023。",
+      "実データ：得点圏ではスライダー・チェンジアップ系が被打率の低い帯（.200以下）。打者は得点を意識して積極的に振るため、ボールゾーンに落ちる変化球に手を出しやすい。出典：Baseball Savant / 2023。",
     sourceLabel: "Baseball Savant",
     sourceUrl: "https://baseballsavant.mlb.com",
     sourceType: "data",
@@ -1472,9 +1484,10 @@ const QUESTIONS_POOL: Question[] = [
     questionType: "THEORY",
     id: 60,
     questionId: QUESTION_UUIDS[59],
+    mode: "pitching", // 配球チャレンジ対象
     situation:
       "2-0カウントからストライクを取りにいったとき、ストライクゾーンに来ると打たれやすい球種は？",
-    count: "配球セオリー",
+    count: "2ボール0ストライク",
     choices: [
       { id: "a", text: "4シーム" },
       { id: "b", text: "スライダー" },
@@ -1483,7 +1496,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "a",
     explanation:
-      "2-0ではストライクを取りにいく配球が基本だが、ストライクゾーンに来たストレートは打たれやすい傾向がある。",
+      "2-0ではストライクを取りにいく配球が基本だが、ストライクゾーンに来たストレートは打たれやすい傾向がある。打者はボールカウントが有利なため、ストライクゾーンに入ったストレートを待っている。",
     sourceLabel: "配球セオリー",
     sourceUrl: "https://ja.wikipedia.org/wiki/ボールカウント",
     sourceType: "static",
@@ -1495,9 +1508,10 @@ const QUESTIONS_POOL: Question[] = [
     id: 61,
     questionId: QUESTION_UUIDS[60],
     answerBiasLevel: "MID",
+    mode: "pitching", // 配球チャレンジ対象
     situation:
-      "2023年NPBで山本由伸が与四球を抑えるために初球で多用した球種は？",
-    count: "NPB 2023 / metric: BB/9",
+      "山本由伸が与四球を抑えるために初球で多用した球種は？",
+    count: "初球",
     choices: [
       { id: "a", text: "4シーム" },
       { id: "b", text: "スライダー" },
@@ -1506,7 +1520,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "a",
     explanation:
-      "実データ：山本は初球でストレートを多用し与四球率を抑えていた。出典：NPB公式 / season 2023 / BB/9。",
+      "実データ：山本は初球でストレートを多用し与四球率を抑えていた（BB/9 1.5以下）。初球ストライクを取ることで配球の主導権を握り、与四球を減らす配球が特徴。出典：NPB公式 / season 2023 / BB/9。",
     sourceLabel: "NPB 公式",
     sourceUrl: "https://npb.jp/bis/2023/stats/pit_c.html",
     sourceType: "data",
@@ -1522,9 +1536,10 @@ const QUESTIONS_POOL: Question[] = [
     id: 62,
     questionId: QUESTION_UUIDS[61],
     answerBiasLevel: "AVG",
+    mode: "pitching", // 配球チャレンジ対象
     situation:
-      "2024年MLBで、初球でストライクを取りにいく球種として最も使われるのは？",
-    count: "MLB 2024 / metric: First Strike%",
+      "初球でストライクを取りにいく球種として最も使われるのは？",
+    count: "初球",
     choices: [
       { id: "a", text: "4シーム" },
       { id: "b", text: "スライダー" },
@@ -2477,18 +2492,19 @@ const QUESTIONS_POOL: Question[] = [
     id: 96,
     questionId: QUESTION_UUIDS[95],
     answerBiasLevel: "LOW",
+    mode: "analysis", // 配球チャレンジから除外（分析編へ移動）
     situation:
       "2024年MLBで、ランナー1塁での盗塁成功率がリーグ下位のチームに共通する傾向は？",
     count: "MLB 2024 / metric: 盗塁成功率",
     choices: [
-      { id: "a", text: "走者の判断力が悪い" },
-      { id: "b", text: "足が遅い選手が多い" },
-      { id: "c", text: "バントが多い" },
-      { id: "d", text: "打者の出塁率が低い" },
+      { id: "a", text: "初球盗塁試行率が低い（3%未満）" },
+      { id: "b", text: "左投手時の成功率が大きく低下する（10%以上差）" },
+      { id: "c", text: "バント成功率が高い（80%以上）" },
+      { id: "d", text: "打者の出塁率が低い（.300未満）" },
     ],
     answerChoiceId: "b",
     explanation:
-      "盗塁成功率が低いチームは足の速い選手が少なく、無理な盗塁を試みる傾向がある。",
+      "盗塁成功率が低いチームは左投手時の成功率が大きく低下する傾向がある。左投手は1塁を向いているため走者を牽制しやすく、スタートが遅れることが多い。",
     sourceLabel: "Baseball-Reference",
     sourceUrl: "https://www.baseball-reference.com/leagues/majors/2024-baserunning.shtml",
     sourceType: "data",
@@ -2535,8 +2551,9 @@ const QUESTIONS_POOL: Question[] = [
     id: 98,
     questionId: QUESTION_UUIDS[97],
     answerBiasLevel: "MID",
+    mode: "pitching", // 配球チャレンジ対象
     situation: "0-2と追い込んだ右打者。ここまでストレートで押してきた。次の1球は？",
-    count: "カウント 0-2",
+    count: "0ボール2ストライク",
     choices: [
       { id: "a", text: "外角低めにフォーク" },
       { id: "b", text: "インコース高めにストレート" },
@@ -2544,7 +2561,7 @@ const QUESTIONS_POOL: Question[] = [
       { id: "d", text: "外角ストレート" },
     ],
     answerChoiceId: "a",
-    explanation: "追い込んだ後はウイニングショットで空振りを狙う。ストレートで押した後のフォークは打者の目線が上にあるため効果的。",
+    explanation: "追い込んだ後はウイニングショットで空振りを狙う。ストレートで押した後のフォークは打者の目線が上にあるため効果的。外角低めに落ちるフォークは打者が手を出しやすく、空振りを取れる確率が高い。",
     sourceLabel: "配球セオリー",
     sourceUrl: "https://ja.wikipedia.org/wiki/球種_(野球)",
     sourceType: "static",
@@ -3067,6 +3084,171 @@ export function isDataQuestion(q: Question): boolean {
   return getQuestionType(q) === "REAL_DATA";
 }
 
+/**
+ * 配球チャレンジ用の問題かどうかを判定
+ * - 投手視点で「次に何を投げるか」を考えさせる問題
+ * - カウント、直前の球種・コース、打者タイプ、ランナー状況、配球の意図のうち2つ以上を含む
+ * - 統計・チーム傾向・盗塁問題は除外
+ */
+export function isPitchingQuestion(q: Question): boolean {
+  // modeが明示的に設定されている場合はそれを使用
+  if (q.mode === "pitching") return true;
+  if (q.mode === "analysis" || q.mode === "general") return false;
+
+  // 統計・チーム傾向・盗塁問題を除外
+  const situation = q.situation.toLowerCase();
+  const excludeKeywords = [
+    "盗塁",
+    "チーム",
+    "球団",
+    "リーグ",
+    "順位",
+    "統計",
+    "傾向",
+    "共通",
+    "足が遅い",
+    "下手",
+    "判断が悪い",
+  ];
+  if (excludeKeywords.some((kw) => situation.includes(kw))) {
+    return false;
+  }
+
+  // 配球思考に必要な要素をチェック
+  const pitchingKeywords = [
+    "カウント",
+    "球種",
+    "ストレート",
+    "スライダー",
+    "フォーク",
+    "カーブ",
+    "チェンジアップ",
+    "配球",
+    "次に",
+    "投げる",
+    "打者",
+    "ランナー",
+    "走者",
+    "コース",
+    "内角",
+    "外角",
+    "見せ球",
+    "誘い球",
+    "決め球",
+    "追い込み",
+  ];
+  const keywordCount = pitchingKeywords.filter((kw) =>
+    situation.includes(kw)
+  ).length;
+
+  // 配球関連キーワードが2つ以上含まれ、かつ除外キーワードが含まれない場合
+  return keywordCount >= 2;
+}
+
+/**
+ * 配球チャレンジ用の問題のみをフィルタリング
+ * - mode === "pitching" のみを対象
+ * - mode未設定の問題は除外（開発中はwarn）
+ * - 必須フィールド（countなど）が欠ける場合は除外（開発中はwarn）
+ * @param questions 全問題の配列
+ * @returns 配球チャレンジ用の問題のみ
+ */
+export function filterPitchingQuestions(questions: Question[]): Question[] {
+  const result: Question[] = [];
+  const excludedIds: number[] = [];
+  const missingFieldIds: number[] = [];
+
+  for (const q of questions) {
+    // mode === "pitching" のみを対象（mode未設定やanalysis/generalは除外）
+    if (q.mode === "pitching") {
+      // 必須フィールドチェック（count必須）
+      if (!q.count || q.count.trim() === "") {
+        missingFieldIds.push(q.id);
+        if (process.env.NODE_ENV === "development") {
+          console.warn(
+            `[filterPitchingQuestions] Question id=${q.id} excluded: missing required field 'count'`
+          );
+        }
+        continue;
+      }
+      result.push(q);
+    } else if (q.mode === undefined || q.mode === null) {
+      // mode未設定の問題は除外（開発中のみwarn、本番は静かに除外）
+      excludedIds.push(q.id);
+      if (process.env.NODE_ENV === "development") {
+        console.warn(
+          `[filterPitchingQuestions] Question id=${q.id} excluded: mode not set (situation: "${q.situation.substring(0, 50)}...")`
+        );
+      }
+    }
+    // mode === "analysis" や "general" は静かに除外（warn不要）
+  }
+
+  // 開発モードで検証結果をログ出力
+  if (process.env.NODE_ENV === "development") {
+    if (result.length === 0) {
+      console.warn(
+        `[filterPitchingQuestions] No pitching questions found in ${questions.length} questions`
+      );
+    } else {
+      console.log(
+        `[filterPitchingQuestions] Filtered ${questions.length} questions:`,
+        `${result.length} pitching questions,`,
+        `${excludedIds.length} excluded (mode not set),`,
+        `${missingFieldIds.length} excluded (missing required fields)`
+      );
+    }
+    if (excludedIds.length > 0 && excludedIds.length <= 20) {
+      console.log(
+        `[filterPitchingQuestions] Excluded question IDs (mode not set):`,
+        excludedIds
+      );
+    }
+    if (missingFieldIds.length > 0) {
+      console.log(
+        `[filterPitchingQuestions] Excluded question IDs (missing fields):`,
+        missingFieldIds
+      );
+    }
+  }
+
+  return result;
+}
+
+/**
+ * 開発者向け：配球チャレンジ対象問題の検証結果を返す
+ * @returns 検証結果（pitching問題のID一覧、除外された問題のID一覧など）
+ */
+export function validatePitchingQuestions(): {
+  pitchingIds: number[];
+  excludedByMode: number[];
+  excludedByMissingFields: number[];
+  total: number;
+} {
+  const pitchingIds: number[] = [];
+  const excludedByMode: number[] = [];
+  const excludedByMissingFields: number[] = [];
+
+  for (const q of QUESTIONS_POOL) {
+    if (q.mode === "pitching") {
+      if (!q.count || q.count.trim() === "") {
+        excludedByMissingFields.push(q.id);
+      } else {
+        pitchingIds.push(q.id);
+      }
+    } else if (q.mode === undefined || q.mode === null) {
+      excludedByMode.push(q.id);
+    }
+  }
+
+  return {
+    pitchingIds,
+    excludedByMode,
+    excludedByMissingFields,
+    total: QUESTIONS_POOL.length,
+  };
+}
+
 const JAPANESE_STAR_MARKERS = ["大谷", "山本", "ダル", "佐々木"] as const;
 
 /**
@@ -3101,6 +3283,8 @@ export interface SessionOptions {
   dataOnly?: boolean;
   /** 同日にすでに出題した questionId。これらを除外して抽選する */
   excludeQuestionIds?: string[];
+  /** 配球チャレンジモード（配球思考に特化した問題のみ） */
+  pitchingMode?: boolean;
 }
 
 /**
@@ -3248,9 +3432,40 @@ function pickComposition(): { r: number; t: number; k: number } {
  * - 最後に並び順をシャッフル
  * @param options.dataOnly true のとき実データ5問のみ
  * @param options.excludeQuestionIds 同日使用済み questionId（除外して抽選）
+ * @param options.pitchingMode true のとき配球チャレンジ用（配球思考に特化した問題のみ）
  */
 export function getSessionQuestions(options?: SessionOptions): Question[] {
   const exclude = options?.excludeQuestionIds;
+
+  // 配球チャレンジモード：配球思考に特化した問題のみ（mode === "pitching" のみ）
+  if (options?.pitchingMode === true) {
+    const allPitching = filterPitchingQuestions(QUESTIONS_POOL);
+    const available = exclude
+      ? allPitching.filter((q) => !exclude.includes(q.questionId))
+      : allPitching;
+    if (available.length === 0) {
+      if (process.env.NODE_ENV === "development") {
+        console.warn(
+          "[getSessionQuestions] No pitching questions available",
+          exclude ? `(excluded: ${exclude.length} questionIds)` : ""
+        );
+      }
+      return [];
+    }
+    if (available.length < 5) {
+      if (process.env.NODE_ENV === "development") {
+        console.warn(
+          `[getSessionQuestions] Only ${available.length} pitching questions available, requested 5`
+        );
+      }
+    }
+    const shuffled = [...available];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled.slice(0, 5);
+  }
 
   if (options?.dataOnly === true) {
     const five = drawRealWithBalance(REAL_DATA_POOL, 5, exclude);

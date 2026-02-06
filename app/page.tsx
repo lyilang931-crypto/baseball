@@ -49,6 +49,7 @@ import { tracker, logger } from "@/lib/monitoring";
 import { reportError } from "@/lib/error-handler";
 import {
   getDailyChallengeQuestions,
+  getPitchingDailyChallengeQuestions,
   saveDailyChallengeResult,
   isDailyChallengeCompleted,
 } from "@/lib/dailyChallenge";
@@ -241,7 +242,7 @@ export default function Home() {
   const handleStart = (options?: StartOptions) => {
     lastSfxPlayedKeyRef.current = null;
 
-    // デイリーチャレンジモード
+    // デイリーチャレンジモード（配球チャレンジ）
     if (options?.dailyChallenge) {
       if (isDailyChallengeCompleted()) {
         if (typeof window !== "undefined") {
@@ -250,9 +251,10 @@ export default function Home() {
         return;
       }
       const allQ = getAllQuestions();
-      const dailyQuestions = getDailyChallengeQuestions(allQ, 5);
+      // 配球チャレンジ用：mode === "pitching" の問題のみ
+      const dailyQuestions = getPitchingDailyChallengeQuestions(allQ, 5);
       if (dailyQuestions.length === 0) {
-        logger.warn("No questions available for daily challenge");
+        logger.warn("No pitching questions available for daily challenge");
         return;
       }
       setIsDailyChallenge(true);

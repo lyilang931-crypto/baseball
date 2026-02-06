@@ -7,6 +7,8 @@
 
 import { hashSeed, shuffleWithSeed } from "@/utils/seededShuffle";
 import { getTodayDate } from "@/lib/daily";
+import type { Question } from "@/data/questions";
+import { filterPitchingQuestions } from "@/data/questions";
 
 const DAILY_CHALLENGE_KEY = "baseball_quiz_daily_challenge";
 
@@ -72,6 +74,7 @@ export function isDailyChallengeCompleted(): boolean {
 /**
  * 日付をシードにして問題プールから5問を決定的に選ぶ。
  * 全ユーザーに同じ問題セットが出る。
+ * 汎用関数：全問題から選択（既存機能維持のため変更なし）
  * @param allQuestions 全問題プール
  * @param count 出題数（デフォルト5）
  */
@@ -83,4 +86,37 @@ export function getDailyChallengeQuestions<T>(
   const seed = hashSeed(`daily-challenge-${today}`);
   const shuffled = shuffleWithSeed(allQuestions, seed);
   return shuffled.slice(0, count);
+}
+
+/**
+ * 配球チャレンジ用：mode === "pitching" の問題のみを対象とするデイリーチャレンジ
+ * @param allQuestions 全問題プール
+ * @param count 出題数（デフォルト5）
+ */
+export function getPitchingDailyChallengeQuestions(
+  allQuestions: Question[],
+  count: number = 5
+): Question[] {
+  // filterPitchingQuestions を通してから getDailyChallengeQuestions を呼ぶ
+  const pitchingQuestions = filterPitchingQuestions(allQuestions);
+  
+  if (pitchingQuestions.length === 0) {
+    if (process.env.NODE_ENV === "development") {
+      console.warn(
+        "[getPitchingDailyChallengeQuestions] No pitching questions available"
+      );
+    }
+    return [];
+  }
+
+  if (pitchingQuestions.length < count) {
+    if (process.env.NODE_ENV === "development") {
+      console.warn(
+        `[getPitchingDailyChallengeQuestions] Only ${pitchingQuestions.length} pitching questions available, requested ${count}`
+      );
+    }
+  }
+
+  // 汎用関数を使って日付シードで選択
+  return getDailyChallengeQuestions(pitchingQuestions, count);
 }
