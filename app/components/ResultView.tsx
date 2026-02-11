@@ -110,7 +110,7 @@ export default function ResultView({
           <h3 className="text-sm font-bold text-gray-500 mb-1">
             {!isCorrect ? "理由" : "解説"}
           </h3>
-          <p className="text-gray-700 text-sm">{replaceCountInText(explanation)}</p>
+          <p className="text-gray-700 text-sm whitespace-pre-line">{replaceCountInText(explanation)}</p>
         </section>
 
         {(sourceUrl || sourceLabel || sourceType) ? (

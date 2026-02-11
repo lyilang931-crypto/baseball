@@ -240,7 +240,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "a",
     explanation:
-      "この場面では『ストレート』で勝負するのが正解。2-2のカウントで打者を抑えれば試合終了です。",
+      "この場面ではストレートで勝負するのが正解。\n2-2で打者を抑えれば試合終了のため、直球で決める。",
     sourceLabel: "野球戦術入門",
     sourceUrl: "https://ja.wikipedia.org/wiki/速球",
     sourceType: "static",
@@ -260,7 +260,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "b",
     explanation:
-      "序盤の無死1塁では『変化球で様子を見る』が定石。打者との駆け引きを重視します。",
+      "序盤の無死1塁では変化球で様子を見るのが定石。\n打者との駆け引きを重視するため。",
     sourceLabel: "プロ野球采配読本",
     sourceUrl: "https://ja.wikipedia.org/wiki/スライダー_(球種)",
     sourceType: "static",
@@ -280,7 +280,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "a",
     explanation:
-      "この場面では『フォーク』が最も空振りを取れる選択でした。1-2で追い込んでいるので決め球です。",
+      "この場面ではフォークで空振りを狙うのが正解。\n1-2で追い込んでいるため決め球を使う。",
     sourceLabel: "変化球の教科書",
     sourceUrl: "https://ja.wikipedia.org/wiki/フォークボール",
     sourceType: "static",
@@ -300,7 +300,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "c",
     explanation:
-      "フルカウント・2アウトでは『フォークで落とす』が有効。打者が待ちに回りにくい球です。",
+      "フルカウント・2アウトではフォークで落とすのが有効。\n打者が待ちに回りにくい球種だから。",
     sourceLabel: "投球論",
     sourceUrl: "https://ja.wikipedia.org/wiki/フォークボール",
     sourceType: "static",
@@ -320,7 +320,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "c",
     explanation:
-      "無死満塁では『ゴロでダブルプレー』を狙うのが得点被害を最小にする選択でした。",
+      "無死満塁ではゴロでダブルプレーを狙うのが正解。\n得点被害を最小にするため。",
     sourceLabel: "守備配球の考え方",
     sourceUrl: "https://ja.wikipedia.org/wiki/併殺",
     sourceType: "static",
@@ -339,7 +339,8 @@ const QUESTIONS_POOL: Question[] = [
       { id: "c", text: "スライダーで外に逃がす" },
     ],
     answerChoiceId: "b",
-    explanation: "0-2で追い込んだら内角で打者の手元を詰める選択が有効です。",
+    explanation:
+      "0-2では内角で打者の手元を詰めるのが有効。\n追い込んだ打者は手元を詰められやすい。",
     sourceLabel: "カウント別配球",
     sourceUrl: "https://ja.wikipedia.org/wiki/球種_(野球)",
     sourceType: "static",
@@ -358,7 +359,8 @@ const QUESTIONS_POOL: Question[] = [
       { id: "c", text: "牽制で2塁封殺狙い" },
     ],
     answerChoiceId: "b",
-    explanation: "延長の無死2塁では敬遠より打者と勝負し、ダブルプレーを狙うケースが一般的です。",
+    explanation:
+      "延長の無死2塁では敬遠より打者と勝負するのが基本。\nダブルプレーを狙えるため。",
     sourceLabel: "延長戦の采配",
     sourceUrl: "https://ja.wikipedia.org/wiki/延長戦",
     sourceType: "static",
@@ -377,7 +379,8 @@ const QUESTIONS_POOL: Question[] = [
       { id: "c", text: "牽制多めに" },
     ],
     answerChoiceId: "a",
-    explanation: "2-0ではストライクを取りにいき、カウントを戻すのが基本です。",
+    explanation:
+      "2-0ではストライクを取りにいくのが基本。\nボールを重ねると打者有利になるため。",
     sourceLabel: "カウント別配球",
     sourceUrl: "https://ja.wikipedia.org/wiki/ボールカウント",
     sourceType: "static",
@@ -396,7 +399,8 @@ const QUESTIONS_POOL: Question[] = [
       { id: "c", text: "スライダーで外へ" },
     ],
     answerChoiceId: "a",
-    explanation: "満塁の2-2では空振りが取れるフォークで決める選択がリスクを抑えられます。",
+    explanation:
+      "満塁の2-2ではフォークで決めるのが正解。\n空振りが取れればリスクを抑えられる。",
     sourceLabel: "危機的場面の配球",
     sourceUrl: "https://ja.wikipedia.org/wiki/フォークボール",
     sourceType: "static",
@@ -415,7 +419,8 @@ const QUESTIONS_POOL: Question[] = [
       { id: "c", text: "牽制で3塁封殺" },
     ],
     answerChoiceId: "a",
-    explanation: "無死1塁3塁ではゴロで併殺を狙い、失点を抑えるのが定石です。",
+    explanation:
+      "無死1塁3塁ではゴロで併殺を狙うのが定石。\n失点を抑えるため。",
     sourceLabel: "守備配球の考え方",
     sourceUrl: "https://ja.wikipedia.org/wiki/併殺",
     sourceType: "static",
@@ -439,7 +444,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "c",
     explanation:
-      "MLB 2023 の Whiff%（空振り率）ではフォークが最も高い球種でした。統計ベース問題です。",
+      "MLB 2023のWhiff%ではフォークが最も高い。\n空振り率のデータでフォークが上位。",
     sourceLabel: "Baseball Savant",
     sourceUrl: "https://baseballsavant.mlb.com",
     sourceType: "data",
@@ -465,7 +470,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "b",
     explanation:
-      "得点圏ではセンター返しを狙う配球が打率面で有効とされる。データに基づく傾向として知られている。",
+      "得点圏ではセンター返しを狙う配球が有効。\n打率面でデータが有利な傾向を示す。",
     sourceLabel: "配球セオリー",
     sourceUrl: "https://ja.wikipedia.org/wiki/打率",
     sourceType: "static",
@@ -487,7 +492,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "b",
     explanation:
-      "MLB 2023 のシフト制限後、左打者で三遊間方向の打率が最も上昇しました。統計ベース問題です。",
+      "シフト制限後、左打者は三遊間方向の打率が最も上昇。\nMLB 2023のSpray Angleデータによる。",
     sourceLabel: "Baseball Savant",
     sourceUrl: "https://baseballsavant.mlb.com/leaderboard/spray-angle",
     sourceType: "data",
@@ -515,7 +520,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "a",
     explanation:
-      "実データ：大谷の本塁打は引っ張り方向が最多。Statcast・打球方向と本塁打の相関。出典：Baseball Savant / season 2023。",
+      "大谷の本塁打は引っ張り方向が最多。\nStatcast打球方向データ（2023年）による。",
     sourceLabel: "Baseball Savant",
     sourceUrl: "https://baseballsavant.mlb.com/leaderboard/statcast",
     sourceType: "data",
@@ -542,7 +547,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "a",
     explanation:
-      "実データ：2024年大谷はナ・リーグOPS1位。出典：MLB.com / season 2024 / metric OPS。",
+      "2024年大谷はナ・リーグOPS1位。\nMLB.com公式打撃成績による。",
     sourceLabel: "MLB.com",
     sourceUrl: "https://www.mlb.com/stats/2024",
     sourceType: "data",
@@ -569,7 +574,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "c",
     explanation:
-      "実データ問題：MLB 2023のStatcastでは2ストライク後のWhiff%はフォーク・スプリット系が最も高い傾向。出典：Baseball Savant / season 2023 / metric Whiff%。",
+      "2ストライク後はフォーク・スプリット系のWhiff%が最も高い。\nBaseball Savant 2023年データによる。",
     sourceLabel: "Baseball Savant",
     sourceUrl: "https://baseballsavant.mlb.com/statcast_leaderboard",
     sourceType: "data",
@@ -596,7 +601,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "a",
     explanation:
-      "実データ問題：Statcastでは引っ張り方向の打球が飛距離・xwOBAで有利な傾向。出典：Baseball Savant / season 2023 / metric 飛距離・打球方向。",
+      "引っ張り方向の打球は飛距離・xwOBAで有利。\nStatcast 2023年データによる。",
     sourceLabel: "Baseball Savant",
     sourceUrl: "https://baseballsavant.mlb.com/leaderboard/statcast",
     sourceType: "data",
@@ -623,7 +628,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "a",
     explanation:
-      "実データ問題：2023年セ・リーグ最多本塁打は村上宗隆（ヤクルト）。出典：NPB公式 / season 2023 / metric 本塁打。",
+      "2023年セ・リーグ最多本塁打は村上宗隆（ヤクルト）。\nNPB公式記録による。",
     sourceLabel: "NPB 公式",
     sourceUrl: "https://npb.jp/bis/2023/stats/bat_c.html",
     sourceType: "data",
@@ -650,7 +655,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "a",
     explanation:
-      "実データ問題：2023年パ・リーグ最多奪三振は佐々木朗希（ロッテ）。出典：NPB公式 / season 2023 / metric 奪三振。",
+      "2023年パ・リーグ最多奪三振は佐々木朗希（ロッテ）。\nNPB公式記録による。",
     sourceLabel: "NPB 公式",
     sourceUrl: "https://npb.jp/bis/2023/stats/pit_c.html",
     sourceType: "data",
@@ -677,7 +682,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "a",
     explanation:
-      "実データ問題：2022年セ・リーグチーム打率1位はヤクルト。出典：NPB公式 / season 2022 / metric チーム打率。",
+      "2022年セ・リーグチーム打率1位はヤクルト。\nNPB公式記録による。",
     sourceLabel: "NPB 公式",
     sourceUrl: "https://npb.jp/bis/2022/stats/tmb_c.html",
     sourceType: "data",
@@ -705,7 +710,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "a",
     explanation:
-      "実データ：山本は4シームの使用率が最も高い。出典：Baseball Savant / season 2024。",
+      "山本は4シームの使用率が最も高い。\nBaseball Savant 2024年データによる。",
     sourceLabel: "MLB.com",
     sourceUrl: "https://www.mlb.com/stats/pitching/2024",
     sourceType: "data",
@@ -732,7 +737,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "b",
     explanation:
-      "実データ：ダルビッシュのスライダーはWhiff%が最も高い球種。出典：Baseball Savant / season 2023。",
+      "ダルビッシュのスライダーはWhiff%が最も高い。\nBaseball Savant 2023年データによる。",
     sourceLabel: "Baseball-Reference",
     sourceUrl: "https://www.baseball-reference.com/players/d/darvish01.shtml",
     sourceType: "data",
@@ -759,7 +764,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "b",
     explanation:
-      "実データ：大谷の打球速度はリーグ上位。出典：Baseball Savant / season 2024 / metric Exit Velocity。",
+      "大谷の打球速度はリーグ上位5%以内。\nBaseball Savant Exit Velocity 2024年データによる。",
     sourceLabel: "Baseball Savant",
     sourceUrl: "https://baseballsavant.mlb.com/leaderboard/statcast",
     sourceType: "data",
@@ -786,7 +791,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "a",
     explanation:
-      "実データ問題：2023年大谷・鈴木誠也らがwOBA上位。出典：FanGraphs / season 2023 / metric wOBA。",
+      "2023年wOBA上位30人に日本人は2人以上。\n大谷・鈴木誠也らがFanGraphsデータで上位。",
     sourceLabel: "FanGraphs",
     sourceUrl: "https://www.fangraphs.com/leaders.aspx?pos=all&stats=bat&lg=all&qual=0&type=8&season=2023",
     sourceType: "data",
@@ -813,7 +818,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "b",
     explanation:
-      "実データ問題：2024年セ・リーグチーム打率1位は巨人。出典：NPB公式 / season 2024 / metric チーム打率。",
+      "2024年セ・リーグチーム打率1位は巨人。\nNPB公式記録による。",
     sourceLabel: "NPB 公式",
     sourceUrl: "https://npb.jp/bis/2024/stats/tmb_c.html",
     sourceType: "data",
@@ -839,7 +844,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "a",
     explanation:
-      "1-2で無死2塁では『外角低めのスライダー』で空振りを狙うのが有効。打者はストライクゾーンを広く見がちで、外に逃げる球に手を出しやすい。",
+      "1-2で無死2塁では外角低めのスライダーで空振りを狙うのが有効。\n打者はストライクゾーンを広く見がちで、外に逃げる球に手を出しやすい。",
     sourceLabel: "カウント別配球",
     sourceUrl: "https://ja.wikipedia.org/wiki/球種_(野球)",
     sourceType: "static",
@@ -860,7 +865,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "a",
     explanation:
-      "同点の1塁3塁・2-1では『ストライクを取りにいく』のが基本。ボールを重ねると満塁やワイルドピッチのリスクが増えるため、まずカウントを戻す。",
+      "同点の1塁3塁・2-1ではストライクを取りにいくのが基本。\nボールを重ねると満塁やワイルドピッチのリスクが増えるため。",
     sourceLabel: "危機的場面の配球",
     sourceUrl: "https://ja.wikipedia.org/wiki/ボールカウント",
     sourceType: "static",
@@ -881,7 +886,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "a",
     explanation:
-      "0-2・2アウト走者なしでは『外角低めに逃げる球』で打者を追い込むのがセオリー。ストライクゾーン外に振らせて空振り・凡打を狙う。",
+      "0-2・2アウトでは外角低めに逃げる球で追い込むのがセオリー。\nストライクゾーン外に振らせて空振り・凡打を狙う。",
     sourceLabel: "追い込み配球",
     sourceUrl: "https://ja.wikipedia.org/wiki/球種_(野球)",
     sourceType: "static",
@@ -905,7 +910,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "a",
     explanation:
-      "実データ：2024年大谷はナ・リーグOPS1位。出典：MLB.com / season 2024 / metric OPS。",
+      "2024年大谷はナ・リーグOPS1位。\nMLB.com公式打撃成績による。",
     sourceLabel: "MLB.com",
     sourceUrl: "https://www.mlb.com/stats/2024",
     sourceType: "data",
@@ -932,7 +937,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "b",
     explanation:
-      "実データ：山本は初球で4シームを最も多用。ストライクを取りにいく配球。出典：Baseball Savant / season 2024。",
+      "山本は初球で4シームを最も多用。\nストライクを取り与四球を抑える配球が特徴。",
     sourceLabel: "Baseball-Reference",
     sourceUrl: "https://www.baseball-reference.com/players/y/yamamo01.shtml",
     sourceType: "data",
@@ -959,7 +964,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "b",
     explanation:
-      "実データ：大谷のBarrel%はリーグ上位。出典：Baseball Savant / season 2023 / metric Barrel%。",
+      "大谷のBarrel%はリーグ上位3%以内。\nBaseball Savant 2023年データによる。",
     sourceLabel: "Baseball Savant",
     sourceUrl: "https://baseballsavant.mlb.com/leaderboard/statcast",
     sourceType: "data",
@@ -986,7 +991,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "a",
     explanation:
-      "実データ：今永はチェンジアップの被打率が低い。出典：Baseball Savant / season 2024。",
+      "今永はチェンジアップの被打率が最も低い。\nBaseball Savant 2024年データによる。",
     sourceLabel: "MLB.com",
     sourceUrl: "https://www.mlb.com/stats/pitching/2024",
     sourceType: "data",
@@ -1013,7 +1018,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "a",
     explanation:
-      "実データ問題：2024年パ・リーグ最多本塁打はロッテの選手。出典：NPB公式 / season 2024 / metric 本塁打。",
+      "2024年パ・リーグ最多本塁打はロッテの選手。\nNPB公式記録による。",
     sourceLabel: "NPB 公式",
     sourceUrl: "https://npb.jp/bis/2024/stats/bat_c.html",
     sourceType: "data",
@@ -1041,7 +1046,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "a",
     explanation:
-      "実データ：打率上位層は.290前後以上。出典：Baseball-Reference / season 2024 / metric AVG。",
+      "打率上位10%は.290以上。\nBaseball-Reference 2024年データによる。",
     sourceLabel: "Baseball-Reference",
     sourceUrl: "https://www.baseball-reference.com/leagues/majors/2024-standard-batting.shtml",
     sourceType: "data",
@@ -1068,7 +1073,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "b",
     explanation:
-      "実データ：奪三振中位層はスライダー・フォーク系で空振りを取る配球が一般的。出典：Baseball-Reference / season 2023 / metric K。",
+      "奪三振中位層はスライダー・フォーク系で空振りを取る。\nBaseball-Reference 2023年データによる。",
     sourceLabel: "Baseball-Reference",
     sourceUrl: "https://www.baseball-reference.com/leagues/majors/2023-standard-pitching.shtml",
     sourceType: "data",
@@ -1095,7 +1100,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "c",
     explanation:
-      "実データ：OBP平均付近は.320前後。出典：MLB.com / season 2024 / metric OBP。",
+      "OBP平均付近は.320〜.329。\nMLB.com 2024年データによる。",
     sourceLabel: "MLB.com",
     sourceUrl: "https://www.mlb.com/stats/2024",
     sourceType: "data",
@@ -1122,7 +1127,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "d",
     explanation:
-      "実データ：与四球が多い層はBB/9が4.0前後以上。出典：Baseball-Reference / season 2023 / metric BB/9。",
+      "与四球が多い層はBB/9が4.0以上。\nBaseball-Reference 2023年データによる。",
     sourceLabel: "Baseball-Reference",
     sourceUrl: "https://www.baseball-reference.com/leagues/majors/2023-standard-pitching.shtml",
     sourceType: "data",
@@ -1149,7 +1154,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "b",
     explanation:
-      "実データ：山本は2ストライク後のスライダーで空振りを多く取る。出典：Baseball Savant / season 2024。",
+      "山本は2ストライク後のスライダーで空振りを最も多く取る。\nBaseball Savant 2024年データによる。",
     sourceLabel: "MLB.com",
     sourceUrl: "https://www.mlb.com/stats/pitching/2024",
     sourceType: "data",
@@ -1177,7 +1182,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "c",
     explanation:
-      "実データ：大谷の盗塁数は規定打席打者で平均付近（30位前後）。出典：Baseball-Reference / season 2023 / metric SB。",
+      "大谷の盗塁数は規定打席打者で30位前後。\nBaseball-Reference 2023年データによる。",
     sourceLabel: "Baseball-Reference",
     sourceUrl: "https://www.baseball-reference.com/players/o/ohtansh01.shtml",
     sourceType: "data",
@@ -1204,7 +1209,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "a",
     explanation:
-      "実データ：2024年セ・リーグチーム打率1位は.270前後以上。出典：NPB公式 / season 2024 / metric チーム打率。",
+      "2024年セ・リーグチーム打率1位は.270以上。\nNPB公式記録による。",
     sourceLabel: "NPB 公式",
     sourceUrl: "https://npb.jp/bis/2024/stats/tmb_c.html",
     sourceType: "data",
@@ -1258,7 +1263,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "d",
     explanation:
-      "実データ：失点上位球団は1試合あたり4.5点前後以上。出典：NPB公式 / season 2024 / metric チーム失点。",
+      "失点上位球団は1試合あたり4.5点以上。\nNPB公式 2024年データによる。",
     sourceLabel: "NPB 公式",
     sourceUrl: "https://npb.jp/bis/2024/stats/tmb_p.html",
     sourceType: "data",
@@ -1285,7 +1290,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "b",
     explanation:
-      "実データ：佐々木はフォークでストライクを多く取り与四球を抑えた。出典：NPB公式 / season 2023。",
+      "佐々木はフォークでストライクを最も多く取り与四球を抑えた。\nNPB公式 2023年データによる。",
     sourceLabel: "NPB 公式",
     sourceUrl: "https://npb.jp/bis/2023/stats/pit_c.html",
     sourceType: "data",
@@ -1314,7 +1319,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "c",
     explanation:
-      "実データ：0-2ではフォーク・スプリット系がWhiff%上位帯（40%以上）。打者はストライクゾーンを意識するため、ボールゾーンに落ちる縦の変化球に手を出しやすい。出典：Baseball Savant / season 2023 / Whiff% by count。",
+      "0-2ではフォーク・スプリット系がWhiff%上位。\n打者はストライクゾーンを意識するため、ボールゾーンに落ちる縦の変化球に手を出しやすい。",
     sourceLabel: "Baseball Savant",
     sourceUrl: "https://baseballsavant.mlb.com/leaderboard/statcast",
     sourceType: "data",
@@ -1341,7 +1346,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "c",
     explanation:
-      "実データ：2ストライク後の球種使用率はリーグ平均付近に分布。出典：Baseball Savant / season 2024。",
+      "2ストライク後はチェンジアップの使用率が平均付近。\nBaseball Savant 2024年データによる。",
     sourceLabel: "Baseball Savant",
     sourceUrl: "https://baseballsavant.mlb.com",
     sourceType: "data",
@@ -1368,7 +1373,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "a",
     explanation:
-      "実データ：3-2ではストレート系が打者に振らせやすい。出典：Baseball Savant / season 2023。",
+      "3-2では4シームが打者に振らせやすい。\nBaseball Savant 2023年データによる。",
     sourceLabel: "Baseball Savant",
     sourceUrl: "https://baseballsavant.mlb.com",
     sourceType: "data",
@@ -1395,7 +1400,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "a",
     explanation:
-      "実データ：初球で打者が振りにいくのはストレート系が多い。出典：Baseball Savant / season 2024。",
+      "初球で打者が振りにいくのは4シームが多い。\nBaseball Savant 2024年データによる。",
     sourceLabel: "Baseball Savant",
     sourceUrl: "https://baseballsavant.mlb.com",
     sourceType: "data",
@@ -1422,7 +1427,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "b",
     explanation:
-      "1-2ではスライダー・フォーク系で空振りを狙う配球が有効とされる。打者はストライクゾーンを意識するため、ボールゾーンに落ちる変化球に手を出しやすい。",
+      "1-2ではスライダーで空振りを狙うのが有効。\n打者はストライクゾーンを意識するため、ボールゾーンに落ちる変化球に手を出しやすい。",
     sourceLabel: "配球セオリー",
     sourceUrl: "https://ja.wikipedia.org/wiki/球種_(野球)",
     sourceType: "static",
@@ -1445,7 +1450,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "a",
     explanation:
-      "牽制後はストレートでストライクを取りにいく配球が一般的。走者をけん制しつつ打者と向き合う。牽制で走者の注意を引いた後、ストレートでストライクを取ることで配球の主導権を握る。",
+      "牽制後は4シームでストライクを取りにいくのが基本。\n走者の注意を引いた後、ストライクで配球の主導権を握る。",
     sourceLabel: "配球セオリー",
     sourceUrl: "https://ja.wikipedia.org/wiki/牽制球",
     sourceType: "static",
@@ -1469,7 +1474,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "b",
     explanation:
-      "実データ：得点圏ではスライダー・チェンジアップ系が被打率の低い帯（.200以下）。打者は得点を意識して積極的に振るため、ボールゾーンに落ちる変化球に手を出しやすい。出典：Baseball Savant / 2023。",
+      "得点圏ではスライダーの被打率が低い。\n打者は得点を意識して積極的に振るため、ボールゾーンに落ちる変化球に手を出しやすい。",
     sourceLabel: "Baseball Savant",
     sourceUrl: "https://baseballsavant.mlb.com",
     sourceType: "data",
@@ -1496,7 +1501,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "a",
     explanation:
-      "2-0ではストライクを取りにいく配球が基本だが、ストライクゾーンに来たストレートは打たれやすい傾向がある。打者はボールカウントが有利なため、ストライクゾーンに入ったストレートを待っている。",
+      "2-0でストライクを取りにいくとき、4シームは打たれやすい。\n打者はボールカウント有利のため、ストライクゾーンのストレートを待っている。",
     sourceLabel: "配球セオリー",
     sourceUrl: "https://ja.wikipedia.org/wiki/ボールカウント",
     sourceType: "static",
@@ -1520,7 +1525,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "a",
     explanation:
-      "実データ：山本は初球でストレートを多用し与四球率を抑えていた（BB/9 1.5以下）。初球ストライクを取ることで配球の主導権を握り、与四球を減らす配球が特徴。出典：NPB公式 / season 2023 / BB/9。",
+      "山本は初球で4シームを多用し与四球を抑えた。\n初球ストライクで配球の主導権を握る配球が特徴。",
     sourceLabel: "NPB 公式",
     sourceUrl: "https://npb.jp/bis/2023/stats/pit_c.html",
     sourceType: "data",
@@ -1548,7 +1553,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "a",
     explanation:
-      "実データ：初球はストレートが最も多用されストライク率が高い。出典：Baseball Savant / season 2024。",
+      "初球でストライクを取りにいくのは4シームが最も多い。\nBaseball Savant 2024年データによる。",
     sourceLabel: "Baseball Savant",
     sourceUrl: "https://baseballsavant.mlb.com/leaderboard/first-pitch-strike",
     sourceType: "data",
@@ -1575,7 +1580,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "b",
     explanation:
-      "実データ：0-2ではスライダー・カーブ系がChase%上位帯。出典：Baseball Savant / season 2023。",
+      "0-2ではスライダーのChase%が高い。\nBaseball Savant 2023年データによる。",
     sourceLabel: "Baseball Savant",
     sourceUrl: "https://baseballsavant.mlb.com",
     sourceType: "data",
@@ -1601,7 +1606,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "d",
     explanation:
-      "満塁では与四球を避ける配球が基本。制球に課題のある層では与四球が増えやすい。",
+      "満塁で与四球が多い層は制球が定まらない傾向。\n制球に課題があると与四球が増える。",
     sourceLabel: "配球セオリー",
     sourceUrl: "https://ja.wikipedia.org/wiki/ボールカウント",
     sourceType: "static",
@@ -1624,7 +1629,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "b",
     explanation:
-      "実データ：ダルビッシュのスライダーはWhiff%が最も高い球種だった。出典：Baseball Savant / 2023。",
+      "ダルビッシュのスライダーはWhiff%が最も高い。\nBaseball Savant 2023年データによる。",
     sourceLabel: "Baseball Savant",
     sourceUrl: "https://baseballsavant.mlb.com/player/476",
     sourceType: "data",
@@ -1651,7 +1656,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "a",
     explanation:
-      "実データ：1-1でのストレート使用率はリーグ平均付近に分布。出典：Baseball Savant / season 2024。",
+      "1-1では4シームの使用率が平均付近。\nBaseball Savant 2024年データによる。",
     sourceLabel: "Baseball Savant",
     sourceUrl: "https://baseballsavant.mlb.com",
     sourceType: "data",
@@ -1677,7 +1682,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "c",
     explanation:
-      "2アウトではフォーク・スライダー系で決め球を投げる配球が空振りを取るうえで有効とされる。",
+      "2アウトではフォークで決め球を投げるのが有効。\n空振りを取るうえで縦の変化球が効く。",
     sourceLabel: "配球セオリー",
     sourceUrl: "https://ja.wikipedia.org/wiki/球種_(野球)",
     sourceType: "static",
@@ -1700,7 +1705,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "a",
     explanation:
-      "実データ：3-0ではストレートでストライクゾーンに投げる傾向が強い。出典：Baseball Savant / 2024。",
+      "3-0では4シームでストライクゾーンに投げる傾向が強い。\nBaseball Savant 2024年データによる。",
     sourceLabel: "Baseball Savant",
     sourceUrl: "https://baseballsavant.mlb.com",
     sourceType: "data",
@@ -1727,7 +1732,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "c",
     explanation:
-      "実データ：佐々木のフォークは奪三振の決め球として最も多用された。出典：NPB公式 / season 2023。",
+      "佐々木はフォークで奪三振を最も多く取った。\nNPB公式 2023年データによる。",
     sourceLabel: "NPB 公式",
     sourceUrl: "https://npb.jp/bis/2023/stats/pit_c.html",
     sourceType: "data",
@@ -1753,7 +1758,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "a",
     explanation:
-      "2塁ランナーではけん制・ピックオフのあと、ストレートでストライクを取りにいく配球が一般的。",
+      "2塁けん制・ピックオフ後は4シームでストライクを取りにいくのが基本。\n走者をけん制した後、打者と向き合う。",
     sourceLabel: "カウント・走者別配球",
     sourceUrl: "https://ja.wikipedia.org/wiki/ボールカウント",
     sourceType: "static",
@@ -1776,7 +1781,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "c",
     explanation:
-      "実データ：1-2での変化球（低速）はWhiff%上位帯。出典：Baseball Savant / season 2023。",
+      "1-2ではフォークのWhiff%が高い。\nBaseball Savant 2023年データによる。",
     sourceLabel: "Baseball Savant",
     sourceUrl: "https://baseballsavant.mlb.com",
     sourceType: "data",
@@ -1802,7 +1807,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "d",
     explanation:
-      "満塁ではプレッシャーで初球が甘くなったり、慎重になりすぎてストライクが少なくなる層は制球が定まらない傾向がある。",
+      "満塁で初球ストライクを取れない層は制球が定まらない傾向。\nプレッシャーで甘くなったり慎重になりすぎる。",
     sourceLabel: "場面別配球",
     sourceUrl: "https://ja.wikipedia.org/wiki/ボールカウント",
     sourceType: "static",
@@ -1825,7 +1830,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "b",
     explanation:
-      "実データ：2023年MLB先発のスプリット・スライダー系はWhiff%でリーグ上位帯。出典：Baseball Savant / 2023。",
+      "2023年MLB先発のWhiff%が最も高い球種はスライダー。\nBaseball Savant 2023年データによる。",
     sourceLabel: "Baseball Savant",
     sourceUrl: "https://baseballsavant.mlb.com/leaderboard/statcast",
     sourceType: "data",
@@ -1852,7 +1857,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "a",
     explanation:
-      "実データ：2-1ではストレート使用率が平均付近に分布する。出典：Baseball Savant / season 2024。",
+      "2-1では4シームの使用率が平均付近。\nBaseball Savant 2024年データによる。",
     sourceLabel: "Baseball Savant",
     sourceUrl: "https://baseballsavant.mlb.com",
     sourceType: "data",
@@ -1878,7 +1883,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "c",
     explanation:
-      "ゴロ狙いの沈む球（フォーク・シンカー系）は打たせて取る場面で有効で、うまく決まったときの被打率は低い傾向がある。",
+      "ゴロ狙いではフォークが有効。\n沈む球はバットの上から叩かせてゴロを誘い、併殺を狙える。",
     sourceLabel: "場面別配球",
     sourceUrl: "https://ja.wikipedia.org/wiki/ボールカウント",
     sourceType: "static",
@@ -1901,7 +1906,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "b",
     explanation:
-      "実データ：2-0ではスライダー・カーブ系がゾーン外に振らせて空振りを取る傾向が強い。出典：Baseball Savant / 2024。",
+      "2-0ではスライダーがゾーン外に振らせて空振りを取る傾向が強い。\nBaseball Savant 2024年データによる。",
     sourceLabel: "Baseball Savant",
     sourceUrl: "https://baseballsavant.mlb.com",
     sourceType: "data",
@@ -1927,7 +1932,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "b",
     explanation:
-      "延長では決め球にスライダー・フォーク系の変化球が多用され、空振りを取る効果が高い傾向がある。",
+      "延長ではスライダーで決め球を投げるのが基本。\n空振りを取る効果が高い変化球だから。",
     sourceLabel: "場面別配球",
     sourceUrl: "https://ja.wikipedia.org/wiki/ボールカウント",
     sourceType: "static",
@@ -1948,7 +1953,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "a",
     explanation:
-      "2-0では『ストライクを取りにいく』のが基本。ボールを重ねると打者有利になるため、カウントを戻してから変化球を使う。",
+      "2-0ではストライクを取りにいくのが基本。\nボールを重ねると打者有利になるため。",
     sourceLabel: "カウント別配球",
     sourceUrl: "https://ja.wikipedia.org/wiki/ボールカウント",
     sourceType: "static",
@@ -1969,7 +1974,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "a",
     explanation:
-      "1-2・2アウト1塁では『外角低めのスライダー』で空振りを狙うのが有効。打者は振りにいきやすく、外に逃げる球に手を出しやすい。",
+      "1-2・2アウト1塁では外角低めのスライダーで空振りを狙うのが有効。\n打者は振りにいきやすく、外に逃げる球に手を出しやすい。",
     sourceLabel: "終盤の配球",
     sourceUrl: "https://ja.wikipedia.org/wiki/球種_(野球)",
     sourceType: "static",
@@ -1990,7 +1995,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "a",
     explanation:
-      "満塁同点の2-2では『フォークで空振り』を狙うのが有効。打者は待ちに回りにくく、空振り・凡打でダブルプレーも狙える。",
+      "満塁同点の2-2ではフォークで空振りを狙うのが有効。\n打者は待ちに回りにくく、ダブルプレーも狙える。",
     sourceLabel: "危機的場面の配球",
     sourceUrl: "https://ja.wikipedia.org/wiki/フォークボール",
     sourceType: "static",
@@ -2017,7 +2022,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "a",
     explanation:
-      "右投手→左打者ではチェンジアップの逃げる軌道が有効。Statcastデータで被打率が最も低い傾向。",
+      "右投手→左打者ではチェンジアップの被打率が最も低い。\n逃げる軌道が左打者に効く。",
     sourceLabel: "Baseball Savant",
     sourceUrl: "https://baseballsavant.mlb.com/leaderboard/pitch-arsenals",
     sourceType: "data",
@@ -2044,7 +2049,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "b",
     explanation:
-      "NPB先発投手の平均球数は85〜95球程度。6回100球を目安に継投するチームが多い。",
+      "NPB先発の平均球数は85〜95球。\n6回100球を目安に継投するチームが多い。",
     sourceLabel: "NPB 公式",
     sourceUrl: "https://npb.jp/bis/2023/stats/pit_c.html",
     sourceType: "data",
@@ -2071,7 +2076,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "a",
     explanation:
-      "スイーパーは横変化量（Horizontal Break）が大きいほど空振りを取りやすい。15インチ以上で上位帯。",
+      "スイーパーは横変化量が大きいほど空振りを取りやすい。\n15インチ以上でWhiff%上位帯。",
     sourceLabel: "Baseball Savant",
     sourceUrl: "https://baseballsavant.mlb.com/leaderboard/pitch-movement",
     sourceType: "data",
@@ -2098,7 +2103,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "a",
     explanation:
-      "三振が少ない打者はコンタクト率が高い傾向。ただし長打力は犠牲になることが多い。",
+      "三振が少ない打者はコンタクト率が高い。\n長打力は犠牲になることが多い。",
     sourceLabel: "Baseball-Reference",
     sourceUrl: "https://www.baseball-reference.com/leagues/majors/2023-batting-leaders.shtml",
     sourceType: "data",
@@ -2125,7 +2130,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "a",
     explanation:
-      "ホールド数は継投の多さに比例する。先発を早めに降板させる分業制のチームが上位。",
+      "ホールド数上位は先発を早めに降板させるチーム。\n継投の多さに比例する。",
     sourceLabel: "NPB 公式",
     sourceUrl: "https://npb.jp/bis/2024/stats/pit_c.html",
     sourceType: "data",
@@ -2152,7 +2157,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "c",
     explanation:
-      "初球ストライクを取られると打者は不利になり、打率は.240〜.259程度に低下する。",
+      "初球ストライク後は打率が.240〜.259程度に低下。\n打者は不利なカウントになるため。",
     sourceLabel: "Baseball Savant",
     sourceUrl: "https://baseballsavant.mlb.com/leaderboard/expected_statistics",
     sourceType: "data",
@@ -2179,7 +2184,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "a",
     explanation:
-      "2ストライクからの低めスプリットはChase%が非常に高い。落ちる球に打者が手を出しやすい。",
+      "2ストライク後は低めスプリットのChase%が高い。\n落ちる球に打者が手を出しやすい。",
     sourceLabel: "Baseball Savant",
     sourceUrl: "https://baseballsavant.mlb.com/leaderboard/pitch-arsenals",
     sourceType: "data",
@@ -2206,7 +2211,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "a",
     explanation:
-      "IsoDが大きい打者は四球を選ぶ能力が高い。出塁率を打率以上に稼げる。",
+      "IsoDが大きい打者は四球を選ぶ能力が高い。\n出塁率を打率以上に稼げる。",
     sourceLabel: "NPB 公式",
     sourceUrl: "https://npb.jp/bis/2023/stats/bat_c.html",
     sourceType: "data",
@@ -2233,7 +2238,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "a",
     explanation:
-      "Hard Hit%が低い打者はバットスピードや打球角度に課題がある。強い打球を打てない。",
+      "Hard Hit%が低い打者はバットスピードや打球角度に課題。\n強い打球を打てない。",
     sourceLabel: "Baseball Savant",
     sourceUrl: "https://baseballsavant.mlb.com/leaderboard/statcast",
     sourceType: "data",
@@ -2260,7 +2265,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "c",
     explanation:
-      "シンカー投手のGB%は50〜60%が多い。沈む軌道でゴロを誘発しやすい。",
+      "シンカー投手のGB%は50〜60%。\n沈む軌道でゴロを誘発しやすい。",
     sourceLabel: "Baseball Savant",
     sourceUrl: "https://baseballsavant.mlb.com/leaderboard/pitch-arsenals",
     sourceType: "data",
@@ -2287,7 +2292,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "a",
     explanation:
-      "QS率が高い投手は球数を抑えて6回以上を投げる。与四球の少なさが鍵。",
+      "QS率が高い投手は与四球が少ない。\n球数を抑えて6回以上を投げられる。",
     sourceLabel: "NPB 公式",
     sourceUrl: "https://npb.jp/bis/2024/stats/pit_c.html",
     sourceType: "data",
@@ -2314,7 +2319,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "b",
     explanation:
-      "有利カウントではスライダーのWhiff%が最も高い。ゾーン外に振らせる決め球として有効。",
+      "有利カウントではスライダーのWhiff%が最も高い。\nゾーン外に振らせる決め球として有効。",
     sourceLabel: "Baseball Savant",
     sourceUrl: "https://baseballsavant.mlb.com",
     sourceType: "data",
@@ -2341,7 +2346,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "b",
     explanation:
-      "打者有利カウントでは甘い球を狙い打ちするため、打球速度は平均より2〜4mph速くなる傾向。",
+      "打者有利カウントでは打球速度が平均より2〜4mph速い。\n甘い球を狙い打ちするため。",
     sourceLabel: "Baseball Savant",
     sourceUrl: "https://baseballsavant.mlb.com/leaderboard/statcast",
     sourceType: "data",
@@ -2368,7 +2373,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "a",
     explanation:
-      "エラーが少ないチームは派手なプレーより確実な捕球・送球を重視する傾向がある。",
+      "エラーが少ないチームは確実性が高い。\n派手なプレーより捕球・送球を重視する。",
     sourceLabel: "NPB 公式",
     sourceUrl: "https://npb.jp/bis/2023/stats/tmf_c.html",
     sourceType: "data",
@@ -2395,7 +2400,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "a",
     explanation:
-      "xBAより実打率が高い打者はBABIP（インプレー打球の打率）が高め。運や打球の落下点が有利に働いている。",
+      "xBAより実打率が高い打者はBABIPが高め。\n打球の落下点が有利に働いている。",
     sourceLabel: "Baseball Savant",
     sourceUrl: "https://baseballsavant.mlb.com/leaderboard/expected_statistics",
     sourceType: "data",
@@ -2422,7 +2427,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "a",
     explanation:
-      "打者は2巡目で投手の球筋に慣れるため、被打率は.020〜.030程度上昇する傾向がある。",
+      "2巡目は被打率が1巡目より.020〜.030程度上昇。\n打者が投手の球筋に慣れるため。",
     sourceLabel: "Baseball Savant",
     sourceUrl: "https://baseballsavant.mlb.com",
     sourceType: "data",
@@ -2449,7 +2454,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "a",
     explanation:
-      "ISO平均付近の打者は二塁打・三塁打も本塁打もそこそこ打てる中距離打者が多い。",
+      "ISO平均付近の打者は中距離打者のバランス型。\n二塁打・三塁打・本塁打をそこそこ打てる。",
     sourceLabel: "NPB 公式",
     sourceUrl: "https://npb.jp/bis/2024/stats/bat_c.html",
     sourceType: "data",
@@ -2476,7 +2481,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "a",
     explanation:
-      "セーブ成功率が高いクローザーは奪三振率が高く、打たせない投球ができる投手が多い。",
+      "セーブ成功率90%超のクローザーは奪三振率が高い。\n打たせない投球ができる。",
     sourceLabel: "Baseball-Reference",
     sourceUrl: "https://www.baseball-reference.com/leagues/majors/2023-reliever-pitching.shtml",
     sourceType: "data",
@@ -2504,7 +2509,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "b",
     explanation:
-      "盗塁成功率が低いチームは左投手時の成功率が大きく低下する傾向がある。左投手は1塁を向いているため走者を牽制しやすく、スタートが遅れることが多い。",
+      "盗塁成功率が低いチームは左投手時に10%以上低下。\n左投手は1塁を向いており牽制しやすいため。",
     sourceLabel: "Baseball-Reference",
     sourceUrl: "https://www.baseball-reference.com/leagues/majors/2024-baserunning.shtml",
     sourceType: "data",
@@ -2531,7 +2536,7 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "a",
     explanation:
-      "得点圏打率が高い打者はプレッシャー下でもコンタクト率を維持できる傾向がある。",
+      "得点圏打率が高い打者はコンタクト率が高い。\nプレッシャー下でも維持できる。",
     sourceLabel: "NPB 公式",
     sourceUrl: "https://npb.jp/bis/2023/stats/bat_c.html",
     sourceType: "data",
@@ -2561,7 +2566,8 @@ const QUESTIONS_POOL: Question[] = [
       { id: "d", text: "外角ストレート" },
     ],
     answerChoiceId: "a",
-    explanation: "追い込んだ後はウイニングショットで空振りを狙う。ストレートで押した後のフォークは打者の目線が上にあるため効果的。外角低めに落ちるフォークは打者が手を出しやすく、空振りを取れる確率が高い。",
+    explanation:
+      "追い込んだ後はフォークで空振りを狙うのが有効。\nストレートで押した後のフォークは打者の目線が上にあり、外角低めに落ちる球に手を出しやすい。",
     sourceLabel: "配球セオリー",
     sourceUrl: "https://ja.wikipedia.org/wiki/球種_(野球)",
     sourceType: "static",
@@ -2582,7 +2588,8 @@ const QUESTIONS_POOL: Question[] = [
       { id: "d", text: "敬遠気味に外す" },
     ],
     answerChoiceId: "a",
-    explanation: "フルカウントでは四球のリスクがあるため、ストレートでゾーン内勝負が基本。走者が走るため捕手が投げやすい直球が選択されやすい。",
+    explanation:
+      "フルカウントではストレートでゾーン内勝負が基本。\n四球のリスクがあるため、捕手が投げやすい直球が選択される。",
     sourceLabel: "配球セオリー",
     sourceUrl: "https://ja.wikipedia.org/wiki/ボールカウント",
     sourceType: "static",
@@ -2603,7 +2610,8 @@ const QUESTIONS_POOL: Question[] = [
       { id: "d", text: "インコースに厳しく投げて詰まらせる" },
     ],
     answerChoiceId: "c",
-    explanation: "得点圏で強打者相手の初球は、甘く入るリスクを避け際どいコースで見逃しストライクを取りにいくのがセオリー。",
+    explanation:
+      "得点圏・強打者相手の初球は際どいコースで見逃しストライクを狙う。\n甘く入るリスクを避けるため。",
     sourceLabel: "配球セオリー",
     sourceUrl: "https://ja.wikipedia.org/wiki/ボールカウント",
     sourceType: "static",
@@ -2624,7 +2632,8 @@ const QUESTIONS_POOL: Question[] = [
       { id: "d", text: "内角はホームランが出にくい" },
     ],
     answerChoiceId: "a",
-    explanation: "左投手の球は左打者のインコースへ食い込む軌道になり、バットの芯で捉えにくい。これが左対左の優位性の根拠。",
+    explanation:
+      "左投手vs左打者では内角攻めが基本。\n同じ側からの球は食い込む軌道になり、バットの芯で捉えにくい。",
     sourceLabel: "配球セオリー",
     sourceUrl: "https://ja.wikipedia.org/wiki/球種_(野球)",
     sourceType: "static",
@@ -2645,7 +2654,8 @@ const QUESTIONS_POOL: Question[] = [
       { id: "d", text: "カーブ" },
     ],
     answerChoiceId: "b",
-    explanation: "ゴロを打たせたい場面では低めのシンカーやツーシームが有効。バットの上から叩かせてゴロを誘い、併殺を狙える。",
+    explanation:
+      "ゴロ狙いでは低めのシンカー・ツーシームが有効。\nバットの上から叩かせてゴロを誘い、併殺を狙える。",
     sourceLabel: "配球セオリー",
     sourceUrl: "https://ja.wikipedia.org/wiki/球種_(野球)",
     sourceType: "static",
@@ -2666,7 +2676,8 @@ const QUESTIONS_POOL: Question[] = [
       { id: "d", text: "際どいコースに投げる" },
     ],
     answerChoiceId: "b",
-    explanation: "リリーフ登板直後はまずストライクゾーンで腕を振ることが最優先。ストレートでストライクを取りリズムを作るのがセオリー。",
+    explanation:
+      "リリーフ登板直後はストレートでストライク先行が基本。\n腕を振ってリズムを作るのが最優先。",
     sourceLabel: "配球セオリー",
     sourceUrl: "https://ja.wikipedia.org/wiki/ボールカウント",
     sourceType: "static",
@@ -2687,7 +2698,8 @@ const QUESTIONS_POOL: Question[] = [
       { id: "d", text: "緩急を使って泳がせる" },
     ],
     answerChoiceId: "b",
-    explanation: "シフトを敷いた方向に打球を誘導するのが基本。右寄りシフトなら内角を攻めて引っ張らせ、シフトの守備範囲で処理する。",
+    explanation:
+      "右寄りシフトなら内角を攻めて引っ張らせるのが基本。\nシフトの守備範囲に打球を誘導するため。",
     sourceLabel: "配球セオリー",
     sourceUrl: "https://ja.wikipedia.org/wiki/球種_(野球)",
     sourceType: "static",
@@ -2708,7 +2720,8 @@ const QUESTIONS_POOL: Question[] = [
       { id: "d", text: "打者のタイミングを完全に外す" },
     ],
     answerChoiceId: "a",
-    explanation: "見せ球は打者の目線や意識を散らし、本命の決め球をより効果的にするための布石。緩急や軌道の残像が次の球の見え方を変える。",
+    explanation:
+      "見せ球は打者の目線をずらし決め球の効果を高める。\n緩急や軌道の残像が次の球の見え方を変える。",
     sourceLabel: "配球セオリー",
     sourceUrl: "https://ja.wikipedia.org/wiki/球種_(野球)",
     sourceType: "static",
@@ -2729,7 +2742,8 @@ const QUESTIONS_POOL: Question[] = [
       { id: "d", text: "全球ストレートで押し切る" },
     ],
     answerChoiceId: "a",
-    explanation: "球速低下は疲労のサイン。打たせて取る配球に切り替え、少ない球数でアウトを取ることでイニングを延ばせる。",
+    explanation:
+      "球速低下時は低めツーシームで打たせて取る。\n少ない球数でアウトを取りイニングを延ばすため。",
     sourceLabel: "配球セオリー",
     sourceUrl: "https://ja.wikipedia.org/wiki/ボールカウント",
     sourceType: "static",
@@ -2750,7 +2764,8 @@ const QUESTIONS_POOL: Question[] = [
       { id: "d", text: "ど真ん中にストレート" },
     ],
     answerChoiceId: "b",
-    explanation: "打者が外角を狙っている場合、内角の変化球で意識を内側に向けさせるのが定石。打者の待ち球を外し、以降の配球の幅を広げる。",
+    explanation:
+      "打者が外角を狙っているなら内角の変化球で意識を変える。\n待ち球を外し、以降の配球の幅を広げる。",
     sourceLabel: "配球セオリー",
     sourceUrl: "https://ja.wikipedia.org/wiki/球種_(野球)",
     sourceType: "static",
@@ -2963,7 +2978,8 @@ const KNOWLEDGE_POOL: Question[] = [
       { id: "c", text: "ダルビッシュ有" },
     ],
     answerChoiceId: "a",
-    explanation: "2024年は山本由伸が最多勝のタイトルを獲得しました。",
+    explanation:
+      "2024年MLB最多勝は山本由伸。\nMLB公式記録による。",
     sourceLabel: "MLB公式",
     sourceUrl: "https://www.mlb.com",
     sourceType: "static",
@@ -2982,7 +2998,8 @@ const KNOWLEDGE_POOL: Question[] = [
       { id: "c", text: "フィリーズ" },
     ],
     answerChoiceId: "a",
-    explanation: "2023年はテキサス・レンジャーズが優勝しました。",
+    explanation:
+      "2023年ワールドシリーズ優勝はレンジャーズ。\nMLB公式記録による。",
     sourceLabel: "MLB公式",
     sourceUrl: "https://www.mlb.com",
     sourceType: "static",
@@ -3002,7 +3019,8 @@ const KNOWLEDGE_POOL: Question[] = [
       { id: "d", text: "広島" },
     ],
     answerChoiceId: "a",
-    explanation: "2024年セ・リーグ優勝は読売巨人軍です。",
+    explanation:
+      "2024年セ・リーグ優勝は巨人。\nNPB公式記録による。",
     sourceLabel: "NPB公式",
     sourceUrl: "https://npb.jp",
     sourceType: "static",
@@ -3022,7 +3040,8 @@ const KNOWLEDGE_POOL: Question[] = [
       { id: "d", text: "ジャイアンツ" },
     ],
     answerChoiceId: "a",
-    explanation: "2024年ナ・リーグ西地区優勝はロサンゼルス・ドジャースです。",
+    explanation:
+      "2024年ナ・リーグ西地区優勝はドジャース。\nMLB公式記録による。",
     sourceLabel: "MLB公式",
     sourceUrl: "https://www.mlb.com",
     sourceType: "static",
@@ -3042,7 +3061,8 @@ const KNOWLEDGE_POOL: Question[] = [
       { id: "d", text: "ダイヤモンドバックス" },
     ],
     answerChoiceId: "a",
-    explanation: "2024年はカンザスシティ・ロイヤルズが優勝しました。",
+    explanation:
+      "2024年ワールドシリーズ優勝はロイヤルズ。\nMLB公式記録による。",
     sourceLabel: "MLB公式",
     sourceUrl: "https://www.mlb.com/postseason",
     sourceType: "static",
@@ -3062,7 +3082,8 @@ const KNOWLEDGE_POOL: Question[] = [
       { id: "d", text: "西武" },
     ],
     answerChoiceId: "a",
-    explanation: "2023年パ・リーグ最多勝はオリックスの山本由伸（当時）です。",
+    explanation:
+      "2023年パ・リーグ最多勝は山本由伸（オリックス当時）。\nNPB公式記録による。",
     sourceLabel: "NPB公式",
     sourceUrl: "https://npb.jp/bis/2023/stats/pit_c.html",
     sourceType: "static",
