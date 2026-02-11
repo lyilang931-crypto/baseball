@@ -85,6 +85,8 @@ interface QuestionBase {
   sourceType?: SourceType;
   /** 実データ由来の場合の試合/データID（任意） */
   sourceGameId?: string;
+  /** 解説の直後に表示する補足（例: ※フォークを選ぶ考え方もあります） */
+  alternativeNote?: string;
   difficulty: 1 | 2 | 3 | 4 | 5;
 }
 
@@ -1427,7 +1429,8 @@ const QUESTIONS_POOL: Question[] = [
     ],
     answerChoiceId: "b",
     explanation:
-      "1-2ではスライダーで空振りを狙うのが有効。\n打者はストライクゾーンを意識するため、ボールゾーンに落ちる変化球に手を出しやすい。",
+      "1ボール2ストライクでは、ストライクに見せて横に外すスライダーが有効。\nフォークも有力だが、ワンバウンドのリスクがあるため、この場面ではスライダーが最適。",
+    alternativeNote: "※フォークを選ぶ考え方もあります",
     sourceLabel: "配球セオリー",
     sourceUrl: "https://ja.wikipedia.org/wiki/球種_(野球)",
     sourceType: "static",

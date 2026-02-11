@@ -549,6 +549,7 @@ export default function Home() {
           q.choices.find((c) => c.id === q.answerChoiceId)?.text ?? ""
         }
         explanation={q.explanation}
+        alternativeNote={q.alternativeNote}
         sourceLabel={q.sourceLabel}
         sourceUrl={q.sourceUrl}
         sourceType={q.sourceType}

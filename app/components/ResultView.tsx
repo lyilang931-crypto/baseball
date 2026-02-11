@@ -27,6 +27,8 @@ interface ResultViewProps {
   sourceType?: SourceType;
   /** 実データ / 配球セオリー / 知識問題 */
   questionType?: "REAL_DATA" | "THEORY" | "KNOWLEDGE";
+  /** 解説の直後に表示する補足（例: ※フォークを選ぶ考え方もあります）問題ごとに切り替え可能 */
+  alternativeNote?: string;
   /** 実データ時の出典短縮表示（例: "NPB 2022", "MLB 2023"） */
   sourceDataSourceShort?: string;
   sourceGameId?: string;
@@ -49,6 +51,7 @@ export default function ResultView({
   questionType,
   sourceDataSourceShort,
   sourceGameId,
+  alternativeNote,
   rating,
   ratingDelta,
   onNext,
@@ -111,6 +114,9 @@ export default function ResultView({
             {!isCorrect ? "理由" : "解説"}
           </h3>
           <p className="text-gray-700 text-sm whitespace-pre-line">{replaceCountInText(explanation)}</p>
+          {alternativeNote ? (
+            <p className="text-xs text-gray-500 mt-1">{alternativeNote}</p>
+          ) : null}
         </section>
 
         {(sourceUrl || sourceLabel || sourceType) ? (
