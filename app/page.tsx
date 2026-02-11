@@ -37,6 +37,8 @@ import {
   setTodayResult,
   getTodayResult,
   getLastPlayedDate,
+  getYesterdayDate,
+  getTodayDate,
   consumeOneAttempt,
   MAX_DAILY_ATTEMPTS,
   getDailyUsedQuestionIds,
@@ -48,11 +50,11 @@ import { playResultSound } from "@/app/hooks/useResultSound";
 import { tracker, logger } from "@/lib/monitoring";
 import { reportError } from "@/lib/error-handler";
 import {
-  getDailyChallengeQuestions,
   getPitchingDailyChallengeQuestions,
   saveDailyChallengeResult,
   isDailyChallengeCompleted,
 } from "@/lib/dailyChallenge";
+import { track, getSessionId, once } from "@/lib/analytics";
 
 type Screen = "start" | "question" | "result" | "final";
 
@@ -92,6 +94,9 @@ export default function Home() {
   const [consecutiveCorrect, setConsecutiveCorrect] = useState(0);
   /** デイリーチャレンジモードか */
   const [isDailyChallenge, setIsDailyChallenge] = useState(false);
+  /** GA4: 同一ランで challenge_start / challenge_complete を1回だけ送る用 */
+  const challengeStartFiredRef = useRef(false);
+  const challengeCompleteFiredRef = useRef(false);
 
   /** 回答後に GET で取得した最新 stats（ResultView に渡して即反映） */
   const [latestQuestionStats, setLatestQuestionStats] = useState<{
@@ -172,6 +177,29 @@ export default function Home() {
     if (screen === "question") setIsAnswering(false);
   }, [screen]);
 
+  // GA4: 最初の問題表示時に challenge_start を1回だけ送る
+  useEffect(() => {
+    if (
+      screen !== "question" ||
+      sessionQuestions.length === 0 ||
+      currentIndex !== 0 ||
+      challengeStartFiredRef.current
+    )
+      return;
+    const q = sessionQuestions[0];
+    if (!q) return;
+    challengeStartFiredRef.current = true;
+    const mode = isDailyChallenge ? "daily_pitching" : "daily_normal";
+    track("challenge_start", {
+      app: "baseball-quiz-web",
+      mode,
+      question_id: q.id,
+      session_id: getSessionId(),
+      is_pro: false,
+      step: 1,
+    });
+  }, [screen, sessionQuestions, currentIndex, isDailyChallenge]);
+
   useEffect(() => {
     // タイムアウト判定: タイマーが動作中で0秒になった場合のみ（遷移中の誤発火を防止）
     if (screen !== "question" || secondsLeft > 0 || sessionQuestions.length === 0) return;
@@ -241,6 +269,8 @@ export default function Home() {
 
   const handleStart = (options?: StartOptions) => {
     lastSfxPlayedKeyRef.current = null;
+    challengeStartFiredRef.current = false;
+    challengeCompleteFiredRef.current = false;
 
     // デイリーチャレンジモード（配球チャレンジ）
     if (options?.dailyChallenge) {
@@ -376,14 +406,44 @@ export default function Home() {
     if (lastCorrect) setCorrectCount((c) => c + 1);
     if (currentIndex + 1 >= sessionQuestions.length) {
       const finalCorrect = lastCorrect ? correctCount + 1 : correctCount;
+      const lastPlayed = getLastPlayedDate();
 
       if (isDailyChallenge) {
-        // デイリーチャレンジ完了 → 回数消費せず結果保存
         saveDailyChallengeResult(finalCorrect, rating - ratingAtSessionStart);
-        updateStreakAndReturn(getLastPlayedDate());
+        const newStreak = updateStreakAndReturn(lastPlayed);
+        if (
+          lastPlayed === getYesterdayDate() &&
+          newStreak >= 2 &&
+          once("streak_continue_" + getTodayDate())
+        ) {
+          track("streak_continue", {
+            app: "baseball-quiz-web",
+            mode: "daily_pitching",
+            question_id: sessionQuestions[sessionQuestions.length - 1]?.id ?? 0,
+            session_id: getSessionId(),
+            is_pro: false,
+            streak_days: newStreak,
+            source: "daily",
+          });
+        }
       } else {
         consumeOneAttempt();
-        updateStreakAndReturn(getLastPlayedDate());
+        const newStreak = updateStreakAndReturn(lastPlayed);
+        if (
+          lastPlayed === getYesterdayDate() &&
+          newStreak >= 2 &&
+          once("streak_continue_" + getTodayDate())
+        ) {
+          track("streak_continue", {
+            app: "baseball-quiz-web",
+            mode: "daily_normal",
+            question_id: sessionQuestions[sessionQuestions.length - 1]?.id ?? 0,
+            session_id: getSessionId(),
+            is_pro: false,
+            streak_days: newStreak,
+            source: "daily",
+          });
+        }
       }
 
       setTodayResult({
@@ -393,7 +453,20 @@ export default function Home() {
         ratingAfter: rating,
       });
 
-      // セッション完了をトラッキング
+      if (!challengeCompleteFiredRef.current) {
+        challengeCompleteFiredRef.current = true;
+        const mode = isDailyChallenge ? "daily_pitching" : "daily_normal";
+        track("challenge_complete", {
+          app: "baseball-quiz-web",
+          mode,
+          question_id: sessionQuestions[sessionQuestions.length - 1]?.id ?? 0,
+          session_id: getSessionId(),
+          is_pro: false,
+          total_questions: 5,
+          correct_count: finalCorrect,
+        });
+      }
+
       tracker.event("session_completed", {
         correctCount: finalCorrect,
         totalQuestions: sessionQuestions.length,
@@ -496,6 +569,9 @@ export default function Home() {
       ratingBefore={ratingAtSessionStart}
       ratingAfter={rating}
       onBackToStart={handleBackToStart}
+      analyticsMode={isDailyChallenge ? "daily_pitching" : "daily_normal"}
+      analyticsQuestionId={sessionQuestions[sessionQuestions.length - 1]?.id ?? 0}
+      isDailyChallenge={isDailyChallenge}
     />
   );
 }

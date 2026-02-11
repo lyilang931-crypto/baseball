@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import Script from "next/script";
+import { Suspense } from "react";
 import "./globals.css";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import ClientInitializer from "./components/ClientInitializer";
+import DebugPanel from "./components/DebugPanel";
 
 export const metadata: Metadata = {
   title: "今日の1球 - 野球IQクイズ",
@@ -43,6 +45,9 @@ export default function RootLayout({
       <body className="antialiased min-h-screen bg-white text-black">
         <ClientInitializer />
         <ErrorBoundary>{children}</ErrorBoundary>
+        <Suspense fallback={null}>
+          <DebugPanel />
+        </Suspense>
       </body>
     </html>
   );

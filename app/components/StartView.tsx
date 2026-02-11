@@ -18,6 +18,7 @@ import {
   isDailyChallengeCompleted,
   getDailyChallengeState,
 } from "@/lib/dailyChallenge";
+import { track, getSessionId, once } from "@/lib/analytics";
 
 /**
  * 1日3回まで挑戦可能。残り回数 / ○/3 回目 を表示。
@@ -166,7 +167,23 @@ export default function StartView({
 
         {/* プレミアムへの誘導（将来実装） */}
         <p className="text-xs text-gray-400 text-center mt-4">
-          <span className="text-blue-500 cursor-pointer hover:underline">
+          <span
+            role="button"
+            tabIndex={0}
+            className="text-blue-500 cursor-pointer hover:underline"
+            onClick={() => {
+              if (!once("pro_cta_click_home")) return;
+              track("pro_cta_click", {
+                app: "baseball-quiz-web",
+                mode: "daily_normal",
+                question_id: 0,
+                session_id: getSessionId(),
+                is_pro: false,
+                placement: "home",
+              });
+            }}
+            onKeyDown={(e) => e.key === "Enter" && (e.target as HTMLElement).click()}
+          >
             プレミアムで無制限プレイ
           </span>
         </p>

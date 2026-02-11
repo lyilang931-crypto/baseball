@@ -11,7 +11,7 @@
  * - インタースティシャルは入れない（"うざい"防止）
  */
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   buildShareText,
   getTwitterShareUrl,
@@ -23,6 +23,11 @@ import ShareCard from "./ShareCard";
 import AdSlot from "./AdSlot";
 import RewardedAdButton from "./RewardedAdButton";
 import { isPremiumUser } from "@/lib/monetization";
+import { track, getSessionId, once } from "@/lib/analytics";
+import {
+  getTodayAttemptsUsed,
+  getTodayAttemptsRemaining,
+} from "@/lib/daily";
 
 interface FinalResultViewProps {
   correctCount: number;
@@ -30,6 +35,11 @@ interface FinalResultViewProps {
   ratingBefore: number;
   ratingAfter: number;
   onBackToStart: () => void;
+  /** GA4用（省略時は daily_normal / 0） */
+  analyticsMode?: "daily_pitching" | "daily_normal" | "normal";
+  analyticsQuestionId?: number;
+  /** 配球チャレンジモードかどうか */
+  isDailyChallenge?: boolean;
 }
 
 export default function FinalResultView({
@@ -38,18 +48,41 @@ export default function FinalResultView({
   ratingBefore,
   ratingAfter,
   onBackToStart,
+  analyticsMode = "daily_normal",
+  analyticsQuestionId = 0,
+  isDailyChallenge = false,
 }: FinalResultViewProps) {
   // SSRとクライアント初期描画時の一致を保証するため、mountedフラグを使用
   const [mounted, setMounted] = useState(false);
   const [streak, setStreak] = useState(0);
   const [premium, setPremium] = useState(false);
+  const [attemptsUsed, setAttemptsUsed] = useState(0);
+  const [attemptsRemaining, setAttemptsRemaining] = useState(0);
+  const resultViewTrackedRef = useRef(false);
 
   // クライアント側でのみlocalStorageから値を読み込む
   useEffect(() => {
     setMounted(true);
     setStreak(getStreakCount());
     setPremium(isPremiumUser());
+    setAttemptsUsed(getTodayAttemptsUsed());
+    setAttemptsRemaining(getTodayAttemptsRemaining());
   }, []);
+
+  // GA4: result_view イベント（1回だけ）
+  useEffect(() => {
+    if (!mounted || resultViewTrackedRef.current) return;
+    resultViewTrackedRef.current = true;
+    const used = getTodayAttemptsUsed();
+    const rem = getTodayAttemptsRemaining();
+    track("result_view", {
+      app: "baseball-quiz-web",
+      mode: analyticsMode,
+      session_id: getSessionId(),
+      attempt: used,
+      remaining: rem,
+    });
+  }, [mounted, analyticsMode]);
 
   const delta = ratingAfter - ratingBefore;
   const accuracy =
@@ -91,11 +124,53 @@ export default function FinalResultView({
           あなたの判断力レベル: {levelLabel}
         </p>
         {mounted && streak > 0 && (
-          <p className="text-center text-gray-500 text-sm mb-6">
+          <p className="text-center text-gray-500 text-sm mb-2">
             連続: {streak}日
           </p>
         )}
-        {(!mounted || streak === 0) && <div className="mb-6" />}
+
+        {/* Primary CTA: 次の挑戦 or 終了 */}
+        {mounted && (
+          <div className="w-full max-w-sm mt-4 mb-6">
+            {!isDailyChallenge && attemptsRemaining > 0 ? (
+              <button
+                type="button"
+                onClick={() => {
+                  track("challenge_continue_click", {
+                    app: "baseball-quiz-web",
+                    mode: analyticsMode,
+                    session_id: getSessionId(),
+                    attempt: attemptsUsed,
+                    remaining: attemptsRemaining,
+                  });
+                  onBackToStart();
+                }}
+                className="w-full py-4 px-6 rounded-2xl bg-blue-500 text-white font-bold text-lg flex items-center justify-center gap-2 hover:bg-blue-600 active:bg-blue-700 transition-colors"
+              >
+                <span aria-hidden>&#x25B6;</span>
+                次の挑戦へ（残り{attemptsRemaining}回）
+              </button>
+            ) : !isDailyChallenge ? (
+              <button
+                type="button"
+                disabled
+                className="w-full py-4 px-6 rounded-2xl bg-gray-300 text-gray-500 font-bold text-lg flex items-center justify-center gap-2 cursor-not-allowed"
+              >
+                今日は終了（明日また挑戦）
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={onBackToStart}
+                className="w-full py-4 px-6 rounded-2xl bg-blue-500 text-white font-bold text-lg flex items-center justify-center gap-2 hover:bg-blue-600 active:bg-blue-700 transition-colors"
+              >
+                <span aria-hidden>&#x25B6;</span>
+                スタートに戻る
+              </button>
+            )}
+          </div>
+        )}
+        {!mounted && <div className="mb-6" />}
 
         {/* 結果画面 = シェア画面（X / LINE を自然に配置） */}
         <section className="w-full max-w-sm mt-4 mb-6" aria-label="結果をシェア">
@@ -139,21 +214,21 @@ export default function FinalResultView({
         {mounted && <RewardedAdButton />}
       </div>
 
-      <button
-        type="button"
-        onClick={onBackToStart}
-        className="w-full max-w-sm py-4 px-6 rounded-2xl bg-blue-500 text-white font-bold text-lg flex items-center justify-center gap-2 hover:bg-blue-600 active:bg-blue-700 transition-colors mt-8"
-      >
-        <span aria-hidden>&#x25B6;</span>
-        スタートに戻る
-      </button>
-
       {/* 広告なし（Pro）導線 */}
       {mounted && !premium && (
         <div className="w-full max-w-sm mt-4 text-center">
           <button
             type="button"
             onClick={() => {
+              if (!once("pro_cta_click_result")) return;
+              track("pro_cta_click", {
+                app: "baseball-quiz-web",
+                mode: analyticsMode,
+                question_id: analyticsQuestionId,
+                session_id: getSessionId(),
+                is_pro: false,
+                placement: "result",
+              });
               if (typeof window !== "undefined") {
                 window.alert("プレミアムプランは準備中です。もうしばらくお待ちください。");
               }
