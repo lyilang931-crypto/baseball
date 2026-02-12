@@ -1,7 +1,7 @@
 /**
- * シェア用「成果カード」画像を Canvas で生成（画像保存・作成して共有専用）
- * 1080x1080 正方形・カード型・情報密度高・数値強調
- * X/LINE の OGP は別なので触らない
+ * シェア用「挑戦状カード」画像を Canvas で生成
+ * 1080×1350（4:5）・ダークネイビー背景・レート数字最大強調
+ * SNS拡散に特化したインパクト重視デザイン
  */
 
 export interface ShareImageParams {
@@ -15,183 +15,151 @@ export interface ShareImageParams {
   url?: string;
 }
 
-const SIZE = 1080;
-const PADDING = 40;
-const CARD_PADDING_V = 36;
-const CARD_PADDING_H = 40;
-const BG = "#f7f9fb";
-const CARD_BG = "#ffffff";
-const TEXT_MAIN = "#111827";
-const TEXT_SUB = "#4b5563";
-const TEXT_MUTED = "#6b7280";
-const BADGE_BG = "#2563eb"; // レベルバッジ（青）
-const RATING_UP = "#059669"; // 成長＋緑
-const RATING_DOWN = "#dc2626"; // マイナス赤
+// --- Canvas size ---
+const W = 1080;
+const H = 1350;
+
+// --- Colors ---
+const BG_TOP = "#080c18";
+const BG_BOTTOM = "#0f1629";
+const TEXT_WHITE = "#f0f0f0";
+const TEXT_MUTED = "#6b7a99";
+const DELTA_PLUS = "#34d399";
+const DELTA_MINUS = "#f87171";
+
+// --- Rating tier colors ---
+export interface RatingTier {
+  label: string;
+  primary: string;
+  glow: string;
+}
+
+export function getRatingTier(rating: number): RatingTier {
+  if (rating >= 2000) return { label: "レジェンド", primary: "#f87171", glow: "#ef444480" };
+  if (rating >= 1800) return { label: "ゴールド",   primary: "#fbbf24", glow: "#f59e0b80" };
+  if (rating >= 1400) return { label: "ブルー",     primary: "#60a5fa", glow: "#3b82f680" };
+  return                       { label: "シルバー",   primary: "#cbd5e1", glow: "#94a3b880" };
+}
+
+// --- Helpers ---
+function roundRect(
+  ctx: CanvasRenderingContext2D,
+  x: number, y: number, w: number, h: number, r: number,
+) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+}
 
 export function generateShareImage(params: ShareImageParams): Promise<Blob> {
   return new Promise((resolve, reject) => {
     const canvas = document.createElement("canvas");
-    canvas.width = SIZE;
-    canvas.height = SIZE;
+    canvas.width = W;
+    canvas.height = H;
     const ctx = canvas.getContext("2d");
-    if (!ctx) {
-      reject(new Error("Canvas not supported"));
-      return;
-    }
+    if (!ctx) { reject(new Error("Canvas not supported")); return; }
 
     const {
       correctCount,
       totalQuestions,
-      accuracy,
       rating,
       ratingDelta = 0,
-      levelLabel = "",
       url = "",
     } = params;
 
-    // 背景
-    ctx.fillStyle = BG;
-    ctx.fillRect(0, 0, SIZE, SIZE);
+    const tier = getRatingTier(rating);
+    const cx = W / 2;
 
-    const centerX = SIZE / 2;
+    // ── Background gradient ──
+    const grad = ctx.createLinearGradient(0, 0, 0, H);
+    grad.addColorStop(0, BG_TOP);
+    grad.addColorStop(1, BG_BOTTOM);
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, W, H);
 
-    // レート行テキスト（成長を明示）
-    const ratingDeltaStr =
-      ratingDelta > 0 ? `（+${ratingDelta}）` : ratingDelta < 0 ? `（${ratingDelta}）` : "";
+    // Subtle radial glow behind rating
+    const glowY = H * 0.38;
+    const glowGrad = ctx.createRadialGradient(cx, glowY, 0, cx, glowY, 360);
+    glowGrad.addColorStop(0, tier.glow);
+    glowGrad.addColorStop(1, "transparent");
+    ctx.fillStyle = glowGrad;
+    ctx.fillRect(0, glowY - 360, W, 720);
 
-    // カード内の高さ（タイトル・サブは小さめ、見出し 4/5 正解 を強調）
-    const titleH = 28;
-    const subH = 24;
-    const lineHeights = [80, 52, 52, 52]; // 1行目 4/5 正解 を大きく
-    const cardInnerH = lineHeights[0] + lineHeights[1] + lineHeights[2] + (levelLabel ? lineHeights[3] : 0);
-    const cardH = cardInnerH + CARD_PADDING_V * 2;
-    const cardW = SIZE - PADDING * 2;
-    const cardX = PADDING;
-    const gapTitleSub = 20;
-    const gapSubCard = 28;
-    const gapCardFooter = 32;
-    const footerH = url ? 28 : 0;
-    const totalContentH =
-      titleH + gapTitleSub + subH + gapSubCard + cardH + gapCardFooter + footerH;
-    const offsetUp = 32;
-    let y = (SIZE - totalContentH) / 2 - offsetUp;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
 
-    ctx.font = "24px sans-serif";
+    // ── ① Brand ──
+    let y = 140;
+    ctx.font = "600 32px sans-serif";
     ctx.fillStyle = TEXT_MUTED;
-    ctx.textAlign = "center";
-    ctx.textBaseline = "top";
-    ctx.fillText("⚾ 今日の1球", centerX, y);
-    y += titleH + gapTitleSub;
+    ctx.fillText("⚾ 野球IQクイズ", cx, y);
 
-    ctx.font = "20px sans-serif";
-    ctx.fillStyle = TEXT_SUB;
-    ctx.fillText("あなたなら、どうする？", centerX, y);
-    y += subH + gapSubCard;
+    // ── ② "野球IQ" label ──
+    y += 120;
+    ctx.font = "bold 56px sans-serif";
+    ctx.fillStyle = TEXT_MUTED;
+    ctx.fillText("野球IQ", cx, y);
 
-    const cardY = y;
+    // ── ③ Rating number (HUGE) ──
+    y += 130;
+    ctx.font = "bold 200px sans-serif";
+    ctx.fillStyle = tier.primary;
+    ctx.fillText(String(rating), cx, y);
 
-    // 角丸カード
-    const radius = 24;
-    ctx.fillStyle = CARD_BG;
-    ctx.beginPath();
-    ctx.moveTo(cardX + radius, cardY);
-    ctx.lineTo(cardX + cardW - radius, cardY);
-    ctx.quadraticCurveTo(cardX + cardW, cardY, cardX + cardW, cardY + radius);
-    ctx.lineTo(cardX + cardW, cardY + cardH - radius);
-    ctx.quadraticCurveTo(
-      cardX + cardW,
-      cardY + cardH,
-      cardX + cardW - radius,
-      cardY + cardH
-    );
-    ctx.lineTo(cardX + radius, cardY + cardH);
-    ctx.quadraticCurveTo(cardX, cardY + cardH, cardX, cardY + cardH - radius);
-    ctx.lineTo(cardX, cardY + radius);
-    ctx.quadraticCurveTo(cardX, cardY, cardX + radius, cardY);
-    ctx.closePath();
-    ctx.fill();
-
-    ctx.textAlign = "center";
-    ctx.textBaseline = "top";
-    let ly = cardY + CARD_PADDING_V;
-
-    // 1行目: 4 / 5 正解（見出し強調）
-    ctx.font = "bold 64px sans-serif";
-    ctx.fillStyle = TEXT_MAIN;
-    ctx.fillText(
-      `${correctCount} / ${totalQuestions} 正解`,
-      centerX,
-      ly
-    );
-    ly += lineHeights[0];
-
-    // 2行目: 正答率 80%
-    ctx.font = "bold 44px sans-serif";
-    ctx.fillStyle = TEXT_MAIN;
-    const accuracyRounded = Math.round(accuracy);
-    ctx.fillText(`正答率 ${accuracyRounded}%`, centerX, ly);
-    ly += lineHeights[1];
-
-    // 3行目: 📈 レート 1585（+10） 成長を明示・（+10）を色で強調
-    ctx.font = "bold 44px sans-serif";
-    const rateLabel = ratingDeltaStr
-      ? `📈 レート ${rating}${ratingDeltaStr}`
-      : `レート ${rating}`;
-    const rateMain = ratingDeltaStr
-      ? `📈 レート ${rating}`
-      : rateLabel;
-    const rateDeltaPart = ratingDeltaStr;
-    ctx.fillStyle = TEXT_MAIN;
-    if (rateDeltaPart) {
-      const wMain = ctx.measureText(rateMain).width;
-      const wDelta = ctx.measureText(rateDeltaPart).width;
-      const totalW = wMain + wDelta;
-      const startX = centerX - totalW / 2;
-      ctx.fillText(rateMain, startX, ly);
-      ctx.fillStyle = ratingDelta > 0 ? RATING_UP : ratingDelta < 0 ? RATING_DOWN : TEXT_MAIN;
-      ctx.fillText(rateDeltaPart, startX + wMain, ly);
+    // ── ④ Delta ──
+    if (ratingDelta !== 0) {
+      y += 120;
+      const sign = ratingDelta > 0 ? "+" : "";
+      ctx.font = "bold 56px sans-serif";
+      ctx.fillStyle = ratingDelta > 0 ? DELTA_PLUS : DELTA_MINUS;
+      ctx.fillText(`(${sign}${ratingDelta})`, cx, y);
     } else {
-      ctx.fillText(rateLabel, centerX, ly);
-    }
-    ly += lineHeights[2];
-
-    // 4行目: 経験者クラス → バッジ（色付きラベル）で強調
-    if (levelLabel) {
-      const badgeFont = "bold 36px sans-serif";
-      ctx.font = badgeFont;
-      const badgePaddingH = 32;
-      const textW = ctx.measureText(levelLabel).width;
-      const badgeW = textW + badgePaddingH * 2;
-      const badgeH = 48;
-      const badgeX = centerX - badgeW / 2;
-      const badgeY = ly;
-      const badgeR = 24;
-      ctx.fillStyle = BADGE_BG;
-      ctx.beginPath();
-      ctx.moveTo(badgeX + badgeR, badgeY);
-      ctx.lineTo(badgeX + badgeW - badgeR, badgeY);
-      ctx.quadraticCurveTo(badgeX + badgeW, badgeY, badgeX + badgeW, badgeY + badgeR);
-      ctx.lineTo(badgeX + badgeW, badgeY + badgeH - badgeR);
-      ctx.quadraticCurveTo(badgeX + badgeW, badgeY + badgeH, badgeX + badgeW - badgeR, badgeY + badgeH);
-      ctx.lineTo(badgeX + badgeR, badgeY + badgeH);
-      ctx.quadraticCurveTo(badgeX, badgeY + badgeH, badgeX, badgeY + badgeH - badgeR);
-      ctx.lineTo(badgeX, badgeY + badgeR);
-      ctx.quadraticCurveTo(badgeX, badgeY, badgeX + badgeR, badgeY);
-      ctx.closePath();
-      ctx.fill();
-      ctx.fillStyle = "#ffffff";
-      ctx.font = badgeFont;
-      ctx.fillText(levelLabel, centerX, badgeY + (badgeH - 40) / 2 + 2);
-      ly += lineHeights[3];
+      y += 120;
     }
 
-    y = cardY + cardH + gapCardFooter;
+    // ── ⑤ Score ──
+    y += 100;
+    ctx.font = "bold 52px sans-serif";
+    ctx.fillStyle = TEXT_WHITE;
+    ctx.fillText(`${correctCount} / ${totalQuestions} 正解`, cx, y);
 
-    // フッター（URL 小さく）
+    // ── ⑥ Percentile placeholder ──
+    y += 72;
+    ctx.font = "400 36px sans-serif";
+    ctx.fillStyle = TEXT_MUTED;
+    ctx.fillText("全国上位 ??%", cx, y);
+
+    // ── ⑦ Taunt ──
+    y += 130;
+    // Pill background
+    const tauntText = "あなたは超えられる？";
+    ctx.font = "bold 52px sans-serif";
+    const tw = ctx.measureText(tauntText).width;
+    const pillW = tw + 80;
+    const pillH = 80;
+    roundRect(ctx, cx - pillW / 2, y - pillH / 2, pillW, pillH, pillH / 2);
+    ctx.fillStyle = tier.primary + "18"; // very subtle tint
+    ctx.fill();
+    ctx.strokeStyle = tier.primary + "40";
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    ctx.fillStyle = TEXT_WHITE;
+    ctx.fillText(tauntText, cx, y);
+
+    // ── ⑧ Footer URL ──
     if (url) {
-      ctx.font = "22px sans-serif";
+      const footerUrl = url.replace(/^https?:\/\//, "");
+      ctx.font = "400 28px sans-serif";
       ctx.fillStyle = TEXT_MUTED;
-      ctx.fillText(url, centerX, y);
+      ctx.fillText(footerUrl, cx, H - 60);
     }
 
     canvas.toBlob(
@@ -200,7 +168,7 @@ export function generateShareImage(params: ShareImageParams): Promise<Blob> {
         else reject(new Error("Failed to create blob"));
       },
       "image/png",
-      0.92
+      0.95,
     );
   });
 }

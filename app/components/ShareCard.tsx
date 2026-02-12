@@ -95,6 +95,7 @@ export default function ShareCard({
         totalQuestions,
         accuracy,
         rating: ratingAfter,
+        ratingDelta,
         streak: streak > 0 ? streak : undefined,
         levelLabel,
         url,
