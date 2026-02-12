@@ -1,6 +1,6 @@
 /**
  * シェア用「挑戦状カード」画像を Canvas で生成
- * 1080×1350（4:5）・ダークネイビー背景・レート数字最大強調
+ * 1080×1350（4:5）・ダークネイビー背景・上重心レイアウト
  * SNS拡散に特化したインパクト重視デザイン
  */
 
@@ -15,33 +15,67 @@ export interface ShareImageParams {
   url?: string;
 }
 
-// --- Canvas size ---
+// ── Canvas size ──
 const W = 1080;
 const H = 1350;
 
-// --- Colors ---
-const BG_TOP = "#080c18";
-const BG_BOTTOM = "#0f1629";
-const TEXT_WHITE = "#f0f0f0";
-const TEXT_MUTED = "#6b7a99";
+// ── Colors ──
+const BG_DARK = "#06091a";
+const BG_MID = "#0c1228";
+const TEXT_WHITE = "#f0f2f5";
+const TEXT_SUB = "#94a3c0";
+const TEXT_MUTED = "#556380";
 const DELTA_PLUS = "#34d399";
 const DELTA_MINUS = "#f87171";
 
-// --- Rating tier colors ---
+// ── Rating tier ──
 export interface RatingTier {
+  rank: string;
   label: string;
   primary: string;
+  primaryLight: string;
   glow: string;
+  glowStrong: string;
 }
 
 export function getRatingTier(rating: number): RatingTier {
-  if (rating >= 2000) return { label: "レジェンド", primary: "#f87171", glow: "#ef444480" };
-  if (rating >= 1800) return { label: "ゴールド",   primary: "#fbbf24", glow: "#f59e0b80" };
-  if (rating >= 1400) return { label: "ブルー",     primary: "#60a5fa", glow: "#3b82f680" };
-  return                       { label: "シルバー",   primary: "#cbd5e1", glow: "#94a3b880" };
+  if (rating >= 2000) return {
+    rank: "SS", label: "レジェンド",
+    primary: "#ef4444", primaryLight: "#fca5a5",
+    glow: "#ef444440", glowStrong: "#ef444470",
+  };
+  if (rating >= 1800) return {
+    rank: "S", label: "ゴールド",
+    primary: "#f59e0b", primaryLight: "#fde68a",
+    glow: "#f59e0b40", glowStrong: "#f59e0b70",
+  };
+  if (rating >= 1600) return {
+    rank: "A", label: "エース",
+    primary: "#3b82f6", primaryLight: "#93c5fd",
+    glow: "#3b82f640", glowStrong: "#3b82f670",
+  };
+  if (rating >= 1400) return {
+    rank: "B", label: "レギュラー",
+    primary: "#6366f1", primaryLight: "#a5b4fc",
+    glow: "#6366f140", glowStrong: "#6366f170",
+  };
+  return {
+    rank: "C", label: "ルーキー",
+    primary: "#94a3b8", primaryLight: "#cbd5e1",
+    glow: "#94a3b840", glowStrong: "#94a3b870",
+  };
 }
 
-// --- Helpers ---
+/** 次の節目レートまでの差（上位1%演出用） */
+function getGapToNext(rating: number): { target: number; gap: number } {
+  const thresholds = [2200, 2000, 1800, 1600, 1400];
+  for (const t of thresholds) {
+    if (rating < t) return { target: t, gap: t - rating };
+  }
+  return { target: 2400, gap: 2400 - rating };
+}
+
+// ── Helpers ──
 function roundRect(
   ctx: CanvasRenderingContext2D,
   x: number, y: number, w: number, h: number, r: number,
@@ -57,6 +91,21 @@ function roundRect(
   ctx.lineTo(x, y + r);
   ctx.quadraticCurveTo(x, y, x + r, y);
   ctx.closePath();
+}
+
+function drawDivider(
+  ctx: CanvasRenderingContext2D,
+  y: number,
+  color: string,
+  width: number = 600,
+) {
+  const x0 = (W - width) / 2;
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(x0, y);
+  ctx.lineTo(x0 + width, y);
+  ctx.stroke();
 }
 
 export function generateShareImage(params: ShareImageParams): Promise<Blob> {
@@ -77,89 +126,144 @@ export function generateShareImage(params: ShareImageParams): Promise<Blob> {
 
     const tier = getRatingTier(rating);
     const cx = W / 2;
+    const { gap } = getGapToNext(rating);
 
-    // ── Background gradient ──
-    const grad = ctx.createLinearGradient(0, 0, 0, H);
-    grad.addColorStop(0, BG_TOP);
-    grad.addColorStop(1, BG_BOTTOM);
-    ctx.fillStyle = grad;
+    // ═══════════════════════════════════════
+    // Background
+    // ═══════════════════════════════════════
+    const bgGrad = ctx.createLinearGradient(0, 0, 0, H);
+    bgGrad.addColorStop(0, BG_DARK);
+    bgGrad.addColorStop(0.5, BG_MID);
+    bgGrad.addColorStop(1, BG_DARK);
+    ctx.fillStyle = bgGrad;
     ctx.fillRect(0, 0, W, H);
 
-    // Subtle radial glow behind rating
-    const glowY = H * 0.38;
-    const glowGrad = ctx.createRadialGradient(cx, glowY, 0, cx, glowY, 360);
-    glowGrad.addColorStop(0, tier.glow);
-    glowGrad.addColorStop(1, "transparent");
-    ctx.fillStyle = glowGrad;
-    ctx.fillRect(0, glowY - 360, W, 720);
+    // Vertical elliptical glow (scaleY で縦長に)
+    ctx.save();
+    const glowCY = H * 0.30;
+    ctx.translate(cx, glowCY);
+    ctx.scale(1, 1.6);
+    const glow = ctx.createRadialGradient(0, 0, 0, 0, 0, 320);
+    glow.addColorStop(0, tier.glowStrong);
+    glow.addColorStop(0.5, tier.glow);
+    glow.addColorStop(1, "transparent");
+    ctx.fillStyle = glow;
+    ctx.fillRect(-540, -540, 1080, 1080);
+    ctx.restore();
 
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
 
-    // ── ① Brand ──
-    let y = 140;
-    ctx.font = "600 32px sans-serif";
+    // ═══════════════════════════════════════
+    // ① Brand (5-8% from top)
+    // ═══════════════════════════════════════
+    let y = 88;
+    ctx.font = "500 30px sans-serif";
     ctx.fillStyle = TEXT_MUTED;
-    ctx.fillText("⚾ 野球IQクイズ", cx, y);
+    ctx.fillText("🧠 野球IQクイズ", cx, y);
 
-    // ── ② "野球IQ" label ──
-    y += 120;
-    ctx.font = "bold 56px sans-serif";
-    ctx.fillStyle = TEXT_MUTED;
+    // ═══════════════════════════════════════
+    // ② Main block — upper gravity
+    // ═══════════════════════════════════════
+
+    // "野球IQ" label
+    y = 200;
+    ctx.font = "bold 52px sans-serif";
+    ctx.fillStyle = TEXT_SUB;
     ctx.fillText("野球IQ", cx, y);
 
-    // ── ③ Rating number (HUGE) ──
-    y += 130;
-    ctx.font = "bold 200px sans-serif";
-    ctx.fillStyle = tier.primary;
-    ctx.fillText(String(rating), cx, y);
+    // Rating number — 250px with shadow + gradient fill
+    y = 370;
+    const ratingStr = String(rating);
+    ctx.font = "bold 250px sans-serif";
 
-    // ── ④ Delta ──
+    // Drop shadow
+    ctx.save();
+    ctx.shadowColor = tier.glow;
+    ctx.shadowBlur = 60;
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 8;
+
+    // Gradient text (top: primaryLight → bottom: primary)
+    const textTop = y - 125; // approximate for 250px font
+    const textBot = y + 125;
+    const textGrad = ctx.createLinearGradient(0, textTop, 0, textBot);
+    textGrad.addColorStop(0, tier.primaryLight);
+    textGrad.addColorStop(1, tier.primary);
+    ctx.fillStyle = textGrad;
+    ctx.fillText(ratingStr, cx, y);
+    ctx.restore();
+
+    // Delta
+    y = 510;
     if (ratingDelta !== 0) {
-      y += 120;
       const sign = ratingDelta > 0 ? "+" : "";
-      ctx.font = "bold 56px sans-serif";
+      ctx.font = "bold 54px sans-serif";
       ctx.fillStyle = ratingDelta > 0 ? DELTA_PLUS : DELTA_MINUS;
       ctx.fillText(`(${sign}${ratingDelta})`, cx, y);
-    } else {
-      y += 120;
     }
 
-    // ── ⑤ Score ──
-    y += 100;
-    ctx.font = "bold 52px sans-serif";
+    // ═══════════════════════════════════════
+    // ③ Stats block
+    // ═══════════════════════════════════════
+
+    // Score
+    y = 620;
+    ctx.font = "bold 50px sans-serif";
     ctx.fillStyle = TEXT_WHITE;
     ctx.fillText(`${correctCount} / ${totalQuestions} 正解`, cx, y);
 
-    // ── ⑥ Percentile placeholder ──
-    y += 72;
-    ctx.font = "400 36px sans-serif";
+    // Rank badge
+    y = 700;
+    const rankText = `${tier.rank}ランク`;
+    ctx.font = "bold 42px sans-serif";
+    const rankW = ctx.measureText(rankText).width + 60;
+    const rankH = 60;
+    roundRect(ctx, cx - rankW / 2, y - rankH / 2, rankW, rankH, rankH / 2);
+    ctx.fillStyle = tier.primary + "25";
+    ctx.fill();
+    ctx.strokeStyle = tier.primary + "60";
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    ctx.fillStyle = tier.primary;
+    ctx.fillText(rankText, cx, y);
+
+    // Percentile placeholder
+    y = 775;
+    ctx.font = "400 34px sans-serif";
     ctx.fillStyle = TEXT_MUTED;
     ctx.fillText("全国上位 ??%", cx, y);
 
-    // ── ⑦ Taunt ──
-    y += 130;
-    // Pill background
-    const tauntText = "あなたは超えられる？";
-    ctx.font = "bold 52px sans-serif";
-    const tw = ctx.measureText(tauntText).width;
-    const pillW = tw + 80;
-    const pillH = 80;
-    roundRect(ctx, cx - pillW / 2, y - pillH / 2, pillW, pillH, pillH / 2);
-    ctx.fillStyle = tier.primary + "18"; // very subtle tint
-    ctx.fill();
-    ctx.strokeStyle = tier.primary + "40";
-    ctx.lineWidth = 2;
-    ctx.stroke();
-    ctx.fillStyle = TEXT_WHITE;
-    ctx.fillText(tauntText, cx, y);
+    // ═══════════════════════════════════════
+    // ④ Competition line
+    // ═══════════════════════════════════════
+    y = 860;
+    ctx.font = "bold 38px sans-serif";
+    ctx.fillStyle = TEXT_SUB;
+    ctx.fillText(`🔥 上位1%まであと ${gap}`, cx, y);
 
-    // ── ⑧ Footer URL ──
+    // ═══════════════════════════════════════
+    // ⑤ CTA with dividers
+    // ═══════════════════════════════════════
+    y = 960;
+    drawDivider(ctx, y, tier.primary + "50", 680);
+
+    y = 1030;
+    ctx.font = "bold 54px sans-serif";
+    ctx.fillStyle = TEXT_WHITE;
+    ctx.fillText("🔥 このIQ、超えられる？", cx, y);
+
+    y = 1100;
+    drawDivider(ctx, y, tier.primary + "50", 680);
+
+    // ═══════════════════════════════════════
+    // ⑥ Footer URL
+    // ═══════════════════════════════════════
     if (url) {
       const footerUrl = url.replace(/^https?:\/\//, "");
       ctx.font = "400 28px sans-serif";
       ctx.fillStyle = TEXT_MUTED;
-      ctx.fillText(footerUrl, cx, H - 60);
+      ctx.fillText(footerUrl, cx, 1190);
     }
 
     canvas.toBlob(
