@@ -19,6 +19,10 @@ import {
   getDailyChallengeState,
 } from "@/lib/dailyChallenge";
 import { track, getSessionId, once } from "@/lib/analytics";
+import { getTomorrowPreview } from "@/utils/tomorrowPreview";
+import type { TomorrowPreview } from "@/utils/tomorrowPreview";
+import { getRating as getStoredRating } from "@/lib/storage";
+import { getInitialRating } from "@/lib/elo";
 
 /**
  * 1日3回まで挑戦可能。残り回数 / ○/3 回目 を表示。
@@ -59,6 +63,8 @@ export default function StartView({
   const [showAdOption, setShowAdOption] = useState(false);
   const [dailyDone, setDailyDone] = useState(false);
   const [dailyResult, setDailyResult] = useState<{ correctCount: number; ratingDelta: number } | null>(null);
+  const [isNewUser, setIsNewUser] = useState(false);
+  const [tomorrow, setTomorrow] = useState<TomorrowPreview | null>(null);
 
   // クライアント側でのみlocalStorageから値を読み込む
   useEffect(() => {
@@ -79,6 +85,10 @@ export default function StartView({
     if (dcState?.completed) {
       setDailyResult({ correctCount: dcState.correctCount, ratingDelta: dcState.ratingDelta });
     }
+    // 初回ユーザー判定（レーティング初期値 + 未プレイ）
+    const currentRating = getStoredRating(getInitialRating());
+    setIsNewUser(currentRating === getInitialRating() && used === 0);
+    setTomorrow(getTomorrowPreview());
   }, []);
 
   // 広告視聴で追加プレイを獲得する処理（将来SDK導入時に実装）
@@ -161,8 +171,23 @@ export default function StartView({
             </button>
           )}
         </div>
-        <p className="text-xs text-gray-400 text-center mt-6">
-          明日の0:00（JST）に次の1球が解放されます
+        {/* 明日の予告（オープンループ） */}
+        {tomorrow && (
+          <div className="w-full max-w-sm mt-6 py-4 px-5 rounded-2xl bg-gradient-to-r from-indigo-50 to-blue-50 border border-indigo-100">
+            <p className="text-xs text-indigo-400 font-medium mb-1">
+              明日のテーマ
+            </p>
+            <p className="text-base font-bold text-indigo-700">
+              {tomorrow.theme}
+            </p>
+            <p className="text-sm text-indigo-500 mt-0.5">
+              {tomorrow.teaser}
+            </p>
+          </div>
+        )}
+
+        <p className="text-xs text-gray-400 text-center mt-4">
+          明日 0:00（JST）に新しい問題が届きます
         </p>
 
         {/* プレミアムへの誘導（将来実装） */}
@@ -205,7 +230,24 @@ export default function StartView({
       <p className="text-sm text-gray-500 mb-1">
         今日 {nextAttempt}/{totalSlots} 回目 · 残り {effectiveRemaining} 回
       </p>
-      <p className="text-gray-600 text-center mb-6">あなたなら、どうする？</p>
+      {isNewUser ? (
+        <>
+          <p className="text-gray-600 text-center mb-1">あなたの野球IQを育てよう</p>
+          <p className="text-sm text-gray-500 text-center mb-1">
+            5問の判断クイズで実力を測定（約2分）
+          </p>
+          <p className="text-xs text-gray-400 text-center mb-6">
+            毎日挑戦するとレーティングが成長します
+          </p>
+        </>
+      ) : (
+        <>
+          <p className="text-gray-600 text-center mb-1">あなたなら、どうする？</p>
+          <p className="text-sm text-gray-500 text-center mb-6">
+            5問であなたの野球IQを判定します（約2分）
+          </p>
+        </>
+      )}
 
       <label className="flex items-center gap-2 mb-6 text-sm text-gray-600 cursor-pointer select-none">
         <input

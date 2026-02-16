@@ -40,6 +40,7 @@ import {
   getYesterdayDate,
   getTodayDate,
   consumeOneAttempt,
+  getTodayAttemptsUsed,
   MAX_DAILY_ATTEMPTS,
   getDailyUsedQuestionIds,
   addDailyUsedQuestionIds,
@@ -97,6 +98,8 @@ export default function Home() {
   /** GA4: 同一ランで challenge_start / challenge_complete を1回だけ送る用 */
   const challengeStartFiredRef = useRef(false);
   const challengeCompleteFiredRef = useRef(false);
+  /** 初回セッション判定フラグ（difficulty cap + delta 圧縮用） */
+  const isFirstSessionRef = useRef(false);
 
   /** 回答後に GET で取得した最新 stats（ResultView に渡して即反映） */
   const [latestQuestionStats, setLatestQuestionStats] = useState<{
@@ -305,10 +308,35 @@ export default function Home() {
 
     setIsDailyChallenge(false);
     const used = getDailyUsedQuestionIds();
-    const questions = getSessionQuestions({
-      dataOnly: options?.dataOnly ?? false,
-      excludeQuestionIds: used,
-    });
+
+    // ① 初回セッション: difficulty ≤ 3 に制限（成功体験を保証）
+    const isFirstEver = getStoredRating(getInitialRating()) === getInitialRating();
+    const isFirstToday = getTodayAttemptsUsed() === 0;
+    isFirstSessionRef.current = isFirstEver && isFirstToday;
+
+    let questions: Question[];
+    if (isFirstSessionRef.current) {
+      const allQ = getAllQuestions();
+      const easyPool = allQ.filter(
+        (q) => q.difficulty <= 3 && !used.includes(q.questionId)
+      );
+      if (easyPool.length >= QUESTIONS_PER_SESSION) {
+        const shuffled = [...easyPool].sort(() => Math.random() - 0.5);
+        questions = shuffled.slice(0, QUESTIONS_PER_SESSION);
+      } else {
+        // フォールバック: easy が足りなければ通常選択
+        questions = getSessionQuestions({
+          dataOnly: options?.dataOnly ?? false,
+          excludeQuestionIds: used,
+        });
+      }
+    } else {
+      questions = getSessionQuestions({
+        dataOnly: options?.dataOnly ?? false,
+        excludeQuestionIds: used,
+      });
+    }
+
     if (questions.length === 0) {
       logger.warn("No questions available for session", { dataOnly: options?.dataOnly });
       if (typeof window !== "undefined") {
@@ -446,11 +474,42 @@ export default function Home() {
         }
       }
 
+      // ① 初回セッション: マイナスを50%圧縮（心理ダメージ緩和）
+      let finalRating = rating;
+      if (isFirstSessionRef.current && !isDailyChallenge) {
+        const sessionDelta = rating - ratingAtSessionStart;
+        if (sessionDelta < 0) {
+          const compressed = Math.round(sessionDelta * 0.5);
+          finalRating = ratingAtSessionStart + compressed;
+          setRatingState(finalRating);
+          persistRating(finalRating);
+        }
+        isFirstSessionRef.current = false;
+      }
+
+      // ③ セッション履歴を localStorage に保存（成長表示用・最大10件）
+      try {
+        const logKey = "bq_session_log";
+        const raw = localStorage.getItem(logKey);
+        const log: Array<{ c: number; t: number; r: number; ts: number }> =
+          raw ? JSON.parse(raw) : [];
+        log.push({
+          c: finalCorrect,
+          t: sessionQuestions.length,
+          r: finalRating,
+          ts: Date.now(),
+        });
+        if (log.length > 10) log.splice(0, log.length - 10);
+        localStorage.setItem(logKey, JSON.stringify(log));
+      } catch {
+        // ignore
+      }
+
       setTodayResult({
         correctCount: finalCorrect,
         totalQuestions: sessionQuestions.length,
         ratingBefore: ratingAtSessionStart,
-        ratingAfter: rating,
+        ratingAfter: finalRating,
       });
 
       if (!challengeCompleteFiredRef.current) {
@@ -471,8 +530,8 @@ export default function Home() {
         correctCount: finalCorrect,
         totalQuestions: sessionQuestions.length,
         ratingBefore: ratingAtSessionStart,
-        ratingAfter: rating,
-        ratingDelta: rating - ratingAtSessionStart,
+        ratingAfter: finalRating,
+        ratingDelta: finalRating - ratingAtSessionStart,
         dailyChallenge: isDailyChallenge,
       });
 

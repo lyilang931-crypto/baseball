@@ -28,6 +28,8 @@ import {
   getTodayAttemptsUsed,
   getTodayAttemptsRemaining,
 } from "@/lib/daily";
+import { getTomorrowPreview } from "@/utils/tomorrowPreview";
+import type { TomorrowPreview } from "@/utils/tomorrowPreview";
 
 interface FinalResultViewProps {
   correctCount: number;
@@ -59,6 +61,12 @@ export default function FinalResultView({
   const [attemptsUsed, setAttemptsUsed] = useState(0);
   const [attemptsRemaining, setAttemptsRemaining] = useState(0);
   const resultViewTrackedRef = useRef(false);
+  /** ③ 前回セッションのレート（成長表示用） */
+  const [prevRating, setPrevRating] = useState<number | null>(null);
+  /** ③ 直近3回の平均正答率 */
+  const [avgAccuracy, setAvgAccuracy] = useState<number | null>(null);
+  /** 明日の予告 */
+  const [tomorrow, setTomorrow] = useState<TomorrowPreview | null>(null);
 
   // クライアント側でのみlocalStorageから値を読み込む
   useEffect(() => {
@@ -67,6 +75,36 @@ export default function FinalResultView({
     setPremium(isPremiumUser());
     setAttemptsUsed(getTodayAttemptsUsed());
     setAttemptsRemaining(getTodayAttemptsRemaining());
+    setTomorrow(getTomorrowPreview());
+
+    // ③ セッション履歴から成長指標を算出
+    try {
+      const raw = localStorage.getItem("bq_session_log");
+      if (raw) {
+        const log = JSON.parse(raw) as Array<{
+          c: number;
+          t: number;
+          r: number;
+          ts: number;
+        }>;
+        // log[-1] = 今回, log[-2] = 前回
+        if (log.length >= 2) {
+          setPrevRating(log[log.length - 2].r);
+        }
+        // 直近3回の平均正答率（今回含む）
+        const recent = log.slice(-3);
+        if (recent.length >= 2) {
+          const avg =
+            recent.reduce(
+              (s, e) => s + (e.t > 0 ? (e.c / e.t) * 100 : 0),
+              0
+            ) / recent.length;
+          setAvgAccuracy(Math.round(avg));
+        }
+      }
+    } catch {
+      // ignore
+    }
   }, []);
 
   // GA4: result_view イベント（1回だけ）
@@ -109,10 +147,27 @@ export default function FinalResultView({
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-6 py-12 max-w-md mx-auto">
       <div className="flex-1 flex flex-col items-center justify-center w-full">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">結果</h2>
-        <p className="text-gray-600 text-center mb-2">
-          {totalQuestions}問中{correctCount}問正解（正答率{Math.round(accuracy)}%）
-        </p>
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">
+          {correctCount <= 1 ? "挑戦完了" : "結果"}
+        </h2>
+
+        {/* ② 0-1問正解: 学習リフレーム / 2問以上: 通常表示 */}
+        {correctCount <= 1 ? (
+          <div className="text-center mb-2">
+            <p className="text-lg font-bold text-gray-900">
+              今日の解説で 知識+{totalQuestions}
+            </p>
+            <p className="text-sm text-gray-500 mt-1">
+              {totalQuestions}問分の解説を読んだ — もう昨日の自分より強い
+            </p>
+          </div>
+        ) : (
+          <p className="text-gray-600 text-center mb-2">
+            {totalQuestions}問中{correctCount}問正解（正答率
+            {Math.round(accuracy)}%）
+          </p>
+        )}
+
         <p className="text-center mb-2">
           <span className="text-gray-600">レート: </span>
           <span className="font-bold text-blue-600 text-xl">
@@ -120,12 +175,50 @@ export default function FinalResultView({
             {delta})
           </span>
         </p>
-        <p className="text-center text-gray-700 font-medium mb-2">
+        <p className="text-center text-gray-700 font-medium mb-1">
           あなたの判断力レベル: {levelLabel}
         </p>
+
+        {/* ③ 成長指標: 前回比 + 直近平均 */}
+        {mounted && (prevRating !== null || avgAccuracy !== null) && (
+          <div className="flex items-center justify-center gap-4 text-xs text-gray-500 mb-1">
+            {prevRating !== null && (
+              <span>
+                前回比{" "}
+                <span
+                  className={
+                    ratingAfter - prevRating >= 0
+                      ? "font-medium text-blue-600"
+                      : "font-medium text-red-500"
+                  }
+                >
+                  {ratingAfter - prevRating >= 0 ? "+" : ""}
+                  {ratingAfter - prevRating}
+                </span>
+              </span>
+            )}
+            {avgAccuracy !== null && (
+              <span>直近平均 {avgAccuracy}%</span>
+            )}
+          </div>
+        )}
+
+        {/* ④ ストリーク: 損失回避強化 */}
         {mounted && streak > 0 && (
-          <p className="text-center text-gray-500 text-sm mb-2">
-            連続: {streak}日
+          <p className="text-center text-sm text-orange-500 font-medium mb-2">
+            🔥 {streak}日連続 — 明日やらないとリセット
+          </p>
+        )}
+        {mounted && streak === 0 && (
+          <p className="text-center text-xs text-gray-400 mb-2">
+            明日プレイで連続記録スタート
+          </p>
+        )}
+
+        {/* ② 0-1問正解時の未来志向メッセージ */}
+        {correctCount <= 1 && (
+          <p className="text-center text-sm text-gray-500 mb-2">
+            明日は取り返せる。挑戦を続けよう。
           </p>
         )}
 
@@ -171,6 +264,21 @@ export default function FinalResultView({
           </div>
         )}
         {!mounted && <div className="mb-6" />}
+
+        {/* 明日の予告（オープンループで再訪を促す） */}
+        {mounted && tomorrow && (
+          <div className="w-full max-w-sm mb-4 py-4 px-5 rounded-2xl bg-gradient-to-r from-indigo-50 to-blue-50 border border-indigo-100">
+            <p className="text-xs text-indigo-400 font-medium mb-1">
+              明日のテーマ
+            </p>
+            <p className="text-base font-bold text-indigo-700">
+              {tomorrow.theme}
+            </p>
+            <p className="text-sm text-indigo-500 mt-0.5">
+              {tomorrow.teaser}
+            </p>
+          </div>
+        )}
 
         {/* 結果画面 = シェア画面（X / LINE を自然に配置） */}
         <section className="w-full max-w-sm mt-4 mb-6" aria-label="結果をシェア">
