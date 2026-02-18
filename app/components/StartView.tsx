@@ -23,6 +23,12 @@ import { getTomorrowPreview } from "@/utils/tomorrowPreview";
 import type { TomorrowPreview } from "@/utils/tomorrowPreview";
 import { getRating as getStoredRating } from "@/lib/storage";
 import { getInitialRating } from "@/lib/elo";
+import {
+  getWeeklyState,
+  getWeeklyRank,
+  getNextRankGap,
+} from "@/lib/weeklyChallenge";
+import type { WeeklyState, WeeklyRank } from "@/lib/weeklyChallenge";
 
 /**
  * 1日3回まで挑戦可能。残り回数 / ○/3 回目 を表示。
@@ -65,6 +71,9 @@ export default function StartView({
   const [dailyResult, setDailyResult] = useState<{ correctCount: number; ratingDelta: number } | null>(null);
   const [isNewUser, setIsNewUser] = useState(false);
   const [tomorrow, setTomorrow] = useState<TomorrowPreview | null>(null);
+  const [weekly, setWeekly] = useState<WeeklyState | null>(null);
+  const [weeklyRank, setWeeklyRank] = useState<WeeklyRank | null>(null);
+  const [nextRank, setNextRank] = useState<{ nextTitle: string; gap: number } | null>(null);
 
   // クライアント側でのみlocalStorageから値を読み込む
   useEffect(() => {
@@ -89,6 +98,11 @@ export default function StartView({
     const currentRating = getStoredRating(getInitialRating());
     setIsNewUser(currentRating === getInitialRating() && used === 0);
     setTomorrow(getTomorrowPreview());
+    // 週間チャレンジ
+    const ws = getWeeklyState();
+    setWeekly(ws);
+    setWeeklyRank(getWeeklyRank(ws.correctTotal));
+    setNextRank(getNextRankGap(ws.correctTotal));
   }, []);
 
   // 広告視聴で追加プレイを獲得する処理（将来SDK導入時に実装）
@@ -293,6 +307,31 @@ export default function StartView({
           </div>
         )}
       </div>
+
+      {/* 週間チャレンジ進捗 */}
+      {weekly && weeklyRank && weekly.sessionCount > 0 && (
+        <div className="w-full max-w-sm mt-4 py-3 px-4 rounded-xl bg-gray-50 border border-gray-100">
+          <div className="flex items-center justify-between mb-1">
+            <span className="text-xs text-gray-400">今週のチャレンジ</span>
+            <span className={`text-xs font-bold ${weeklyRank.color}`}>
+              {weeklyRank.title}
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-medium text-gray-700">
+              {weekly.correctTotal}問正解
+            </span>
+            <span className="text-xs text-gray-400">
+              / {weekly.daysPlayed.length}日プレイ
+            </span>
+          </div>
+          {nextRank && (
+            <p className="text-xs text-gray-400 mt-1">
+              {nextRank.nextTitle}まであと{nextRank.gap}問
+            </p>
+          )}
+        </div>
+      )}
 
       {attemptsUsed >= 1 && (
         <button

@@ -36,6 +36,34 @@ export function getStreakCount(): number {
 }
 
 /**
+ * セッション開始時に呼ぶ。1問も解かなくても「参加した」= streak 維持。
+ * lastPlayedDate を更新し、streak を即座に反映する。
+ * 既に今日更新済みならスキップ（冪等）。
+ */
+export function ensureTodayStreak(): number {
+  if (typeof window === "undefined") return 0;
+  const today = getTodayDate();
+  const yesterday = getYesterdayDate();
+
+  // 既に今日のプレイが記録されていればスキップ
+  const LAST_PLAYED_KEY = "baseball_quiz_last_played_date";
+  const lastPlayed = localStorage.getItem(LAST_PLAYED_KEY) || null;
+  if (lastPlayed === today) {
+    return getStoredStreakCount();
+  }
+
+  // streak 更新
+  const current = getStoredStreakCount();
+  const next = lastPlayed === yesterday ? current + 1 : 1;
+  setStoredStreakCount(next);
+
+  // lastPlayedDate も即座に更新
+  localStorage.setItem(LAST_PLAYED_KEY, today);
+
+  return next;
+}
+
+/**
  * 今日のプレイ完了時に呼ぶ。lastPlayedDate は呼び出し元で setLastPlayedToday() すること。
  * - 同日内の再プレイは増やさない
  * - 昨日の翌日なら +1

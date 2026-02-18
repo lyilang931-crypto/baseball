@@ -45,7 +45,7 @@ import {
   getDailyUsedQuestionIds,
   addDailyUsedQuestionIds,
 } from "@/lib/daily";
-import { updateStreakAndReturn } from "@/utils/streak";
+import { updateStreakAndReturn, ensureTodayStreak } from "@/utils/streak";
 import { getOrCreateUserId } from "@/lib/userId";
 import { playResultSound } from "@/app/hooks/useResultSound";
 import { tracker, logger } from "@/lib/monitoring";
@@ -56,6 +56,7 @@ import {
   isDailyChallengeCompleted,
 } from "@/lib/dailyChallenge";
 import { track, getSessionId, once } from "@/lib/analytics";
+import { addWeeklySession } from "@/lib/weeklyChallenge";
 
 type Screen = "start" | "question" | "result" | "final";
 
@@ -274,6 +275,9 @@ export default function Home() {
     lastSfxPlayedKeyRef.current = null;
     challengeStartFiredRef.current = false;
     challengeCompleteFiredRef.current = false;
+
+    // セッション開始 = 今日参加した → streak を即更新（1問でも維持）
+    ensureTodayStreak();
 
     // デイリーチャレンジモード（配球チャレンジ）
     if (options?.dailyChallenge) {
@@ -504,6 +508,9 @@ export default function Home() {
       } catch {
         // ignore
       }
+
+      // 週間チャレンジに今回のセッション結果を加算
+      addWeeklySession(finalCorrect, sessionQuestions.length);
 
       setTodayResult({
         correctCount: finalCorrect,

@@ -30,6 +30,12 @@ import {
 } from "@/lib/daily";
 import { getTomorrowPreview } from "@/utils/tomorrowPreview";
 import type { TomorrowPreview } from "@/utils/tomorrowPreview";
+import {
+  getWeeklyState,
+  getWeeklyRank,
+  getNextRankGap,
+} from "@/lib/weeklyChallenge";
+import type { WeeklyState, WeeklyRank } from "@/lib/weeklyChallenge";
 
 interface FinalResultViewProps {
   correctCount: number;
@@ -67,6 +73,10 @@ export default function FinalResultView({
   const [avgAccuracy, setAvgAccuracy] = useState<number | null>(null);
   /** 明日の予告 */
   const [tomorrow, setTomorrow] = useState<TomorrowPreview | null>(null);
+  /** 週間チャレンジ */
+  const [weekly, setWeekly] = useState<WeeklyState | null>(null);
+  const [weeklyRank, setWeeklyRank] = useState<WeeklyRank | null>(null);
+  const [nextRank, setNextRank] = useState<{ nextTitle: string; gap: number } | null>(null);
 
   // クライアント側でのみlocalStorageから値を読み込む
   useEffect(() => {
@@ -76,6 +86,11 @@ export default function FinalResultView({
     setAttemptsUsed(getTodayAttemptsUsed());
     setAttemptsRemaining(getTodayAttemptsRemaining());
     setTomorrow(getTomorrowPreview());
+    // 週間チャレンジ
+    const ws = getWeeklyState();
+    setWeekly(ws);
+    setWeeklyRank(getWeeklyRank(ws.correctTotal));
+    setNextRank(getNextRankGap(ws.correctTotal));
 
     // ③ セッション履歴から成長指標を算出
     try {
@@ -277,6 +292,31 @@ export default function FinalResultView({
             <p className="text-sm text-indigo-500 mt-0.5">
               {tomorrow.teaser}
             </p>
+          </div>
+        )}
+
+        {/* 週間チャレンジ進捗 */}
+        {mounted && weekly && weeklyRank && weekly.sessionCount > 0 && (
+          <div className="w-full max-w-sm mb-4 py-3 px-4 rounded-xl bg-gray-50 border border-gray-100">
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-xs text-gray-400">今週のチャレンジ</span>
+              <span className={`text-xs font-bold ${weeklyRank.color}`}>
+                {weeklyRank.title}
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-medium text-gray-700">
+                {weekly.correctTotal}問正解
+              </span>
+              <span className="text-xs text-gray-400">
+                / {weekly.daysPlayed.length}日プレイ
+              </span>
+            </div>
+            {nextRank && (
+              <p className="text-xs text-gray-400 mt-1">
+                {nextRank.nextTitle}まであと{nextRank.gap}問
+              </p>
+            )}
           </div>
         )}
 
