@@ -20,6 +20,33 @@ function urlBase64ToUint8Array(base64String: string): Uint8Array {
   return Uint8Array.from(Array.from(rawData).map((char) => char.charCodeAt(0)));
 }
 
+/**
+ * Service Worker の Registration を取得する
+ *
+ * navigator.serviceWorker.ready は SW が "waiting" 状態のとき永遠に待ち続けるため
+ * getRegistration() で即時取得を優先し、未登録時のみ ready + タイムアウトにフォールバックする
+ */
+async function getSwRegistration(): Promise<ServiceWorkerRegistration> {
+  // getRegistration はブロックせず即座に既存の registration を返す（active でなくてもOK）
+  const reg = await navigator.serviceWorker.getRegistration("/");
+  if (reg) {
+    console.log("[Push] getRegistration: state=", reg.active?.state ?? "no active worker");
+    return reg;
+  }
+
+  // まだ登録がない場合は ready を 5 秒タイムアウト付きで待つ
+  console.log("[Push] getRegistration returned undefined, falling back to serviceWorker.ready");
+  return Promise.race([
+    navigator.serviceWorker.ready,
+    new Promise<never>((_, reject) =>
+      setTimeout(
+        () => reject(new Error("[Push] serviceWorker.ready がタイムアウトしました（5秒）")),
+        5000
+      )
+    ),
+  ]);
+}
+
 /** このブラウザがWeb Pushをサポートしているか確認 */
 export function isPushSupported(): boolean {
   if (typeof window === "undefined") return false;
@@ -51,7 +78,7 @@ export async function registerServiceWorker(): Promise<ServiceWorkerRegistration
 export async function getCurrentSubscription(): Promise<PushSubscription | null> {
   if (!isPushSupported()) return null;
   try {
-    const registration = await navigator.serviceWorker.ready;
+    const registration = await getSwRegistration();
     return await registration.pushManager.getSubscription();
   } catch {
     return null;
@@ -87,7 +114,7 @@ export async function subscribeToPush(
       return "denied";
     }
 
-    const registration = await navigator.serviceWorker.ready;
+    const registration = await getSwRegistration();
 
     // すでに購読済みならスキップ
     const existingSub = await registration.pushManager.getSubscription();
@@ -120,7 +147,7 @@ export async function subscribeToPush(
 export async function unsubscribeFromPush(userId: string): Promise<boolean> {
   if (!isPushSupported()) return false;
   try {
-    const registration = await navigator.serviceWorker.ready;
+    const registration = await getSwRegistration();
     const subscription = await registration.pushManager.getSubscription();
 
     if (!subscription) return true; // すでに未購読
