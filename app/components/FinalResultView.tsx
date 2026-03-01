@@ -22,6 +22,7 @@ import { getStreakCount } from "@/utils/streak";
 import ShareCard from "./ShareCard";
 import AdSlot from "./AdSlot";
 import RewardedAdButton from "./RewardedAdButton";
+import NotificationButton from "./NotificationButton";
 import { isPremiumUser } from "@/lib/monetization";
 import { track, getSessionId, once } from "@/lib/analytics";
 import {
@@ -279,6 +280,9 @@ export default function FinalResultView({
           </div>
         )}
         {!mounted && <div className="mb-6" />}
+
+        {/* 🔔 プッシュ通知オプトイン（今日のプレイ完了後に表示） */}
+        {mounted && <NotificationButton />}
 
         {/* 明日の予告（オープンループで再訪を促す） */}
         {mounted && tomorrow && (
