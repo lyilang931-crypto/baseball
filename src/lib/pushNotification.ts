@@ -17,7 +17,7 @@ function urlBase64ToUint8Array(base64String: string): Uint8Array {
     .replace(/-/g, "+")
     .replace(/_/g, "/");
   const rawData = window.atob(base64);
-  return Uint8Array.from([...rawData].map((char) => char.charCodeAt(0)));
+  return Uint8Array.from(Array.from(rawData).map((char) => char.charCodeAt(0)));
 }
 
 /** このブラウザがWeb Pushをサポートしているか確認 */
