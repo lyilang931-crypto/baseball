@@ -22,7 +22,8 @@ type NotifState =
   | "unsupported"   // ブラウザ非対応
   | "denied"        // ユーザーが拒否済み
   | "subscribed"    // 購読中
-  | "unsubscribed"; // 未購読（許可を求められる）
+  | "unsubscribed"  // 未購読（許可を求められる）
+  | "error";        // 購読処理でエラー発生
 
 interface NotificationButtonProps {
   /** コンパクト表示（スタート画面など） */
@@ -63,8 +64,10 @@ export default function NotificationButton({ compact = false }: NotificationButt
         setState("subscribed");
       } else if (result === "denied") {
         setState("denied");
+      } else {
+        // "error": UI にフィードバックを表示する
+        setState("error");
       }
-      // "error" の場合はそのまま（ボタンは再度押せる）
     } finally {
       setIsProcessing(false);
     }
@@ -90,6 +93,27 @@ export default function NotificationButton({ compact = false }: NotificationButt
       <p className="text-xs text-gray-400 text-center mt-2">
         通知はブラウザの設定からオンにできます
       </p>
+    );
+  }
+
+  if (state === "error") {
+    return (
+      <div className="w-full max-w-sm mt-4 py-3 px-4 rounded-xl bg-red-50 border border-red-100 text-center">
+        <p className="text-sm text-red-600 mb-2">
+          通知の設定に失敗しました
+        </p>
+        <p className="text-xs text-red-400 mb-3">
+          ブラウザのコンソールでエラー詳細を確認してください
+        </p>
+        <button
+          onClick={() => {
+            setState("unsubscribed");
+          }}
+          className="text-xs text-blue-500 underline hover:text-blue-600 transition-colors"
+        >
+          再試行する
+        </button>
+      </div>
     );
   }
 

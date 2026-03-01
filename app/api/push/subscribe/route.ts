@@ -33,8 +33,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // endpointの長さ制限チェック（長すぎるエンドポイントを拒否）
-    if (endpoint.length > 500) {
+    // endpointの長さ制限チェック
+    // Chrome(FCM)のエンドポイントはトークン部分だけで500文字超えることがあるため
+    // 実用上の上限として2048文字を設定する
+    if (endpoint.length > 2048) {
       return NextResponse.json(
         { error: "endpointが長すぎます" },
         { status: 400 }

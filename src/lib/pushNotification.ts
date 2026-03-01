@@ -170,6 +170,10 @@ async function sendSubscriptionToServer(
 
   if (!response.ok) {
     const text = await response.text();
-    throw new Error(`サーバーへの保存に失敗しました: ${text}`);
+    // ステータスコードを含めてログ出力（デバッグ用）
+    console.error(
+      `[Push] sendSubscriptionToServer failed: status=${response.status}, body=${text}, endpoint_length=${subscription.endpoint.length}`
+    );
+    throw new Error(`サーバーへの保存に失敗しました (${response.status}): ${text}`);
   }
 }
