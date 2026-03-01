@@ -163,8 +163,8 @@ async function sendSubscriptionToServer(
     body: JSON.stringify({
       userId,
       endpoint: subscription.endpoint,
-      p256dh: btoa(String.fromCharCode(...new Uint8Array(key))),
-      auth: btoa(String.fromCharCode(...new Uint8Array(auth))),
+      p256dh: btoa(String.fromCharCode(...Array.from(new Uint8Array(key)))),
+      auth: btoa(String.fromCharCode(...Array.from(new Uint8Array(auth)))),
     }),
   });
 
